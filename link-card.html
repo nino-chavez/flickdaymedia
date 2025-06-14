@@ -14,14 +14,13 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 2rem;
+      padding: 1rem;
       min-height: 100vh;
-      position: relative;
     }
 
     h1 {
       font-family: 'Bangers', cursive;
-      font-size: 3rem;
+      font-size: 2.5rem;
       text-shadow: 2px 2px #f7c331;
       color: #12343b;
       margin-bottom: 0.5rem;
@@ -29,9 +28,9 @@
 
     .handle {
       color: #fefefe;
-      font-size: 1rem;
+      font-size: 0.9rem;
       font-weight: bold;
-      margin-bottom: 2rem;
+      margin-bottom: 1rem;
       text-shadow: 1px 1px #000;
     }
 
@@ -41,33 +40,28 @@
       margin: 0 0.25rem;
     }
 
-    .link-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 1rem;
+    .bg-container {
+      position: relative;
+      width: 100%;
       max-width: 428px;
-      width: 100%;
+      aspect-ratio: 3 / 4;
+      background: url('https://flickdaymedia.com/flickday-assets/link-card.png') center/cover no-repeat;
     }
 
-    .card {
-      width: 100%;
+    .hotspot {
+      position: absolute;
+      width: 80%;
       aspect-ratio: 1 / 1;
-      border-radius: 1rem;
-      overflow: hidden;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
-      transition: transform 0.2s ease-in-out;
+      left: 10%;
+      cursor: pointer;
     }
 
-    .card:hover {
-      transform: scale(1.05);
-    }
-
-    .card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+    .photo-work { top: 10.5%; }
+    .lets-pepper { top: 24%; }
+    .blog { top: 37.5%; }
+    .flickday { top: 51%; }
+    .gallery { top: 64.5%; }
+    .contact { top: 78%; }
   </style>
 </head>
 <body>
@@ -78,25 +72,13 @@
     <a href="https://www.instagram.com/flickday.media" target="_blank">@flickdaymedia</a>
   </div>
 
-  <div class="link-grid">
-    <a class="card" href="https://nino.photos" target="_blank">
-      <img src="/link-cards/photo-work.png" alt="My Photo Work">
-    </a>
-    <a class="card" href="https://letspepper.com" target="_blank">
-      <img src="/link-cards/lets-pepper.png" alt="Let’s Pepper Open">
-    </a>
-    <a class="card" href="https://blog.nino.photos" target="_blank">
-      <img src="/link-cards/blog.png" alt="Signal Reflex Blog">
-    </a>
-    <a class="card" href="https://flickdaymedia.com" target="_blank">
-      <img src="/link-cards/flickday.png" alt="Flickday Media">
-    </a>
-    <a class="card" href="https://nino.photos/pepper-launch" target="_blank">
-      <img src="/link-cards/gallery.png" alt="Latest Gallery">
-    </a>
-    <a class="card" href="mailto:hello@nino.photos" target="_blank">
-      <img src="/link-cards/contact.png" alt="Get in Touch">
-    </a>
+  <div class="bg-container">
+    <a class="hotspot photo-work" href="https://nino.photos" target="_blank"></a>
+    <a class="hotspot lets-pepper" href="https://letspepper.com" target="_blank"></a>
+    <a class="hotspot blog" href="https://blog.nino.photos" target="_blank"></a>
+    <a class="hotspot flickday" href="https://flickdaymedia.com" target="_blank"></a>
+    <a class="hotspot gallery" href="https://nino.photos/pepper-launch" target="_blank"></a>
+    <a class="hotspot contact" href="mailto:hello@nino.photos" target="_blank"></a>
   </div>
 </body>
 </html>
