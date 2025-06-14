@@ -2,81 +2,66 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Links | Nino Chavez</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Open+Sans&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Flickday Link Hub</title>
   <style>
-    body {
+    * {
       margin: 0;
-      font-family: 'Open Sans', sans-serif;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
       background-color: #000;
-      color: #2d545e;
+      color: #fff;
+      font-family: sans-serif;
+      height: 100vh;
       display: flex;
-      flex-direction: column;
+      justify-content: center;
       align-items: center;
-      padding: 1rem;
-      min-height: 100vh;
     }
-
-    h1 {
-      font-family: 'Bangers', cursive;
-      font-size: 2.5rem;
-      text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7), 2px 2px #f7c331;
-      color: #fefefe;
-      margin-bottom: 0.5rem;
-    }
-
-    .handle {
-      color: #fefefe;
-      font-size: 0.9rem;
-      font-weight: bold;
-      margin-bottom: 1rem;
-      text-shadow: 1px 1px #000;
-    }
-
-    .handle a {
-      color: #f7c331;
-      text-decoration: none;
-      margin: 0 0.25rem;
-    }
-
-    .bg-container {
+    .link-card {
       position: relative;
       width: 100%;
-      max-width: 428px;
-      aspect-ratio: 3 / 4;
-      background: url('https://flickdaymedia.com/flickday-assets/link-card-v2.png') center/cover no-repeat;
+      max-width: 500px;
     }
-
-    .hotspot {
+    .link-card img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+    .link-card a {
       position: absolute;
-      width: 90%;
-      height: 10.5%;
-      left: 5%;
+      display: block;
+      width: 70%;
+      height: 40px;
+      left: 15%;
+      opacity: 0;
       cursor: pointer;
     }
 
-    .photo-work { top: 15.8%; }
-    .lets-pepper { top: 29.2%; }
-    .blog { top: 43%; }
-    .flickday { top: 58%; }
-    .contact { top: 70.2%; height: 11.2%; }
+    /* Adjust these top values to line up buttons with your background image */
+
+    .btn-1 { top: 28%; } /* www.nino.photos */
+    .btn-2 { top: 39%; } /* blog.nino.photos */
+    .btn-3 { top: 50%; } /* flickdaymedia.com */
+    .btn-4 { top: 61%; } /* mailto */
+
+    @media screen and (max-width: 600px) {
+      .link-card a {
+        height: 36px;
+      }
+    }
   </style>
 </head>
 <body>
-  <h1>Let’s Go!</h1>
-  <div class="handle">
-    <a href="https://instagram.com/nino.chavez.photo" target="_blank">@nino.chavez.photo</a> |
-    <a href="https://www.instagram.com/letspepper.open" target="_blank">@letspepper</a> |
-    <a href="https://www.instagram.com/flickday.media" target="_blank">@flickday</a>
-  </div>
+  <div class="link-card">
+    <img src="/flickday-assets/link-card-v2.png" alt="Flickday Link Hub Background">
 
-  <div class="bg-container">
-    <a class="hotspot photo-work" href="https://nino.photos" target="_blank" rel="noopener noreferrer" title="Visit Nino's Photo Work"></a>
-    <a class="hotspot lets-pepper" href="https://letspepper.com" target="_blank" rel="noopener noreferrer" title="Visit Let's Pepper"></a>
-    <a class="hotspot blog" href="https://blog.nino.photos" target="_blank" rel="noopener noreferrer" title="Read Signal Reflex Blog"></a>
-    <a class="hotspot flickday" href="https://flickdaymedia.com" target="_blank" rel="noopener noreferrer" title="Visit Flickday Media"></a>
-    <a class="hotspot contact" href="mailto:hello@nino.photos" title="Email Nino"></a>
+    <a class="btn-1" href="https://www.nino.photos" target="_blank" title="Photo Site"></a>
+    <a class="btn-2" href="https://blog.nino.photos" target="_blank" title="Signal Reflex Blog"></a>
+    <a class="btn-3" href="https://flickdaymedia.com" target="_blank" title="Flickday Media"></a>
+    <a class="btn-4" href="mailto:nino@nino.photos" title="Email Nino"></a>
   </div>
 </body>
 </html>
