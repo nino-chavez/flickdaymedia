@@ -35,43 +35,68 @@
       text-shadow: 1px 1px #000;
     }
 
-    .image-map {
-      width: 100%;
+    .handle a {
+      color: #f7c331;
+      text-decoration: none;
+      margin: 0 0.25rem;
+    }
+
+    .link-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1rem;
       max-width: 428px;
-      aspect-ratio: 3 / 4;
-      position: relative;
-      background: url('https://flickdaymedia.com/flickday-assets/link-card.png') center/contain no-repeat;
-      background-size: contain;
+      width: 100%;
     }
 
-    .hotspot {
-      position: absolute;
+    .card {
+      width: 100%;
+      aspect-ratio: 1 / 1;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+      transition: transform 0.2s ease-in-out;
+    }
+
+    .card:hover {
+      transform: scale(1.05);
+    }
+
+    .card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
       display: block;
-      z-index: 2;
-    }
-
-    .photo-work { top: 20%; left: 10%; width: 80%; height: 10%; }
-    .lets-pepper { top: 32%; left: 10%; width: 80%; height: 10%; }
-    .blog { top: 44%; left: 10%; width: 80%; height: 10%; }
-    .flickday { top: 56%; left: 10%; width: 80%; height: 10%; }
-    .gallery { top: 68%; left: 10%; width: 80%; height: 10%; }
-    .contact { top: 80%; left: 10%; width: 80%; height: 10%; }
-
-    .hotspot:hover {
-      outline: 2px dashed #f7c331;
     }
   </style>
 </head>
 <body>
   <h1>Let’s Go!</h1>
-  <div class="handle">@nino.chavez.photo | @letspepper | @flickdaymedia</div>
-  <div class="image-map">
-    <a class="hotspot photo-work" href="https://nino.photos" target="_blank" aria-label="My Photo Work"></a>
-    <a class="hotspot lets-pepper" href="https://letspepper.com" target="_blank" aria-label="Let’s Pepper Open"></a>
-    <a class="hotspot blog" href="https://blog.nino.photos" target="_blank" aria-label="Signal Reflex Blog"></a>
-    <a class="hotspot flickday" href="https://flickdaymedia.com" target="_blank" aria-label="Flickday Media"></a>
-    <a class="hotspot gallery" href="https://nino.photos/pepper-launch" target="_blank" aria-label="Latest Gallery"></a>
-    <a class="hotspot contact" href="mailto:hello@nino.photos" target="_blank" aria-label="Get in Touch"></a>
+  <div class="handle">
+    <a href="https://instagram.com/nino.chavez.photo" target="_blank">@nino.chavez.photo</a> |
+    <a href="https://www.instagram.com/letspepper.open" target="_blank">@letspepper</a> |
+    <a href="https://www.instagram.com/flickday.media" target="_blank">@flickdaymedia</a>
+  </div>
+
+  <div class="link-grid">
+    <a class="card" href="https://nino.photos" target="_blank">
+      <img src="/link-cards/photo-work.png" alt="My Photo Work">
+    </a>
+    <a class="card" href="https://letspepper.com" target="_blank">
+      <img src="/link-cards/lets-pepper.png" alt="Let’s Pepper Open">
+    </a>
+    <a class="card" href="https://blog.nino.photos" target="_blank">
+      <img src="/link-cards/blog.png" alt="Signal Reflex Blog">
+    </a>
+    <a class="card" href="https://flickdaymedia.com" target="_blank">
+      <img src="/link-cards/flickday.png" alt="Flickday Media">
+    </a>
+    <a class="card" href="https://nino.photos/pepper-launch" target="_blank">
+      <img src="/link-cards/gallery.png" alt="Latest Gallery">
+    </a>
+    <a class="card" href="mailto:hello@nino.photos" target="_blank">
+      <img src="/link-cards/contact.png" alt="Get in Touch">
+    </a>
   </div>
 </body>
 </html>
