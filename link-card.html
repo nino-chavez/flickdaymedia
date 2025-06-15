@@ -10,58 +10,65 @@
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
       background-color: #000;
-      color: #fff;
       font-family: sans-serif;
       height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
     }
+
     .link-card {
       position: relative;
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
     }
+
     .link-card img {
       width: 100%;
       height: auto;
       display: block;
       object-fit: contain;
     }
+
     .link-card a {
       position: absolute;
       display: block;
-      width: 70%;
-      height: 40px;
-      left: 15%;
-      opacity: 0;
+      left: 8%;
+      width: 84%;
+      height: 52px;
+      opacity: 1;
       cursor: pointer;
+      /* TEMP VISUALIZATION: 20% opaque overlays */
+      background-color: rgba(255, 255, 0, 0.2); /* yellow tint for visibility */
+      border: 1px dashed rgba(255, 255, 255, 0.3);
     }
 
-    /* Adjust these top values to line up buttons with your background image */
+    /* Button positions */
+    .btn-photo     { top: 13.5%; }
+    .btn-pepper    { top: 25.2%; }
+    .btn-blog      { top: 36.9%; }
+    .btn-flickday  { top: 48.7%; }
+    .btn-contact   { top: 60.4%; }
 
-    .btn-1 { top: 28%; } /* www.nino.photos */
-    .btn-2 { top: 39%; } /* blog.nino.photos */
-    .btn-3 { top: 50%; } /* flickdaymedia.com */
-    .btn-4 { top: 61%; } /* mailto */
-
-    @media screen and (max-width: 600px) {
+    @media (max-width: 600px) {
       .link-card a {
-        height: 36px;
+        height: 48px;
       }
     }
   </style>
 </head>
 <body>
   <div class="link-card">
-    <img src="/flickday-assets/link-card-v2.png" alt="Flickday Link Hub Background">
+    <img src="https://flickdaymedia.com/flickday-assets/link-card-v2.png" alt="Flickday Link Card" />
 
-    <a class="btn-1" href="https://www.nino.photos" target="_blank" title="Photo Site"></a>
-    <a class="btn-2" href="https://blog.nino.photos" target="_blank" title="Signal Reflex Blog"></a>
-    <a class="btn-3" href="https://flickdaymedia.com" target="_blank" title="Flickday Media"></a>
-    <a class="btn-4" href="mailto:nino@nino.photos" title="Email Nino"></a>
+    <a class="btn-photo"     href="https://www.nino.photos"       target="_blank" title="My Photo Work"></a>
+    <a class="btn-pepper"    href="https://letspepper.com"        target="_blank" title="Let's Pepper Open"></a>
+    <a class="btn-blog"      href="https://blog.nino.photos"      target="_blank" title="Signal Reflex Blog"></a>
+    <a class="btn-flickday"  href="https://flickdaymedia.com"     target="_blank" title="Flickday Media"></a>
+    <a class="btn-contact"   href="mailto:hello@nino.photos"                      title="Get in Touch"></a>
   </div>
 </body>
 </html>
