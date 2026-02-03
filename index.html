@@ -1,735 +1,1383 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Flickday Media | Grassroots Sports Media</title>
-  <meta name="description" content="Grassroots sports media — raw, fast, and player-first. We shoot for the ones who live in the rally. Tournament coverage, reels, and photo galleries.">
+  <meta name="description" content="Grassroots sports media — raw, fast, and player-first. We shoot for the ones who live in the rally.">
 
   <!-- Open Graph -->
-  <meta property="og:title" content="Flickday Media | Grassroots Sports Media">
+  <meta property="og:title" content="Flickday Media | Every Day's a Flickday">
   <meta property="og:description" content="Raw, fast, and player-first sports media. Tournament coverage for volleyball and action sports.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://flickdaymedia.com">
   <meta property="og:image" content="./flickday-assets/flickday-badge.png">
 
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Flickday Media">
-  <meta name="twitter:description" content="Grassroots sports media — raw, fast, and player-first.">
-
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="./flickday-assets/logo-monochrome-face.png">
-  <link rel="apple-touch-icon" href="./flickday-assets/flickday-badge.png">
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
-  <!-- Tailwind -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            'flickday-yellow': '#facc15',
-            'flickday-yellow-light': '#fde047',
-            'rich-black': '#0a0a0f',
-          },
-          fontFamily: {
-            'display': ['Bebas Neue', 'sans-serif'],
-            'body': ['Inter', 'sans-serif'],
-            'mono': ['JetBrains Mono', 'monospace'],
-          },
-        },
-      },
-    }
-  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
 
   <style>
+    /* ============================================
+       FLICKDAY MEDIA - EDITORIAL SPORTS DESIGN
+       "Like a sports magazine that came to life"
+       ============================================ */
+
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --black: #000000;
+      --white: #ffffff;
+      --yellow: #facc15;
+      --yellow-bright: #fde047;
+      --gray-dark: #111;
+      --gray-mid: #333;
+      --gray-light: #888;
+
+      --font-display: 'Bebas Neue', Impact, sans-serif;
+      --font-body: system-ui, -apple-system, sans-serif;
+
+      --transition-fast: 0.2s ease;
+      --transition-medium: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      --transition-slow: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      font-family: 'Inter', sans-serif;
-      background: #000;
-      color: #fff;
+      font-family: var(--font-body);
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+      line-height: 1.5;
     }
 
-    .font-display {
-      font-family: 'Bebas Neue', sans-serif;
+    /* Reduce motion for accessibility */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+      .parallax {
+        transform: none !important;
+      }
     }
 
-    .hero-text {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(3.5rem, 12vw, 10rem);
-      line-height: 0.9;
+    /* ============================================
+       TYPOGRAPHY - MASSIVE & UNAPOLOGETIC
+       ============================================ */
+
+    .display-massive {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 20vw, 18rem);
+      line-height: 0.85;
       letter-spacing: -0.02em;
+      text-transform: uppercase;
     }
 
-    .grid-overlay {
-      background-image:
-        linear-gradient(rgba(250, 204, 21, 0.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(250, 204, 21, 0.05) 1px, transparent 1px);
-      background-size: 60px 60px;
+    .display-large {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 12vw, 10rem);
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
     }
 
-    .grain-overlay {
-      background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E');
+    .display-medium {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 8vw, 6rem);
+      line-height: 0.95;
+      text-transform: uppercase;
     }
 
-    .bento-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: 260px;
-      gap: 1rem;
+    /* Text that punches through images */
+    .text-knockout {
+      mix-blend-mode: difference;
     }
 
-    .bento-large {
-      grid-column: span 2;
-      grid-row: span 2;
+    .text-outline {
+      -webkit-text-stroke: 2px var(--white);
+      color: transparent;
     }
 
-    @media (max-width: 1024px) {
-      .bento-grid {
-        grid-template-columns: repeat(2, 1fr);
-        grid-auto-rows: 220px;
+    /* ============================================
+       HERO - FULL BLEED EDITORIAL
+       ============================================ */
+
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      overflow: hidden;
+    }
+
+    .hero__media {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .hero__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      filter: contrast(1.1) brightness(0.9);
+    }
+
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(to top, var(--black) 0%, transparent 40%),
+        linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%);
+    }
+
+    /* Grain texture for gritty feel */
+    .hero__grain {
+      position: absolute;
+      inset: 0;
+      opacity: 0.15;
+      mix-blend-mode: overlay;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 10;
+      padding: 2rem;
+      padding-bottom: 4rem;
+    }
+
+    @media (min-width: 768px) {
+      .hero__content {
+        padding: 4rem;
+        padding-bottom: 6rem;
       }
-      .bento-large {
-        grid-column: span 2;
-        grid-row: span 1;
-      }
     }
 
-    @media (max-width: 640px) {
-      .bento-grid {
-        grid-template-columns: 1fr;
-        grid-auto-rows: auto;
-      }
-      .bento-large {
-        grid-column: span 1;
-        grid-row: span 1;
-      }
+    .hero__badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--yellow);
+      color: var(--black);
+      font-family: var(--font-display);
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      margin-bottom: 2rem;
     }
 
-    .gallery-scroll {
-      overflow-x: auto;
-      overflow-y: hidden;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      cursor: grab;
+    .hero__badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--black);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
     }
 
-    .gallery-scroll::-webkit-scrollbar {
-      display: none;
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
     }
 
-    .gallery-scroll:active {
-      cursor: grabbing;
+    .hero__title {
+      position: relative;
+      color: var(--white);
     }
 
-    @keyframes scroll-strip {
-      0% { transform: translateX(0); }
-      100% { transform: translateX(-50%); }
+    .hero__title-line {
+      display: block;
+      opacity: 0;
+      transform: translateY(60px);
+      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
 
-    .animate-scroll-strip {
-      animation: scroll-strip 25s linear infinite;
+    .hero__title-line:nth-child(1) { animation-delay: 0.1s; }
+    .hero__title-line:nth-child(2) { animation-delay: 0.2s; }
+
+    .hero__title-accent {
+      color: var(--yellow);
     }
 
-    .animate-scroll-strip:hover {
-      animation-play-state: paused;
-    }
-
-    @keyframes slide-up {
-      from {
-        opacity: 0;
-        transform: translateY(40px);
-      }
+    @keyframes slideUp {
       to {
         opacity: 1;
         transform: translateY(0);
       }
     }
 
-    @keyframes fade-in {
-      from { opacity: 0; }
+    .hero__tagline {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: rgba(255,255,255,0.8);
+      max-width: 500px;
+      margin: 2rem 0;
+      opacity: 0;
+      animation: fadeIn 1s ease 0.5s forwards;
+    }
+
+    @keyframes fadeIn {
       to { opacity: 1; }
     }
 
-    .animate-slide-up {
-      opacity: 0;
-      animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    .hero__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 1rem 2rem;
+      background: transparent;
+      border: 2px solid var(--white);
+      color: var(--white);
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: var(--transition-fast);
+      min-height: 56px;
     }
 
-    .animate-fade-in {
-      opacity: 0;
-      animation: fade-in 1s ease forwards;
+    .hero__cta:hover,
+    .hero__cta:focus {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--black);
+      outline: none;
     }
 
-    @keyframes pulse-dot {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.5; }
+    .hero__cta:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
     }
 
-    .animate-pulse-dot {
-      animation: pulse-dot 2s ease-in-out infinite;
-    }
-
-    .progress-bar {
-      height: 2px;
-      background: rgba(250, 204, 21, 0.8);
-      transition: width 0.1s linear;
-    }
-
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.95);
-      z-index: 9999;
-      display: none;
-      flex-direction: column;
-    }
-
-    .lightbox.active {
+    .hero__scroll {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 10;
       display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--white);
+      font-size: 0.625rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.6;
     }
 
-    .glow-yellow:hover {
-      filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.5));
+    .hero__scroll-line {
+      width: 1px;
+      height: 60px;
+      background: linear-gradient(to bottom, var(--yellow), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
     }
 
-    @media (prefers-reduced-motion: reduce) {
-      .animate-slide-up,
-      .animate-fade-in,
-      .animate-scroll-strip {
-        animation: none;
-        opacity: 1;
-        transform: none;
+    @keyframes scrollPulse {
+      0%, 100% { transform: scaleY(1); opacity: 1; }
+      50% { transform: scaleY(0.5); opacity: 0.5; }
+    }
+
+    /* ============================================
+       MARQUEE - BROADCAST ENERGY
+       ============================================ */
+
+    .marquee {
+      background: var(--yellow);
+      color: var(--black);
+      padding: 1rem 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .marquee__track {
+      display: flex;
+      width: max-content;
+      animation: marquee 20s linear infinite;
+    }
+
+    .marquee:hover .marquee__track {
+      animation-play-state: paused;
+    }
+
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    .marquee__content {
+      display: flex;
+      align-items: center;
+      gap: 4rem;
+      padding: 0 2rem;
+      font-family: var(--font-display);
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .marquee__separator {
+      width: 12px;
+      height: 12px;
+      background: var(--black);
+      transform: rotate(45deg);
+    }
+
+    /* ============================================
+       SPLIT SECTION - EDITORIAL LAYOUT
+       ============================================ */
+
+    .split {
+      display: grid;
+      grid-template-columns: 1fr;
+      min-height: 80vh;
+    }
+
+    @media (min-width: 768px) {
+      .split {
+        grid-template-columns: 1fr 1fr;
       }
+
+      .split--reverse .split__media {
+        order: 2;
+      }
+    }
+
+    .split__media {
+      position: relative;
+      min-height: 50vh;
+      overflow: hidden;
+    }
+
+    .split__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .split:hover .split__image {
+      transform: scale(1.05);
+    }
+
+    .split__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 3rem 2rem;
+      background: var(--gray-dark);
+    }
+
+    @media (min-width: 768px) {
+      .split__content {
+        padding: 4rem;
+      }
+    }
+
+    .split__label {
+      font-family: var(--font-display);
+      font-size: 0.875rem;
+      letter-spacing: 0.2em;
+      color: var(--yellow);
+      margin-bottom: 1rem;
+    }
+
+    .split__title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 8vw, 5rem);
+      line-height: 0.95;
+      margin-bottom: 1.5rem;
+    }
+
+    .split__text {
+      font-size: 1rem;
+      color: rgba(255,255,255,0.7);
+      max-width: 400px;
+      margin-bottom: 2rem;
+    }
+
+    .split__link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--yellow);
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: gap var(--transition-fast);
+    }
+
+    .split__link:hover {
+      gap: 1.25rem;
+    }
+
+    .split__link-arrow {
+      transition: transform var(--transition-fast);
+    }
+
+    .split__link:hover .split__link-arrow {
+      transform: translateX(4px);
+    }
+
+    /* ============================================
+       GALLERY - HORIZONTAL SCROLL
+       ============================================ */
+
+    .gallery {
+      padding: 6rem 0;
+      background: var(--black);
+    }
+
+    .gallery__header {
+      padding: 0 2rem;
+      margin-bottom: 3rem;
+    }
+
+    @media (min-width: 768px) {
+      .gallery__header {
+        padding: 0 4rem;
+      }
+    }
+
+    .gallery__title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 10vw, 8rem);
+      line-height: 0.9;
+    }
+
+    .gallery__title-outline {
+      -webkit-text-stroke: 1px var(--white);
+      color: transparent;
+    }
+
+    .gallery__scroll {
+      display: flex;
+      gap: 1rem;
+      padding: 0 2rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      cursor: grab;
+    }
+
+    .gallery__scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery__scroll:active {
+      cursor: grabbing;
+    }
+
+    @media (min-width: 768px) {
+      .gallery__scroll {
+        gap: 1.5rem;
+        padding: 0 4rem;
+      }
+    }
+
+    .gallery__item {
+      flex: 0 0 auto;
+      width: 280px;
+      height: 400px;
+      scroll-snap-align: start;
+      position: relative;
+      overflow: hidden;
+      background: var(--gray-dark);
+    }
+
+    @media (min-width: 768px) {
+      .gallery__item {
+        width: 350px;
+        height: 500px;
+      }
+    }
+
+    .gallery__item-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      filter: grayscale(30%);
+    }
+
+    .gallery__item:hover .gallery__item-image,
+    .gallery__item:focus-within .gallery__item-image {
+      transform: scale(1.08);
+      filter: grayscale(0%);
+    }
+
+    .gallery__item-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+      opacity: 0;
+      transition: opacity var(--transition-fast);
+    }
+
+    .gallery__item:hover .gallery__item-overlay {
+      opacity: 1;
+    }
+
+    .gallery__item-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 1.5rem;
+      transform: translateY(20px);
+      opacity: 0;
+      transition: all var(--transition-medium);
+    }
+
+    .gallery__item:hover .gallery__item-caption {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .gallery__item-title {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .gallery__item-meta {
+      font-size: 0.75rem;
+      color: var(--yellow);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .gallery__hint {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.75rem;
+      color: var(--gray-light);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ============================================
+       EVENTS - DIAGONAL CUT
+       ============================================ */
+
+    .events {
+      position: relative;
+      padding: 8rem 0;
+      background: var(--gray-dark);
+    }
+
+    .events::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 100px;
+      background: var(--black);
+      clip-path: polygon(0 0, 100% 0, 100% 0%, 0 100%);
+    }
+
+    .events__inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .events__inner {
+        padding: 0 4rem;
+      }
+    }
+
+    .events__header {
+      margin-bottom: 4rem;
+    }
+
+    .events__label {
+      font-family: var(--font-display);
+      font-size: 0.875rem;
+      letter-spacing: 0.2em;
+      color: var(--yellow);
+      margin-bottom: 1rem;
+    }
+
+    .events__title {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 10vw, 7rem);
+      line-height: 0.9;
+    }
+
+    .events__grid {
+      display: grid;
+      gap: 2rem;
+    }
+
+    @media (min-width: 768px) {
+      .events__grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .event-card {
+      position: relative;
+      background: var(--black);
+      padding: 2rem;
+      border: 1px solid var(--gray-mid);
+      transition: border-color var(--transition-fast);
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+
+    .event-card:hover,
+    .event-card:focus {
+      border-color: var(--yellow);
+      outline: none;
+    }
+
+    .event-card:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+
+    .event-card__date {
+      display: flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .event-card__day {
+      font-family: var(--font-display);
+      font-size: 4rem;
+      line-height: 1;
+      color: var(--yellow);
+    }
+
+    .event-card__month {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      color: var(--gray-light);
+      text-transform: uppercase;
+    }
+
+    .event-card__title {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .event-card__subtitle {
+      font-size: 0.875rem;
+      color: var(--gray-light);
+      margin-bottom: 1.5rem;
+    }
+
+    .event-card__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--yellow);
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+    }
+
+    .event-card__cta-arrow {
+      transition: transform var(--transition-fast);
+    }
+
+    .event-card:hover .event-card__cta-arrow {
+      transform: translateX(4px);
+    }
+
+    .events__promo {
+      margin-top: 4rem;
+      padding: 2rem;
+      border: 2px dashed var(--gray-mid);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: flex-start;
+    }
+
+    @media (min-width: 768px) {
+      .events__promo {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .events__promo-text h3 {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .events__promo-text p {
+      color: var(--gray-light);
+      font-size: 0.875rem;
+    }
+
+    .events__promo-cta {
+      padding: 1rem 2rem;
+      background: var(--yellow);
+      color: var(--black);
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: background var(--transition-fast);
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .events__promo-cta:hover {
+      background: var(--yellow-bright);
+    }
+
+    /* ============================================
+       CONTACT - FULL BLEED CTA
+       ============================================ */
+
+    .contact {
+      position: relative;
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .contact__media {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .contact__image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: brightness(0.4) contrast(1.1);
+    }
+
+    .contact__content {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .contact__status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 2rem;
+    }
+
+    .contact__status-dot {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .contact__title {
+      font-family: var(--font-display);
+      font-size: clamp(4rem, 18vw, 14rem);
+      line-height: 0.85;
+      margin-bottom: 2rem;
+    }
+
+    .contact__subtitle {
+      font-size: 1.125rem;
+      color: rgba(255,255,255,0.7);
+      max-width: 400px;
+      margin: 0 auto 3rem;
+    }
+
+    .contact__links {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    @media (min-width: 480px) {
+      .contact__links {
+        flex-direction: row;
+        justify-content: center;
+      }
+    }
+
+    .contact__link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1rem 2rem;
+      min-width: 200px;
+      min-height: 56px;
+      font-family: var(--font-display);
+      font-size: 1.125rem;
+      letter-spacing: 0.05em;
+      text-decoration: none;
+      transition: all var(--transition-fast);
+    }
+
+    .contact__link--primary {
+      background: var(--yellow);
+      color: var(--black);
+    }
+
+    .contact__link--primary:hover {
+      background: var(--yellow-bright);
+    }
+
+    .contact__link--secondary {
+      border: 2px solid var(--white);
+      color: var(--white);
+    }
+
+    .contact__link--secondary:hover {
+      background: var(--white);
+      color: var(--black);
+    }
+
+    .contact__link:focus-visible {
+      outline: 3px solid var(--yellow);
+      outline-offset: 3px;
+    }
+
+    /* ============================================
+       FOOTER - MINIMAL
+       ============================================ */
+
+    .footer {
+      background: var(--black);
+      border-top: 1px solid var(--gray-mid);
+      padding: 2rem;
+    }
+
+    .footer__inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    @media (min-width: 768px) {
+      .footer__inner {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    .footer__brand {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .footer__logo {
+      width: 32px;
+      height: 32px;
+      opacity: 0.7;
+    }
+
+    .footer__copyright {
+      font-size: 0.75rem;
+      color: var(--gray-light);
+      letter-spacing: 0.05em;
+    }
+
+    .footer__links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .footer__link {
+      color: var(--gray-light);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: color var(--transition-fast);
+    }
+
+    .footer__link:hover {
+      color: var(--yellow);
+    }
+
+    .footer__social {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .footer__social-link {
+      color: var(--gray-light);
+      transition: color var(--transition-fast);
+      padding: 0.5rem;
+    }
+
+    .footer__social-link:hover {
+      color: var(--yellow);
+    }
+
+    .footer__social-link svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    /* ============================================
+       PLACEHOLDER IMAGES (Replace with real photos)
+       ============================================ */
+
+    .placeholder-image {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, var(--gray-mid) 0%, var(--gray-dark) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 0.875rem;
+      letter-spacing: 0.1em;
+      color: var(--gray-light);
+      text-transform: uppercase;
+    }
+
+    /* ============================================
+       SCROLL ANIMATIONS
+       ============================================ */
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
     }
   </style>
 </head>
 
-<body class="bg-black text-white overflow-x-hidden">
+<body>
 
-  <!-- HERO SECTION -->
-  <section id="hero" class="relative min-h-screen flex flex-col justify-end">
-    <div class="absolute inset-0 z-0">
-      <div class="w-full h-full bg-gradient-to-br from-neutral-900 via-neutral-800 to-black">
-        <div class="absolute inset-0 opacity-20" style="background: radial-gradient(circle at 70% 30%, rgba(250, 204, 21, 0.3), transparent 60%);"></div>
+  <!-- ====== HERO ====== -->
+  <section class="hero" aria-label="Hero">
+    <div class="hero__media">
+      <div class="placeholder-image hero__image" role="img" aria-label="Volleyball action shot">
+        ADD HERO PHOTO
       </div>
-      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40"></div>
-      <div class="grain-overlay absolute inset-0 opacity-20 mix-blend-overlay"></div>
+      <div class="hero__overlay"></div>
+      <div class="hero__grain"></div>
     </div>
 
-    <div class="grid-overlay absolute inset-0 z-10 pointer-events-none"></div>
+    <div class="hero__content">
+      <div class="hero__badge">NOW BOOKING 2026</div>
 
-    <div class="relative z-20 px-6 lg:px-12 pb-12 lg:pb-16">
-      <div class="mb-6 animate-slide-up" style="animation-delay: 0ms">
-        <span class="inline-flex items-center gap-2 px-4 py-2 border border-flickday-yellow text-flickday-yellow text-xs font-mono tracking-widest uppercase bg-black/50 backdrop-blur-sm">
-          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse-dot"></span>
-          Now Booking 2026
-        </span>
-      </div>
-
-      <h1 class="hero-text text-white mb-4">
-        <span class="block animate-slide-up" style="animation-delay: 100ms">EVERY DAY'S</span>
-        <span class="block animate-slide-up" style="animation-delay: 200ms">A <span class="text-flickday-yellow">FLICKDAY</span></span>
+      <h1 class="display-massive hero__title">
+        <span class="hero__title-line">EVERY DAY'S A</span>
+        <span class="hero__title-line"><span class="hero__title-accent">FLICKDAY</span></span>
       </h1>
 
-      <div class="max-w-xl animate-slide-up" style="animation-delay: 300ms">
-        <p class="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed">
-          Grassroots sports media — raw, fast, and player-first.<br class="hidden md:block">
-          We shoot for the ones who live in the rally.
-        </p>
+      <p class="hero__tagline">
+        Grassroots sports media — raw, fast, and player-first.<br>
+        We shoot for the ones who live in the rally.
+      </p>
 
-        <div class="flex flex-col sm:flex-row gap-4">
-          <a href="#portfolio" class="px-8 py-4 bg-flickday-yellow text-black font-bold text-sm tracking-wide hover:bg-white transition-colors text-center">
-            VIEW OUR WORK
-          </a>
-          <a href="#contact" class="px-8 py-4 border border-white/30 text-white text-sm tracking-wide hover:border-flickday-yellow hover:text-flickday-yellow transition-colors text-center backdrop-blur-sm">
-            BOOK FLICKDAY
-          </a>
-        </div>
-      </div>
-
-      <div class="absolute bottom-6 right-6 lg:right-12 flex items-center gap-3 animate-fade-in" style="animation-delay: 600ms">
-        <span class="text-xs font-mono text-gray-500 tracking-widest">SCROLL</span>
-        <div class="w-px h-12 bg-gradient-to-b from-flickday-yellow to-transparent"></div>
-      </div>
-    </div>
-
-    <div class="absolute top-6 right-6 lg:top-12 lg:right-12 z-20 animate-fade-in" style="animation-delay: 400ms">
-      <img src="./flickday-assets/flickday-badge.png" alt="Flickday Media" class="w-24 md:w-32 opacity-80 glow-yellow transition-all duration-300">
-    </div>
-  </section>
-
-  <!-- PHOTO STRIP -->
-  <section class="py-8 border-t border-b border-neutral-800 overflow-hidden bg-rich-black">
-    <div class="flex gap-4 animate-scroll-strip">
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 01</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 02</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 03</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 04</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 05</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 06</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 07</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 08</div>
-      </div>
-      <!-- Duplicate for seamless loop -->
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 01</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 02</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 03</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 04</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 05</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 06</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 07</div>
-      </div>
-      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
-        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 08</div>
-      </div>
-    </div>
-    <p class="text-center text-neutral-600 text-xs font-mono tracking-wider mt-4">HOVER TO PAUSE</p>
-  </section>
-
-  <!-- SERVICES -->
-  <section id="services" class="py-20 lg:py-28 px-6 lg:px-12">
-    <div class="max-w-7xl mx-auto">
-      <div class="mb-16">
-        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-          <div>
-            <span class="text-flickday-yellow font-mono text-sm tracking-widest mb-4 block">01 / WHAT WE DO</span>
-            <h2 class="text-4xl lg:text-6xl font-display font-bold tracking-tight">
-              MEDIA FOR THE<br>GRASSROOTS GAME
-            </h2>
-          </div>
-          <p class="text-gray-400 text-lg max-w-md lg:text-right">
-            From tournament coverage to player highlights — we capture the moments that matter.
-          </p>
-        </div>
-      </div>
-
-      <div class="bento-grid">
-        <!-- Tournament Coverage - Large -->
-        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="bento-large bg-rich-black border border-neutral-800 rounded-lg p-8 flex flex-col justify-between group hover:border-flickday-yellow transition-colors relative overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-flickday-yellow/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="relative z-10">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="relative flex h-2 w-2">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-flickday-yellow opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2 w-2 bg-flickday-yellow"></span>
-              </span>
-              <span class="text-flickday-yellow font-mono text-xs tracking-widest">FEATURED</span>
-            </div>
-            <h3 class="text-3xl lg:text-4xl font-display font-bold mb-3 group-hover:text-flickday-yellow transition-colors">TOURNAMENT COVERAGE</h3>
-            <p class="text-gray-400 mb-4">Full event documentation</p>
-            <p class="text-gray-500 leading-relaxed max-w-md">
-              On-site photography, real-time reels, and same-day photo drops. We embed with your event to capture every spike, dig, and celebration.
-            </p>
-          </div>
-          <div class="flex flex-wrap gap-2 mt-6 relative z-10">
-            <span class="px-3 py-1 border border-flickday-yellow/30 text-flickday-yellow/80 text-xs font-mono">Let's Pepper</span>
-            <span class="px-3 py-1 border border-neutral-700 text-neutral-500 text-xs font-mono">Bell Pepper</span>
-            <span class="px-3 py-1 border border-neutral-700 text-neutral-500 text-xs font-mono">Grass 3s</span>
-          </div>
-        </a>
-
-        <!-- Reels & Edits -->
-        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="bg-rich-black border border-neutral-800 rounded-lg p-6 flex flex-col justify-between group hover:border-flickday-yellow transition-colors">
-          <div>
-            <div class="text-3xl mb-4">🎥</div>
-            <h3 class="text-2xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">REELS & EDITS</h3>
-            <p class="text-gray-500 text-sm">Quick-turn highlight reels and player edits optimized for Instagram and TikTok.</p>
-          </div>
-          <div class="flex items-center gap-2 text-neutral-600 text-xs group-hover:text-flickday-yellow transition-colors mt-4">
-            <span>View on Instagram</span>
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </div>
-        </a>
-
-        <!-- Photo Galleries -->
-        <a href="https://www.nino.photos" target="_blank" rel="noopener noreferrer" class="bg-rich-black border border-neutral-800 rounded-lg p-6 flex flex-col justify-between group hover:border-flickday-yellow transition-colors">
-          <div>
-            <div class="text-3xl mb-4">📸</div>
-            <h3 class="text-2xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">PHOTO DROPS</h3>
-            <p class="text-gray-500 text-sm">High-resolution action shots delivered fast. Find yourself, download, and share.</p>
-          </div>
-          <div class="flex items-center gap-2 text-neutral-600 text-xs group-hover:text-flickday-yellow transition-colors mt-4">
-            <span>Browse galleries</span>
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </div>
-        </a>
-
-        <!-- Event Media Packages -->
-        <div class="bg-rich-black border border-neutral-800 rounded-lg p-6 flex flex-col justify-between group hover:border-flickday-yellow transition-colors">
-          <div>
-            <div class="text-3xl mb-4">📦</div>
-            <h3 class="text-2xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">MEDIA PACKAGES</h3>
-            <p class="text-gray-500 text-sm">Complete event coverage bundles. Photos, reels, graphics, and social content.</p>
-          </div>
-          <a href="#contact" class="flex items-center gap-2 text-neutral-600 text-xs group-hover:text-flickday-yellow transition-colors mt-4">
-            <span>Get a quote</span>
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
-        </div>
-
-        <!-- Game Day Gear -->
-        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="bg-rich-black border border-neutral-800 rounded-lg p-6 flex flex-col justify-between group hover:border-flickday-yellow transition-colors">
-          <div>
-            <div class="text-3xl mb-4">👕</div>
-            <h3 class="text-2xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">GAME DAY GEAR</h3>
-            <p class="text-gray-500 text-sm">Tournament merch, event tees, and player swag. Rep the rally.</p>
-          </div>
-          <div class="flex items-center gap-2 text-neutral-600 text-xs group-hover:text-flickday-yellow transition-colors mt-4">
-            <span>Shop merch</span>
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </div>
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <!-- PORTFOLIO GALLERY -->
-  <section id="portfolio" class="py-20 lg:py-28 bg-neutral-900">
-    <div class="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 lg:px-12">
-      <div class="mb-12">
-        <span class="text-flickday-yellow font-mono text-sm tracking-widest mb-4 block">02 / PORTFOLIO</span>
-        <h2 class="text-4xl lg:text-6xl font-display font-bold tracking-tight mb-4">RECENT SHOTS</h2>
-        <p class="text-gray-400 text-lg max-w-xl">Action sports captured raw. Scroll through our latest tournament coverage.</p>
-      </div>
-
-      <div class="gallery-scroll" id="galleryScroll">
-        <div class="flex gap-6 pb-4" style="padding-right: 4rem;">
-          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(0)">
-            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
-              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 01</span>
-            </div>
-          </button>
-          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(1)">
-            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
-              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 02</span>
-            </div>
-          </button>
-          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(2)">
-            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
-              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 03</span>
-            </div>
-          </button>
-          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(3)">
-            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
-              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 04</span>
-            </div>
-          </button>
-          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(4)">
-            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
-              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 05</span>
-            </div>
-          </button>
-          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(5)">
-            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
-              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 06</span>
-            </div>
-          </button>
-          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(6)">
-            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
-              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 07</span>
-            </div>
-          </button>
-          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(7)">
-            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
-              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 08</span>
-            </div>
-          </button>
-        </div>
-      </div>
-
-      <div class="mt-4 h-0.5 bg-neutral-800 rounded-full overflow-hidden">
-        <div class="progress-bar" id="galleryProgress" style="width: 0%"></div>
-      </div>
-      <p class="text-center text-neutral-600 text-xs font-mono tracking-wider mt-4">DRAG TO SCROLL • CLICK TO EXPAND</p>
-    </div>
-  </section>
-
-  <!-- EVENTS -->
-  <section id="events" class="py-20 lg:py-28 px-6 lg:px-12 border-t border-neutral-800">
-    <div class="max-w-7xl mx-auto">
-      <div class="mb-16">
-        <span class="text-flickday-yellow font-mono text-sm tracking-widest mb-4 block">03 / EVENTS</span>
-        <h2 class="text-4xl lg:text-6xl font-display font-bold tracking-tight">UPCOMING<br>TOURNAMENTS</h2>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-8">
-        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="group relative bg-rich-black border border-neutral-800 rounded-lg overflow-hidden hover:border-flickday-yellow transition-colors">
-          <div class="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="p-8 relative z-10">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-4xl">🌶️</span>
-              <span class="px-3 py-1 bg-orange-500/20 text-orange-400 text-xs font-mono tracking-wide rounded">JULY 19, 2025</span>
-            </div>
-            <h3 class="text-3xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">LET'S PEPPER OPEN</h3>
-            <p class="text-gray-400 mb-4">Grass 3s tournament with full media coverage</p>
-            <p class="text-gray-500 text-sm leading-relaxed mb-6">"Where being 'caught on camera' is a good thing." Competitive grassroots volleyball built from the grass up.</p>
-            <span class="flex items-center gap-2 text-flickday-yellow text-sm font-medium">
-              Register now
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="group relative bg-rich-black border border-neutral-800 rounded-lg overflow-hidden hover:border-flickday-yellow transition-colors">
-          <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          <div class="p-8 relative z-10">
-            <div class="flex items-center gap-3 mb-4">
-              <span class="text-4xl">🫑</span>
-              <span class="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs font-mono tracking-wide rounded">COMING SOON</span>
-            </div>
-            <h3 class="text-3xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">BELL PEPPER OPEN</h3>
-            <p class="text-gray-400 mb-4">19 teams locked in. One division. All the spice.</p>
-            <p class="text-gray-500 text-sm leading-relaxed mb-6">The next chapter in the Pepper series. Full tournament coverage by Flickday Media.</p>
-            <span class="flex items-center gap-2 text-flickday-yellow text-sm font-medium">
-              Get notified
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-              </svg>
-            </span>
-          </div>
-        </a>
-      </div>
-
-      <div class="mt-12 p-8 bg-gradient-to-r from-flickday-yellow/5 to-transparent border border-dashed border-neutral-700 rounded-lg">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-          <div>
-            <h3 class="text-xl font-bold mb-2">Running a tournament?</h3>
-            <p class="text-gray-400">Let Flickday handle your media so you can focus on the event.</p>
-          </div>
-          <a href="#contact" class="px-6 py-3 bg-flickday-yellow text-black font-bold text-sm hover:bg-white transition-colors text-center whitespace-nowrap">BOOK COVERAGE</a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact" class="py-20 lg:py-28 px-6 lg:px-12 border-t border-neutral-800 relative overflow-hidden">
-    <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
-      <span class="text-[15vw] font-display font-bold text-neutral-900/50 whitespace-nowrap">BOOK FLICKDAY</span>
-    </div>
-
-    <div class="max-w-7xl mx-auto relative z-10">
-      <div class="max-w-2xl">
-        <span class="text-flickday-yellow font-mono text-sm tracking-widest mb-6 block">04 / CONTACT</span>
-
-        <div class="flex items-center gap-3 mb-8">
-          <span class="relative flex h-3 w-3">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-          </span>
-          <span class="text-gray-400">Available for 2026 events</span>
-        </div>
-
-        <h2 class="text-5xl lg:text-7xl font-display font-bold tracking-tight mb-8">LET'S<br>WORK</h2>
-
-        <p class="text-gray-400 text-lg mb-12 max-w-md">Tournament coverage, player content, or event media packages. Chicago-based, travel available.</p>
-
-        <div class="flex flex-col sm:flex-row gap-4">
-          <a href="mailto:flickday@ninochavez.co" class="group px-8 py-4 bg-flickday-yellow text-black font-bold text-lg hover:bg-white transition-colors inline-flex items-center justify-center gap-3">
-            flickday@ninochavez.co
-            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-            </svg>
-          </a>
-          <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="px-8 py-4 border-2 border-neutral-700 text-white font-bold text-lg hover:border-flickday-yellow hover:text-flickday-yellow transition-colors text-center inline-flex items-center justify-center gap-3">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-            </svg>
-            @flickday.media
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="py-8 px-6 lg:px-12 border-t border-neutral-800">
-    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-      <div class="flex items-center gap-4">
-        <img src="./flickday-assets/logo-monochrome-face.png" alt="Flickday" class="w-8 h-8 opacity-60">
-        <span class="text-neutral-600 text-sm font-mono">© 2026 FLICKDAY MEDIA</span>
-      </div>
-
-      <div class="flex items-center gap-6">
-        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="text-neutral-600 hover:text-flickday-yellow transition-colors" aria-label="Instagram">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-          </svg>
-        </a>
-        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="text-neutral-600 hover:text-flickday-yellow transition-colors text-sm font-mono">LET'S PEPPER</a>
-        <a href="https://www.nino.photos" target="_blank" rel="noopener noreferrer" class="text-neutral-600 hover:text-flickday-yellow transition-colors text-sm font-mono">PHOTOS</a>
-      </div>
-
-      <span class="text-neutral-700 text-xs font-mono tracking-wider">BUILT WITH SWEAT AND TAILWIND</span>
-    </div>
-  </footer>
-
-  <!-- LIGHTBOX -->
-  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
-    <button class="absolute top-6 right-6 z-10 text-white/60 hover:text-white transition-colors" onclick="closeLightbox()" aria-label="Close">
-      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-
-    <div class="flex-1 flex items-center justify-center p-8" onclick="event.stopPropagation()">
-      <button class="absolute left-4 lg:left-8 text-white/40 hover:text-white transition-colors" onclick="prevLightbox()" aria-label="Previous">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+      <a href="#contact" class="hero__cta">
+        BOOK US
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
         </svg>
-      </button>
+      </a>
+    </div>
 
-      <div id="lightboxContent" class="max-h-[80vh] max-w-[90vw] bg-neutral-800 rounded flex items-center justify-center text-neutral-500 font-mono text-sm p-20">
-        PHOTO PLACEHOLDER
+    <div class="hero__scroll" aria-hidden="true">
+      <span>SCROLL</span>
+      <div class="hero__scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ====== MARQUEE ====== -->
+  <div class="marquee" role="marquee" aria-label="Tagline">
+    <div class="marquee__track">
+      <div class="marquee__content">
+        <span>RAW</span>
+        <span class="marquee__separator"></span>
+        <span>FAST</span>
+        <span class="marquee__separator"></span>
+        <span>PLAYER-FIRST</span>
+        <span class="marquee__separator"></span>
+        <span>RAW</span>
+        <span class="marquee__separator"></span>
+        <span>FAST</span>
+        <span class="marquee__separator"></span>
+        <span>PLAYER-FIRST</span>
+        <span class="marquee__separator"></span>
       </div>
-
-      <button class="absolute right-4 lg:right-8 text-white/40 hover:text-white transition-colors" onclick="nextLightbox()" aria-label="Next">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-        </svg>
-      </button>
-    </div>
-
-    <div class="absolute top-6 left-6 font-mono text-white/50 text-sm tracking-widest">
-      <span id="lightboxCounter">01 / 08</span>
-    </div>
-
-    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-xs text-white/30 tracking-widest">
-      ← → to navigate • ESC to close
+      <div class="marquee__content" aria-hidden="true">
+        <span>RAW</span>
+        <span class="marquee__separator"></span>
+        <span>FAST</span>
+        <span class="marquee__separator"></span>
+        <span>PLAYER-FIRST</span>
+        <span class="marquee__separator"></span>
+        <span>RAW</span>
+        <span class="marquee__separator"></span>
+        <span>FAST</span>
+        <span class="marquee__separator"></span>
+        <span>PLAYER-FIRST</span>
+        <span class="marquee__separator"></span>
+      </div>
     </div>
   </div>
 
+  <!-- ====== SERVICES - SPLIT LAYOUTS ====== -->
+  <main>
+
+    <!-- Tournament Coverage -->
+    <section class="split reveal" aria-labelledby="service-coverage">
+      <div class="split__media">
+        <div class="placeholder-image split__image" role="img" aria-label="Tournament coverage">
+          TOURNAMENT PHOTO
+        </div>
+      </div>
+      <div class="split__content">
+        <span class="split__label">01 — WHAT WE DO</span>
+        <h2 id="service-coverage" class="split__title">TOURNAMENT<br>COVERAGE</h2>
+        <p class="split__text">
+          On-site photography, real-time reels, and same-day photo drops.
+          We embed with your event to capture every spike, dig, and celebration.
+        </p>
+        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="split__link">
+          SEE LET'S PEPPER
+          <svg class="split__link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- Reels & Edits -->
+    <section class="split split--reverse reveal" aria-labelledby="service-reels">
+      <div class="split__media">
+        <div class="placeholder-image split__image" role="img" aria-label="Video editing">
+          REELS PHOTO
+        </div>
+      </div>
+      <div class="split__content">
+        <span class="split__label">02 — WHAT WE DO</span>
+        <h2 id="service-reels" class="split__title">REELS &<br>EDITS</h2>
+        <p class="split__text">
+          Quick-turn highlight reels and player edits optimized for Instagram
+          and TikTok. Your moments, amplified.
+        </p>
+        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="split__link">
+          WATCH ON INSTAGRAM
+          <svg class="split__link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- Photo Drops -->
+    <section class="split reveal" aria-labelledby="service-photos">
+      <div class="split__media">
+        <div class="placeholder-image split__image" role="img" aria-label="Photo gallery">
+          GALLERY PHOTO
+        </div>
+      </div>
+      <div class="split__content">
+        <span class="split__label">03 — WHAT WE DO</span>
+        <h2 id="service-photos" class="split__title">PHOTO<br>DROPS</h2>
+        <p class="split__text">
+          High-resolution action shots delivered fast. Find yourself,
+          download, and share. No watermarks, no hassle.
+        </p>
+        <a href="https://www.nino.photos" target="_blank" rel="noopener noreferrer" class="split__link">
+          BROWSE GALLERIES
+          <svg class="split__link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ====== GALLERY ====== -->
+  <section class="gallery reveal" aria-labelledby="gallery-title">
+    <div class="gallery__header">
+      <h2 id="gallery-title" class="gallery__title">
+        RECENT <span class="gallery__title-outline">SHOTS</span>
+      </h2>
+    </div>
+
+    <div class="gallery__scroll" role="region" aria-label="Photo gallery" tabindex="0">
+      <article class="gallery__item">
+        <div class="placeholder-image gallery__item-image" role="img" aria-label="Action shot 1">01</div>
+        <div class="gallery__item-overlay"></div>
+        <div class="gallery__item-caption">
+          <h3 class="gallery__item-title">THE SPIKE</h3>
+          <span class="gallery__item-meta">LET'S PEPPER 2025</span>
+        </div>
+      </article>
+      <article class="gallery__item">
+        <div class="placeholder-image gallery__item-image" role="img" aria-label="Action shot 2">02</div>
+        <div class="gallery__item-overlay"></div>
+        <div class="gallery__item-caption">
+          <h3 class="gallery__item-title">FULL EXTENSION</h3>
+          <span class="gallery__item-meta">GRASS 3S</span>
+        </div>
+      </article>
+      <article class="gallery__item">
+        <div class="placeholder-image gallery__item-image" role="img" aria-label="Action shot 3">03</div>
+        <div class="gallery__item-overlay"></div>
+        <div class="gallery__item-caption">
+          <h3 class="gallery__item-title">THE DIG</h3>
+          <span class="gallery__item-meta">BELL PEPPER OPEN</span>
+        </div>
+      </article>
+      <article class="gallery__item">
+        <div class="placeholder-image gallery__item-image" role="img" aria-label="Action shot 4">04</div>
+        <div class="gallery__item-overlay"></div>
+        <div class="gallery__item-caption">
+          <h3 class="gallery__item-title">CELEBRATION</h3>
+          <span class="gallery__item-meta">LET'S PEPPER 2025</span>
+        </div>
+      </article>
+      <article class="gallery__item">
+        <div class="placeholder-image gallery__item-image" role="img" aria-label="Action shot 5">05</div>
+        <div class="gallery__item-overlay"></div>
+        <div class="gallery__item-caption">
+          <h3 class="gallery__item-title">BLOCK PARTY</h3>
+          <span class="gallery__item-meta">GRASS 3S</span>
+        </div>
+      </article>
+      <article class="gallery__item">
+        <div class="placeholder-image gallery__item-image" role="img" aria-label="Action shot 6">06</div>
+        <div class="gallery__item-overlay"></div>
+        <div class="gallery__item-caption">
+          <h3 class="gallery__item-title">SERVE RECEIVE</h3>
+          <span class="gallery__item-meta">BELL PEPPER OPEN</span>
+        </div>
+      </article>
+    </div>
+
+    <p class="gallery__hint">DRAG TO SCROLL</p>
+  </section>
+
+  <!-- ====== EVENTS ====== -->
+  <section class="events reveal" aria-labelledby="events-title">
+    <div class="events__inner">
+      <header class="events__header">
+        <span class="events__label">UPCOMING</span>
+        <h2 id="events-title" class="events__title">ON THE<br>SCHEDULE</h2>
+      </header>
+
+      <div class="events__grid">
+        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="event-card">
+          <div class="event-card__date">
+            <time class="event-card__day" datetime="2025-07-19">19</time>
+            <span class="event-card__month">JUL 2025</span>
+          </div>
+          <h3 class="event-card__title">LET'S PEPPER OPEN</h3>
+          <p class="event-card__subtitle">Grass 3s · Full Media Coverage</p>
+          <span class="event-card__cta">
+            REGISTER NOW
+            <svg class="event-card__cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </a>
+
+        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="event-card">
+          <div class="event-card__date">
+            <time class="event-card__day">TBD</time>
+            <span class="event-card__month">2025</span>
+          </div>
+          <h3 class="event-card__title">BELL PEPPER OPEN</h3>
+          <p class="event-card__subtitle">19 Teams · One Division · All the Spice</p>
+          <span class="event-card__cta">
+            GET NOTIFIED
+            <svg class="event-card__cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </a>
+      </div>
+
+      <div class="events__promo">
+        <div class="events__promo-text">
+          <h3>RUNNING A TOURNAMENT?</h3>
+          <p>Let Flickday handle your media so you can focus on the event.</p>
+        </div>
+        <a href="#contact" class="events__promo-cta">BOOK COVERAGE</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== CONTACT ====== -->
+  <section id="contact" class="contact" aria-labelledby="contact-title">
+    <div class="contact__media">
+      <div class="placeholder-image contact__image" role="img" aria-label="Contact background">
+        ADD CONTACT PHOTO
+      </div>
+    </div>
+
+    <div class="contact__content">
+      <div class="contact__status">
+        <span class="contact__status-dot"></span>
+        AVAILABLE FOR 2026 EVENTS
+      </div>
+
+      <h2 id="contact-title" class="display-massive contact__title">LET'S<br>WORK</h2>
+
+      <p class="contact__subtitle">
+        Tournament coverage, player content, or event media packages.
+        Chicago-based, travel available.
+      </p>
+
+      <div class="contact__links">
+        <a href="mailto:flickday@ninochavez.co" class="contact__link contact__link--primary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="4" width="20" height="16" rx="2"/>
+            <path d="M22 6l-10 7L2 6"/>
+          </svg>
+          EMAIL US
+        </a>
+        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="contact__link contact__link--secondary">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+          @FLICKDAY.MEDIA
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <img src="./flickday-assets/logo-monochrome-face.png" alt="" class="footer__logo">
+        <span class="footer__copyright">© 2026 FLICKDAY MEDIA</span>
+      </div>
+
+      <nav class="footer__links" aria-label="Footer navigation">
+        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="footer__link">LET'S PEPPER</a>
+        <a href="https://www.nino.photos" target="_blank" rel="noopener noreferrer" class="footer__link">PHOTO DROPS</a>
+      </nav>
+
+      <div class="footer__social">
+        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ====== SCRIPTS ====== -->
   <script>
-    // Gallery drag-to-scroll
-    const gallery = document.getElementById('galleryScroll');
-    const progressBar = document.getElementById('galleryProgress');
-    let isDragging = false;
+    // Scroll reveal animations
+    const revealElements = document.querySelectorAll('.reveal');
+
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    revealElements.forEach(el => revealObserver.observe(el));
+
+    // Gallery drag scroll
+    const gallery = document.querySelector('.gallery__scroll');
+    let isDown = false;
     let startX;
     let scrollLeft;
 
     if (gallery) {
       gallery.addEventListener('mousedown', (e) => {
-        isDragging = true;
+        isDown = true;
         gallery.style.cursor = 'grabbing';
         startX = e.pageX - gallery.offsetLeft;
         scrollLeft = gallery.scrollLeft;
       });
 
+      gallery.addEventListener('mouseleave', () => {
+        isDown = false;
+        gallery.style.cursor = 'grab';
+      });
+
+      gallery.addEventListener('mouseup', () => {
+        isDown = false;
+        gallery.style.cursor = 'grab';
+      });
+
       gallery.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
+        if (!isDown) return;
         e.preventDefault();
         const x = e.pageX - gallery.offsetLeft;
         const walk = (x - startX) * 2;
         gallery.scrollLeft = scrollLeft - walk;
-        updateProgress();
       });
 
-      gallery.addEventListener('mouseup', () => {
-        isDragging = false;
-        gallery.style.cursor = 'grab';
+      // Keyboard navigation
+      gallery.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') {
+          gallery.scrollBy({ left: 300, behavior: 'smooth' });
+        } else if (e.key === 'ArrowLeft') {
+          gallery.scrollBy({ left: -300, behavior: 'smooth' });
+        }
       });
-
-      gallery.addEventListener('mouseleave', () => {
-        isDragging = false;
-        gallery.style.cursor = 'grab';
-      });
-
-      gallery.addEventListener('scroll', updateProgress);
-
-      function updateProgress() {
-        const maxScroll = gallery.scrollWidth - gallery.clientWidth;
-        const progress = (gallery.scrollLeft / maxScroll) * 100;
-        progressBar.style.width = progress + '%';
-      }
     }
 
-    // Lightbox
-    let currentLightboxIndex = 0;
-    const totalImages = 8;
-
-    function openLightbox(index) {
-      currentLightboxIndex = index;
-      document.getElementById('lightbox').classList.add('active');
-      document.body.style.overflow = 'hidden';
-      updateLightboxCounter();
-    }
-
-    function closeLightbox() {
-      document.getElementById('lightbox').classList.remove('active');
-      document.body.style.overflow = '';
-    }
-
-    function nextLightbox() {
-      currentLightboxIndex = (currentLightboxIndex + 1) % totalImages;
-      updateLightboxCounter();
-    }
-
-    function prevLightbox() {
-      currentLightboxIndex = (currentLightboxIndex - 1 + totalImages) % totalImages;
-      updateLightboxCounter();
-    }
-
-    function updateLightboxCounter() {
-      const counter = document.getElementById('lightboxCounter');
-      counter.textContent = String(currentLightboxIndex + 1).padStart(2, '0') + ' / ' + String(totalImages).padStart(2, '0');
-    }
-
-    // Keyboard navigation
-    document.addEventListener('keydown', (e) => {
-      const lightbox = document.getElementById('lightbox');
-      if (!lightbox.classList.contains('active')) return;
-      if (e.key === 'Escape') closeLightbox();
-      if (e.key === 'ArrowRight') nextLightbox();
-      if (e.key === 'ArrowLeft') prevLightbox();
-    });
-
-    // Smooth scroll
+    // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
+      anchor.addEventListener('click', function(e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
