@@ -1,65 +1,743 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Flickday Media</title>
-    <link rel="icon" type="image/png" href="./flickday-assets/logo-monochrome-face.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-      .fade-in {
-        opacity: 0;
-        animation: fadeIn 1.5s ease-in-out forwards;
-        animation-delay: 0.4s;
-      }
-      @keyframes fadeIn {
-        to {
-          opacity: 1;
-        }
-      }
-      .glow:hover {
-        filter: drop-shadow(0 0 8px #facc15);
-        transition: filter 0.3s ease-in-out;
-      }
-    </style>
-  </head>
-  <body class="bg-black text-white">
-    <div class="min-h-screen flex flex-col justify-between">
-      <main class="flex-grow flex flex-col items-center justify-center text-center px-4 py-16">
-        <h1 class="text-4xl md:text-5xl font-extrabold tracking-tight mt-4">Flickday Media</h1>
-        <p>&nbsp;</p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flickday Media | Grassroots Sports Media</title>
+  <meta name="description" content="Grassroots sports media — raw, fast, and player-first. We shoot for the ones who live in the rally. Tournament coverage, reels, and photo galleries.">
 
-        <p class="text-sm text-yellow-400 uppercase tracking-wide fade-in">Every day’s a Flickday</p>
-        <p class="mt-4 text-lg md:text-xl text-gray-300 max-w-xl">
-          Grassroots sports media — raw, fast, and player-first. We shoot for the ones who live in the rally.
+  <!-- Open Graph -->
+  <meta property="og:title" content="Flickday Media | Grassroots Sports Media">
+  <meta property="og:description" content="Raw, fast, and player-first sports media. Tournament coverage for volleyball and action sports.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://flickdaymedia.com">
+  <meta property="og:image" content="./flickday-assets/flickday-badge.png">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Flickday Media">
+  <meta name="twitter:description" content="Grassroots sports media — raw, fast, and player-first.">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="./flickday-assets/logo-monochrome-face.png">
+  <link rel="apple-touch-icon" href="./flickday-assets/flickday-badge.png">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'flickday-yellow': '#facc15',
+            'flickday-yellow-light': '#fde047',
+            'rich-black': '#0a0a0f',
+          },
+          fontFamily: {
+            'display': ['Bebas Neue', 'sans-serif'],
+            'body': ['Inter', 'sans-serif'],
+            'mono': ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      color: #fff;
+    }
+
+    .font-display {
+      font-family: 'Bebas Neue', sans-serif;
+    }
+
+    .hero-text {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 12vw, 10rem);
+      line-height: 0.9;
+      letter-spacing: -0.02em;
+    }
+
+    .grid-overlay {
+      background-image:
+        linear-gradient(rgba(250, 204, 21, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(250, 204, 21, 0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+    }
+
+    .grain-overlay {
+      background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noise"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noise)"/%3E%3C/svg%3E');
+    }
+
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-auto-rows: 260px;
+      gap: 1rem;
+    }
+
+    .bento-large {
+      grid-column: span 2;
+      grid-row: span 2;
+    }
+
+    @media (max-width: 1024px) {
+      .bento-grid {
+        grid-template-columns: repeat(2, 1fr);
+        grid-auto-rows: 220px;
+      }
+      .bento-large {
+        grid-column: span 2;
+        grid-row: span 1;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .bento-grid {
+        grid-template-columns: 1fr;
+        grid-auto-rows: auto;
+      }
+      .bento-large {
+        grid-column: span 1;
+        grid-row: span 1;
+      }
+    }
+
+    .gallery-scroll {
+      overflow-x: auto;
+      overflow-y: hidden;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      cursor: grab;
+    }
+
+    .gallery-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery-scroll:active {
+      cursor: grabbing;
+    }
+
+    @keyframes scroll-strip {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    .animate-scroll-strip {
+      animation: scroll-strip 25s linear infinite;
+    }
+
+    .animate-scroll-strip:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes slide-up {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fade-in {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .animate-slide-up {
+      opacity: 0;
+      animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .animate-fade-in {
+      opacity: 0;
+      animation: fade-in 1s ease forwards;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .animate-pulse-dot {
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    .progress-bar {
+      height: 2px;
+      background: rgba(250, 204, 21, 0.8);
+      transition: width 0.1s linear;
+    }
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 9999;
+      display: none;
+      flex-direction: column;
+    }
+
+    .lightbox.active {
+      display: flex;
+    }
+
+    .glow-yellow:hover {
+      filter: drop-shadow(0 0 12px rgba(250, 204, 21, 0.5));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .animate-slide-up,
+      .animate-fade-in,
+      .animate-scroll-strip {
+        animation: none;
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-black text-white overflow-x-hidden">
+
+  <!-- HERO SECTION -->
+  <section id="hero" class="relative min-h-screen flex flex-col justify-end">
+    <div class="absolute inset-0 z-0">
+      <div class="w-full h-full bg-gradient-to-br from-neutral-900 via-neutral-800 to-black">
+        <div class="absolute inset-0 opacity-20" style="background: radial-gradient(circle at 70% 30%, rgba(250, 204, 21, 0.3), transparent 60%);"></div>
+      </div>
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/40"></div>
+      <div class="grain-overlay absolute inset-0 opacity-20 mix-blend-overlay"></div>
+    </div>
+
+    <div class="grid-overlay absolute inset-0 z-10 pointer-events-none"></div>
+
+    <div class="relative z-20 px-6 lg:px-12 pb-12 lg:pb-16">
+      <div class="mb-6 animate-slide-up" style="animation-delay: 0ms">
+        <span class="inline-flex items-center gap-2 px-4 py-2 border border-flickday-yellow text-flickday-yellow text-xs font-mono tracking-widest uppercase bg-black/50 backdrop-blur-sm">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse-dot"></span>
+          Now Booking 2026
+        </span>
+      </div>
+
+      <h1 class="hero-text text-white mb-4">
+        <span class="block animate-slide-up" style="animation-delay: 100ms">EVERY DAY'S</span>
+        <span class="block animate-slide-up" style="animation-delay: 200ms">A <span class="text-flickday-yellow">FLICKDAY</span></span>
+      </h1>
+
+      <div class="max-w-xl animate-slide-up" style="animation-delay: 300ms">
+        <p class="text-lg md:text-xl text-gray-300 mb-8 leading-relaxed">
+          Grassroots sports media — raw, fast, and player-first.<br class="hidden md:block">
+          We shoot for the ones who live in the rally.
         </p>
 
-        <div class="mt-10 grid gap-6 w-full max-w-3xl sm:grid-cols-3">
-          <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:bg-gray-800 transition">
-            <div class="text-3xl mb-2">🎥</div>
-            <h3 class="font-semibold text-lg">Reels & Edits</h3>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="#portfolio" class="px-8 py-4 bg-flickday-yellow text-black font-bold text-sm tracking-wide hover:bg-white transition-colors text-center">
+            VIEW OUR WORK
           </a>
-          <a href="https://www.nino.photos" target="_blank" rel="noopener noreferrer" class="bg-gray-900 border border-yellow-400 rounded-xl p-6 hover:bg-gray-800 transition">
-            <img src="./flickday-assets/logo-monochrome-face.png" alt="Nino face icon" class="w-8 h-8 mx-auto mb-2">
-            <h3 class="font-semibold text-lg">Photo Drops</h3>
-          </a>
-          <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="bg-gray-900 border border-gray-700 rounded-xl p-6 hover:bg-gray-800 transition">
-            <div class="text-3xl mb-2">🏐</div>
-            <h3 class="font-semibold text-lg">Let's Pepper Open</h3>
+          <a href="#contact" class="px-8 py-4 border border-white/30 text-white text-sm tracking-wide hover:border-flickday-yellow hover:text-flickday-yellow transition-colors text-center backdrop-blur-sm">
+            BOOK FLICKDAY
           </a>
         </div>
-<p>&nbsp;</p>
-        <img src="./flickday-assets/flickday-badge.png" alt="Flickday Media badge logo" class="w-40 mb-4 glow">
-      </main>
+      </div>
 
-      <footer class="text-center py-6 text-sm text-gray-500">
-        © 2025 Flickday Media. Built with sweat and Tailwind.
-      </footer>
+      <div class="absolute bottom-6 right-6 lg:right-12 flex items-center gap-3 animate-fade-in" style="animation-delay: 600ms">
+        <span class="text-xs font-mono text-gray-500 tracking-widest">SCROLL</span>
+        <div class="w-px h-12 bg-gradient-to-b from-flickday-yellow to-transparent"></div>
+      </div>
     </div>
-  </body>
+
+    <div class="absolute top-6 right-6 lg:top-12 lg:right-12 z-20 animate-fade-in" style="animation-delay: 400ms">
+      <img src="./flickday-assets/flickday-badge.png" alt="Flickday Media" class="w-24 md:w-32 opacity-80 glow-yellow transition-all duration-300">
+    </div>
+  </section>
+
+  <!-- PHOTO STRIP -->
+  <section class="py-8 border-t border-b border-neutral-800 overflow-hidden bg-rich-black">
+    <div class="flex gap-4 animate-scroll-strip">
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 01</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 02</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 03</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 04</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 05</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 06</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 07</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 08</div>
+      </div>
+      <!-- Duplicate for seamless loop -->
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 01</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 02</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 03</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 04</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 05</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 06</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 07</div>
+      </div>
+      <div class="flex-shrink-0 w-48 h-64 bg-neutral-800 rounded overflow-hidden group">
+        <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">PHOTO 08</div>
+      </div>
+    </div>
+    <p class="text-center text-neutral-600 text-xs font-mono tracking-wider mt-4">HOVER TO PAUSE</p>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services" class="py-20 lg:py-28 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-16">
+        <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+          <div>
+            <span class="text-flickday-yellow font-mono text-sm tracking-widest mb-4 block">01 / WHAT WE DO</span>
+            <h2 class="text-4xl lg:text-6xl font-display font-bold tracking-tight">
+              MEDIA FOR THE<br>GRASSROOTS GAME
+            </h2>
+          </div>
+          <p class="text-gray-400 text-lg max-w-md lg:text-right">
+            From tournament coverage to player highlights — we capture the moments that matter.
+          </p>
+        </div>
+      </div>
+
+      <div class="bento-grid">
+        <!-- Tournament Coverage - Large -->
+        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="bento-large bg-rich-black border border-neutral-800 rounded-lg p-8 flex flex-col justify-between group hover:border-flickday-yellow transition-colors relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-flickday-yellow/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="relative flex h-2 w-2">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-flickday-yellow opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2 w-2 bg-flickday-yellow"></span>
+              </span>
+              <span class="text-flickday-yellow font-mono text-xs tracking-widest">FEATURED</span>
+            </div>
+            <h3 class="text-3xl lg:text-4xl font-display font-bold mb-3 group-hover:text-flickday-yellow transition-colors">TOURNAMENT COVERAGE</h3>
+            <p class="text-gray-400 mb-4">Full event documentation</p>
+            <p class="text-gray-500 leading-relaxed max-w-md">
+              On-site photography, real-time reels, and same-day photo drops. We embed with your event to capture every spike, dig, and celebration.
+            </p>
+          </div>
+          <div class="flex flex-wrap gap-2 mt-6 relative z-10">
+            <span class="px-3 py-1 border border-flickday-yellow/30 text-flickday-yellow/80 text-xs font-mono">Let's Pepper</span>
+            <span class="px-3 py-1 border border-neutral-700 text-neutral-500 text-xs font-mono">Bell Pepper</span>
+            <span class="px-3 py-1 border border-neutral-700 text-neutral-500 text-xs font-mono">Grass 3s</span>
+          </div>
+        </a>
+
+        <!-- Reels & Edits -->
+        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="bg-rich-black border border-neutral-800 rounded-lg p-6 flex flex-col justify-between group hover:border-flickday-yellow transition-colors">
+          <div>
+            <div class="text-3xl mb-4">🎥</div>
+            <h3 class="text-2xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">REELS & EDITS</h3>
+            <p class="text-gray-500 text-sm">Quick-turn highlight reels and player edits optimized for Instagram and TikTok.</p>
+          </div>
+          <div class="flex items-center gap-2 text-neutral-600 text-xs group-hover:text-flickday-yellow transition-colors mt-4">
+            <span>View on Instagram</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </div>
+        </a>
+
+        <!-- Photo Galleries -->
+        <a href="https://www.nino.photos" target="_blank" rel="noopener noreferrer" class="bg-rich-black border border-neutral-800 rounded-lg p-6 flex flex-col justify-between group hover:border-flickday-yellow transition-colors">
+          <div>
+            <div class="text-3xl mb-4">📸</div>
+            <h3 class="text-2xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">PHOTO DROPS</h3>
+            <p class="text-gray-500 text-sm">High-resolution action shots delivered fast. Find yourself, download, and share.</p>
+          </div>
+          <div class="flex items-center gap-2 text-neutral-600 text-xs group-hover:text-flickday-yellow transition-colors mt-4">
+            <span>Browse galleries</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </div>
+        </a>
+
+        <!-- Event Media Packages -->
+        <div class="bg-rich-black border border-neutral-800 rounded-lg p-6 flex flex-col justify-between group hover:border-flickday-yellow transition-colors">
+          <div>
+            <div class="text-3xl mb-4">📦</div>
+            <h3 class="text-2xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">MEDIA PACKAGES</h3>
+            <p class="text-gray-500 text-sm">Complete event coverage bundles. Photos, reels, graphics, and social content.</p>
+          </div>
+          <a href="#contact" class="flex items-center gap-2 text-neutral-600 text-xs group-hover:text-flickday-yellow transition-colors mt-4">
+            <span>Get a quote</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+        </div>
+
+        <!-- Game Day Gear -->
+        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="bg-rich-black border border-neutral-800 rounded-lg p-6 flex flex-col justify-between group hover:border-flickday-yellow transition-colors">
+          <div>
+            <div class="text-3xl mb-4">👕</div>
+            <h3 class="text-2xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">GAME DAY GEAR</h3>
+            <p class="text-gray-500 text-sm">Tournament merch, event tees, and player swag. Rep the rally.</p>
+          </div>
+          <div class="flex items-center gap-2 text-neutral-600 text-xs group-hover:text-flickday-yellow transition-colors mt-4">
+            <span>Shop merch</span>
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PORTFOLIO GALLERY -->
+  <section id="portfolio" class="py-20 lg:py-28 bg-neutral-900">
+    <div class="max-w-7xl 2xl:max-w-[1600px] mx-auto px-6 lg:px-12">
+      <div class="mb-12">
+        <span class="text-flickday-yellow font-mono text-sm tracking-widest mb-4 block">02 / PORTFOLIO</span>
+        <h2 class="text-4xl lg:text-6xl font-display font-bold tracking-tight mb-4">RECENT SHOTS</h2>
+        <p class="text-gray-400 text-lg max-w-xl">Action sports captured raw. Scroll through our latest tournament coverage.</p>
+      </div>
+
+      <div class="gallery-scroll" id="galleryScroll">
+        <div class="flex gap-6 pb-4" style="padding-right: 4rem;">
+          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(0)">
+            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 01</span>
+            </div>
+          </button>
+          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(1)">
+            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 02</span>
+            </div>
+          </button>
+          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(2)">
+            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 03</span>
+            </div>
+          </button>
+          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(3)">
+            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 04</span>
+            </div>
+          </button>
+          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(4)">
+            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 05</span>
+            </div>
+          </button>
+          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(5)">
+            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 06</span>
+            </div>
+          </button>
+          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(6)">
+            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 07</span>
+            </div>
+          </button>
+          <button class="gallery-item flex-shrink-0 w-64 h-96 bg-neutral-800 rounded-lg overflow-hidden group relative" onclick="openLightbox(7)">
+            <div class="w-full h-full bg-gradient-to-br from-neutral-700 to-neutral-900 flex items-center justify-center">
+              <span class="text-neutral-600 text-xs font-mono group-hover:text-flickday-yellow transition-colors">GALLERY 08</span>
+            </div>
+          </button>
+        </div>
+      </div>
+
+      <div class="mt-4 h-0.5 bg-neutral-800 rounded-full overflow-hidden">
+        <div class="progress-bar" id="galleryProgress" style="width: 0%"></div>
+      </div>
+      <p class="text-center text-neutral-600 text-xs font-mono tracking-wider mt-4">DRAG TO SCROLL • CLICK TO EXPAND</p>
+    </div>
+  </section>
+
+  <!-- EVENTS -->
+  <section id="events" class="py-20 lg:py-28 px-6 lg:px-12 border-t border-neutral-800">
+    <div class="max-w-7xl mx-auto">
+      <div class="mb-16">
+        <span class="text-flickday-yellow font-mono text-sm tracking-widest mb-4 block">03 / EVENTS</span>
+        <h2 class="text-4xl lg:text-6xl font-display font-bold tracking-tight">UPCOMING<br>TOURNAMENTS</h2>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="group relative bg-rich-black border border-neutral-800 rounded-lg overflow-hidden hover:border-flickday-yellow transition-colors">
+          <div class="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="p-8 relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-4xl">🌶️</span>
+              <span class="px-3 py-1 bg-orange-500/20 text-orange-400 text-xs font-mono tracking-wide rounded">JULY 19, 2025</span>
+            </div>
+            <h3 class="text-3xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">LET'S PEPPER OPEN</h3>
+            <p class="text-gray-400 mb-4">Grass 3s tournament with full media coverage</p>
+            <p class="text-gray-500 text-sm leading-relaxed mb-6">"Where being 'caught on camera' is a good thing." Competitive grassroots volleyball built from the grass up.</p>
+            <span class="flex items-center gap-2 text-flickday-yellow text-sm font-medium">
+              Register now
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="group relative bg-rich-black border border-neutral-800 rounded-lg overflow-hidden hover:border-flickday-yellow transition-colors">
+          <div class="absolute inset-0 bg-gradient-to-r from-yellow-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <div class="p-8 relative z-10">
+            <div class="flex items-center gap-3 mb-4">
+              <span class="text-4xl">🫑</span>
+              <span class="px-3 py-1 bg-yellow-500/20 text-yellow-400 text-xs font-mono tracking-wide rounded">COMING SOON</span>
+            </div>
+            <h3 class="text-3xl font-display font-bold mb-2 group-hover:text-flickday-yellow transition-colors">BELL PEPPER OPEN</h3>
+            <p class="text-gray-400 mb-4">19 teams locked in. One division. All the spice.</p>
+            <p class="text-gray-500 text-sm leading-relaxed mb-6">The next chapter in the Pepper series. Full tournament coverage by Flickday Media.</p>
+            <span class="flex items-center gap-2 text-flickday-yellow text-sm font-medium">
+              Get notified
+              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+              </svg>
+            </span>
+          </div>
+        </a>
+      </div>
+
+      <div class="mt-12 p-8 bg-gradient-to-r from-flickday-yellow/5 to-transparent border border-dashed border-neutral-700 rounded-lg">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div>
+            <h3 class="text-xl font-bold mb-2">Running a tournament?</h3>
+            <p class="text-gray-400">Let Flickday handle your media so you can focus on the event.</p>
+          </div>
+          <a href="#contact" class="px-6 py-3 bg-flickday-yellow text-black font-bold text-sm hover:bg-white transition-colors text-center whitespace-nowrap">BOOK COVERAGE</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="py-20 lg:py-28 px-6 lg:px-12 border-t border-neutral-800 relative overflow-hidden">
+    <div class="absolute inset-0 flex items-center justify-center pointer-events-none select-none">
+      <span class="text-[15vw] font-display font-bold text-neutral-900/50 whitespace-nowrap">BOOK FLICKDAY</span>
+    </div>
+
+    <div class="max-w-7xl mx-auto relative z-10">
+      <div class="max-w-2xl">
+        <span class="text-flickday-yellow font-mono text-sm tracking-widest mb-6 block">04 / CONTACT</span>
+
+        <div class="flex items-center gap-3 mb-8">
+          <span class="relative flex h-3 w-3">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+          </span>
+          <span class="text-gray-400">Available for 2026 events</span>
+        </div>
+
+        <h2 class="text-5xl lg:text-7xl font-display font-bold tracking-tight mb-8">LET'S<br>WORK</h2>
+
+        <p class="text-gray-400 text-lg mb-12 max-w-md">Tournament coverage, player content, or event media packages. Chicago-based, travel available.</p>
+
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a href="mailto:flickday@ninochavez.co" class="group px-8 py-4 bg-flickday-yellow text-black font-bold text-lg hover:bg-white transition-colors inline-flex items-center justify-center gap-3">
+            flickday@ninochavez.co
+            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+            </svg>
+          </a>
+          <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="px-8 py-4 border-2 border-neutral-700 text-white font-bold text-lg hover:border-flickday-yellow hover:text-flickday-yellow transition-colors text-center inline-flex items-center justify-center gap-3">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+            @flickday.media
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="py-8 px-6 lg:px-12 border-t border-neutral-800">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+      <div class="flex items-center gap-4">
+        <img src="./flickday-assets/logo-monochrome-face.png" alt="Flickday" class="w-8 h-8 opacity-60">
+        <span class="text-neutral-600 text-sm font-mono">© 2026 FLICKDAY MEDIA</span>
+      </div>
+
+      <div class="flex items-center gap-6">
+        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="text-neutral-600 hover:text-flickday-yellow transition-colors" aria-label="Instagram">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+        </a>
+        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="text-neutral-600 hover:text-flickday-yellow transition-colors text-sm font-mono">LET'S PEPPER</a>
+        <a href="https://www.nino.photos" target="_blank" rel="noopener noreferrer" class="text-neutral-600 hover:text-flickday-yellow transition-colors text-sm font-mono">PHOTOS</a>
+      </div>
+
+      <span class="text-neutral-700 text-xs font-mono tracking-wider">BUILT WITH SWEAT AND TAILWIND</span>
+    </div>
+  </footer>
+
+  <!-- LIGHTBOX -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <button class="absolute top-6 right-6 z-10 text-white/60 hover:text-white transition-colors" onclick="closeLightbox()" aria-label="Close">
+      <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <div class="flex-1 flex items-center justify-center p-8" onclick="event.stopPropagation()">
+      <button class="absolute left-4 lg:left-8 text-white/40 hover:text-white transition-colors" onclick="prevLightbox()" aria-label="Previous">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+
+      <div id="lightboxContent" class="max-h-[80vh] max-w-[90vw] bg-neutral-800 rounded flex items-center justify-center text-neutral-500 font-mono text-sm p-20">
+        PHOTO PLACEHOLDER
+      </div>
+
+      <button class="absolute right-4 lg:right-8 text-white/40 hover:text-white transition-colors" onclick="nextLightbox()" aria-label="Next">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="absolute top-6 left-6 font-mono text-white/50 text-sm tracking-widest">
+      <span id="lightboxCounter">01 / 08</span>
+    </div>
+
+    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 font-mono text-xs text-white/30 tracking-widest">
+      ← → to navigate • ESC to close
+    </div>
+  </div>
+
+  <script>
+    // Gallery drag-to-scroll
+    const gallery = document.getElementById('galleryScroll');
+    const progressBar = document.getElementById('galleryProgress');
+    let isDragging = false;
+    let startX;
+    let scrollLeft;
+
+    if (gallery) {
+      gallery.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        gallery.style.cursor = 'grabbing';
+        startX = e.pageX - gallery.offsetLeft;
+        scrollLeft = gallery.scrollLeft;
+      });
+
+      gallery.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - gallery.offsetLeft;
+        const walk = (x - startX) * 2;
+        gallery.scrollLeft = scrollLeft - walk;
+        updateProgress();
+      });
+
+      gallery.addEventListener('mouseup', () => {
+        isDragging = false;
+        gallery.style.cursor = 'grab';
+      });
+
+      gallery.addEventListener('mouseleave', () => {
+        isDragging = false;
+        gallery.style.cursor = 'grab';
+      });
+
+      gallery.addEventListener('scroll', updateProgress);
+
+      function updateProgress() {
+        const maxScroll = gallery.scrollWidth - gallery.clientWidth;
+        const progress = (gallery.scrollLeft / maxScroll) * 100;
+        progressBar.style.width = progress + '%';
+      }
+    }
+
+    // Lightbox
+    let currentLightboxIndex = 0;
+    const totalImages = 8;
+
+    function openLightbox(index) {
+      currentLightboxIndex = index;
+      document.getElementById('lightbox').classList.add('active');
+      document.body.style.overflow = 'hidden';
+      updateLightboxCounter();
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('active');
+      document.body.style.overflow = '';
+    }
+
+    function nextLightbox() {
+      currentLightboxIndex = (currentLightboxIndex + 1) % totalImages;
+      updateLightboxCounter();
+    }
+
+    function prevLightbox() {
+      currentLightboxIndex = (currentLightboxIndex - 1 + totalImages) % totalImages;
+      updateLightboxCounter();
+    }
+
+    function updateLightboxCounter() {
+      const counter = document.getElementById('lightboxCounter');
+      counter.textContent = String(currentLightboxIndex + 1).padStart(2, '0') + ' / ' + String(totalImages).padStart(2, '0');
+    }
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      const lightbox = document.getElementById('lightbox');
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowRight') nextLightbox();
+      if (e.key === 'ArrowLeft') prevLightbox();
+    });
+
+    // Smooth scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+
+</body>
 </html>
