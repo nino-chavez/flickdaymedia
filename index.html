@@ -105,8 +105,14 @@
     }
 
     .site-header__logo {
-      height: 40px;
+      height: 36px;
       width: auto;
+    }
+
+    @media (min-width: 768px) {
+      .site-header__logo {
+        height: 44px;
+      }
     }
 
     .site-header__cta {
@@ -504,17 +510,21 @@
     }
 
     /* ============================================
-       GALLERY - HORIZONTAL SCROLL
+       GALLERY - PARALLAX HORIZONTAL SCROLL
        ============================================ */
 
     .gallery {
       padding: 6rem 0;
       background: var(--black);
+      overflow: hidden;
     }
 
     .gallery__header {
       padding: 0 2rem;
       margin-bottom: 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
     }
 
     @media (min-width: 768px) {
@@ -534,111 +544,292 @@
       color: transparent;
     }
 
+    .gallery__counter {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--gray-light);
+      letter-spacing: 0.1em;
+    }
+
+    .gallery__counter-current {
+      color: var(--yellow);
+      font-size: 2rem;
+    }
+
     .gallery__scroll {
       display: flex;
-      gap: 1rem;
-      padding: 0 2rem;
+      gap: 2vw;
+      padding: 2rem 8vw;
       overflow-x: auto;
-      scroll-snap-type: x mandatory;
       scrollbar-width: none;
       -ms-overflow-style: none;
       cursor: grab;
+      height: 60vh;
+      min-height: 450px;
+      max-height: 700px;
+      align-items: center;
     }
 
     .gallery__scroll::-webkit-scrollbar {
       display: none;
     }
 
-    .gallery__scroll:active {
+    .gallery__scroll.is-dragging {
       cursor: grabbing;
-    }
-
-    @media (min-width: 768px) {
-      .gallery__scroll {
-        gap: 1.5rem;
-        padding: 0 4rem;
-      }
     }
 
     .gallery__item {
       flex: 0 0 auto;
-      width: 280px;
-      height: 400px;
-      scroll-snap-align: start;
+      width: auto;
+      height: 85%;
+      aspect-ratio: 2/3;
       position: relative;
       overflow: hidden;
       background: var(--gray-dark);
+      cursor: pointer;
+      transform-origin: center center;
+      transition: box-shadow 0.3s ease;
     }
 
-    @media (min-width: 768px) {
-      .gallery__item {
-        width: 350px;
-        height: 500px;
-      }
+    .gallery__item:hover {
+      box-shadow: 0 20px 60px rgba(250, 204, 21, 0.15);
+    }
+
+    .gallery__item-inner {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      overflow: hidden;
     }
 
     .gallery__item-image {
-      width: 100%;
-      height: 100%;
+      width: 115%;
+      height: 115%;
       object-fit: cover;
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-      filter: grayscale(30%);
-    }
-
-    .gallery__item:hover .gallery__item-image,
-    .gallery__item:focus-within .gallery__item-image {
-      transform: scale(1.08);
-      filter: grayscale(0%);
-    }
-
-    .gallery__item-overlay {
       position: absolute;
-      inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
-      opacity: 0;
-      transition: opacity var(--transition-fast);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: transform 0.4s ease;
+      will-change: transform;
     }
 
-    .gallery__item:hover .gallery__item-overlay {
-      opacity: 1;
+    .gallery__item:hover .gallery__item-image {
+      transform: translate(-50%, -50%) scale(1.02);
     }
 
-    .gallery__item-caption {
+    .gallery__controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      padding: 2rem;
+    }
+
+    .gallery__progress {
+      width: 200px;
+      height: 2px;
+      background: var(--gray-mid);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gallery__progress-bar {
       position: absolute;
-      bottom: 0;
       left: 0;
-      right: 0;
-      padding: 1.5rem;
-      transform: translateY(20px);
-      opacity: 0;
-      transition: all var(--transition-medium);
-    }
-
-    .gallery__item:hover .gallery__item-caption {
-      transform: translateY(0);
-      opacity: 1;
-    }
-
-    .gallery__item-title {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .gallery__item-meta {
-      font-size: 0.75rem;
-      color: var(--yellow);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+      top: 0;
+      height: 100%;
+      background: var(--yellow);
+      width: 0%;
+      transition: width 0.1s ease;
     }
 
     .gallery__hint {
-      text-align: center;
-      padding: 2rem;
-      font-size: 0.75rem;
+      font-size: 0.625rem;
       color: var(--gray-light);
-      letter-spacing: 0.1em;
+      letter-spacing: 0.2em;
       text-transform: uppercase;
+    }
+
+    /* ============================================
+       LIGHTBOX
+       ============================================ */
+
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0, 0, 0, 0.98);
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .lightbox.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .lightbox__header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.5rem 2rem;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+    }
+
+    .lightbox__counter {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      letter-spacing: 0.1em;
+      color: var(--white);
+    }
+
+    .lightbox__counter-current {
+      color: var(--yellow);
+      font-size: 1.5rem;
+    }
+
+    .lightbox__close {
+      width: 48px;
+      height: 48px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .lightbox__close:hover {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--black);
+    }
+
+    .lightbox__main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5rem 4rem;
+      position: relative;
+    }
+
+    .lightbox__image-container {
+      max-width: 90vw;
+      max-height: 80vh;
+      position: relative;
+    }
+
+    .lightbox__image {
+      max-width: 100%;
+      max-height: 80vh;
+      object-fit: contain;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .lightbox.is-open .lightbox__image {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .lightbox__nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 56px;
+      height: 56px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: var(--white);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .lightbox__nav:hover {
+      background: var(--yellow);
+      border-color: var(--yellow);
+      color: var(--black);
+    }
+
+    .lightbox__nav--prev {
+      left: 2rem;
+    }
+
+    .lightbox__nav--next {
+      right: 2rem;
+    }
+
+    .lightbox__thumbnails {
+      display: flex;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      justify-content: center;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .lightbox__thumbnails::-webkit-scrollbar {
+      display: none;
+    }
+
+    .lightbox__thumb {
+      width: 60px;
+      height: 80px;
+      flex-shrink: 0;
+      opacity: 0.4;
+      cursor: pointer;
+      transition: opacity 0.2s ease;
+      border: 2px solid transparent;
+    }
+
+    .lightbox__thumb.is-active {
+      opacity: 1;
+      border-color: var(--yellow);
+    }
+
+    .lightbox__thumb:hover {
+      opacity: 0.8;
+    }
+
+    .lightbox__thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    @media (max-width: 768px) {
+      .lightbox__nav {
+        width: 44px;
+        height: 44px;
+      }
+      .lightbox__nav--prev {
+        left: 1rem;
+      }
+      .lightbox__nav--next {
+        right: 1rem;
+      }
+      .lightbox__thumbnails {
+        padding: 1rem;
+      }
+      .lightbox__thumb {
+        width: 50px;
+        height: 66px;
+      }
     }
 
     /* ============================================
@@ -976,9 +1167,15 @@
     }
 
     .footer__logo {
-      width: 32px;
-      height: 32px;
-      opacity: 0.7;
+      width: 36px;
+      height: 36px;
+    }
+
+    @media (min-width: 768px) {
+      .footer__logo {
+        width: 40px;
+        height: 40px;
+      }
     }
 
     .footer__copyright {
@@ -1066,7 +1263,7 @@
   <header class="site-header" id="site-header">
     <div class="site-header__inner">
       <a href="#hero" aria-label="Flickday Media - Back to top">
-        <img src="./flickday-assets/lockup-flickday-media-v2b.png" alt="Flickday Media" class="site-header__logo">
+        <img src="./flickday-assets/lockup-header.png" alt="Flickday Media" class="site-header__logo">
       </a>
       <a href="#contact" class="site-header__cta">BOOK US</a>
     </div>
@@ -1215,61 +1412,130 @@
       <h2 id="gallery-title" class="gallery__title">
         RECENT <span class="gallery__title-outline">SHOTS</span>
       </h2>
+      <div class="gallery__counter" aria-live="polite">
+        <span class="gallery__counter-current" id="gallery-current">01</span>
+        <span>/</span>
+        <span id="gallery-total">12</span>
+      </div>
     </div>
 
-    <div class="gallery__scroll" role="region" aria-label="Photo gallery" tabindex="0">
-      <article class="gallery__item">
-        <img src="./images/gallery/portfolio-04.jpg" alt="Action shot - The Spike" class="gallery__item-image" loading="lazy">
-        <div class="gallery__item-overlay"></div>
-        <div class="gallery__item-caption">
-          <h3 class="gallery__item-title">THE SPIKE</h3>
-          <span class="gallery__item-meta">LET'S PEPPER 2025</span>
+    <div class="gallery__scroll" id="gallery-scroll" role="region" aria-label="Photo gallery" tabindex="0">
+      <article class="gallery__item" data-index="0">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-01.jpg" alt="FlickDay Media photo 1" class="gallery__item-image" loading="lazy">
         </div>
       </article>
-      <article class="gallery__item">
-        <img src="./images/gallery/portfolio-05.jpg" alt="Action shot - Full Extension" class="gallery__item-image" loading="lazy">
-        <div class="gallery__item-overlay"></div>
-        <div class="gallery__item-caption">
-          <h3 class="gallery__item-title">FULL EXTENSION</h3>
-          <span class="gallery__item-meta">GRASS 3S</span>
+
+      <article class="gallery__item" data-index="1">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-02.jpg" alt="FlickDay Media photo 2" class="gallery__item-image" loading="lazy">
         </div>
       </article>
-      <article class="gallery__item">
-        <img src="./images/gallery/portfolio-06.jpg" alt="Action shot - The Dig" class="gallery__item-image" loading="lazy">
-        <div class="gallery__item-overlay"></div>
-        <div class="gallery__item-caption">
-          <h3 class="gallery__item-title">THE DIG</h3>
-          <span class="gallery__item-meta">BELL PEPPER OPEN</span>
+
+      <article class="gallery__item" data-index="2">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-03.jpg" alt="FlickDay Media photo 3" class="gallery__item-image" loading="lazy">
         </div>
       </article>
-      <article class="gallery__item">
-        <img src="./images/gallery/portfolio-07.jpg" alt="Action shot - Celebration" class="gallery__item-image" loading="lazy">
-        <div class="gallery__item-overlay"></div>
-        <div class="gallery__item-caption">
-          <h3 class="gallery__item-title">CELEBRATION</h3>
-          <span class="gallery__item-meta">LET'S PEPPER 2025</span>
+
+      <article class="gallery__item" data-index="3">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-04.jpg" alt="FlickDay Media photo 4" class="gallery__item-image" loading="lazy">
         </div>
       </article>
-      <article class="gallery__item">
-        <img src="./images/gallery/portfolio-08.jpg" alt="Action shot - Block Party" class="gallery__item-image" loading="lazy">
-        <div class="gallery__item-overlay"></div>
-        <div class="gallery__item-caption">
-          <h3 class="gallery__item-title">BLOCK PARTY</h3>
-          <span class="gallery__item-meta">GRASS 3S</span>
+
+      <article class="gallery__item" data-index="4">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-05.jpg" alt="FlickDay Media photo 5" class="gallery__item-image" loading="lazy">
         </div>
       </article>
-      <article class="gallery__item">
-        <img src="./images/gallery/portfolio-09.jpg" alt="Action shot - Serve Receive" class="gallery__item-image" loading="lazy">
-        <div class="gallery__item-overlay"></div>
-        <div class="gallery__item-caption">
-          <h3 class="gallery__item-title">SERVE RECEIVE</h3>
-          <span class="gallery__item-meta">BELL PEPPER OPEN</span>
+
+      <article class="gallery__item" data-index="5">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-06.jpg" alt="FlickDay Media photo 6" class="gallery__item-image" loading="lazy">
+        </div>
+      </article>
+
+      <article class="gallery__item" data-index="6">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-07.jpg" alt="FlickDay Media photo 7" class="gallery__item-image" loading="lazy">
+        </div>
+      </article>
+
+      <article class="gallery__item" data-index="7">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-08.jpg" alt="FlickDay Media photo 8" class="gallery__item-image" loading="lazy">
+        </div>
+      </article>
+
+      <article class="gallery__item" data-index="8">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-09.jpg" alt="FlickDay Media photo 9" class="gallery__item-image" loading="lazy">
+        </div>
+      </article>
+
+      <article class="gallery__item" data-index="9">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-10.jpg" alt="FlickDay Media photo 10" class="gallery__item-image" loading="lazy">
+        </div>
+      </article>
+
+      <article class="gallery__item" data-index="10">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-11.jpg" alt="FlickDay Media photo 11" class="gallery__item-image" loading="lazy">
+        </div>
+      </article>
+
+      <article class="gallery__item" data-index="11">
+        <div class="gallery__item-inner">
+          <img src="./images/gallery/portfolio-12.jpg" alt="FlickDay Media photo 12" class="gallery__item-image" loading="lazy">
         </div>
       </article>
     </div>
 
-    <p class="gallery__hint">DRAG TO SCROLL</p>
+    <div class="gallery__controls">
+      <div class="gallery__progress">
+        <div class="gallery__progress-bar" id="gallery-progress"></div>
+      </div>
+      <span class="gallery__hint">DRAG TO SCROLL · CLICK TO EXPAND</span>
+    </div>
   </section>
+
+  <!-- ====== LIGHTBOX ====== -->
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image lightbox">
+    <div class="lightbox__header">
+      <div class="lightbox__counter">
+        <span class="lightbox__counter-current" id="lightbox-current">01</span>
+        <span>/</span>
+        <span id="lightbox-total">12</span>
+      </div>
+      <button class="lightbox__close" id="lightbox-close" aria-label="Close lightbox">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M18 6L6 18M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="lightbox__main">
+      <button class="lightbox__nav lightbox__nav--prev" id="lightbox-prev" aria-label="Previous image">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+
+      <div class="lightbox__image-container">
+        <img src="" alt="" class="lightbox__image" id="lightbox-image">
+      </div>
+
+      <button class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="Next image">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="lightbox__thumbnails" id="lightbox-thumbnails"></div>
+  </div>
 
   <!-- ====== EVENTS ====== -->
   <section class="events reveal" aria-labelledby="events-title">
@@ -1362,7 +1628,7 @@
   <footer class="footer">
     <div class="footer__inner">
       <div class="footer__brand">
-        <img src="./flickday-assets/icon-social-circle.png" alt="Flickday Media" class="footer__logo">
+        <img src="./flickday-assets/icon-footer.png" alt="Flickday Media" class="footer__logo">
         <span class="footer__copyright">© 2026 FLICKDAY MEDIA</span>
       </div>
 
@@ -1420,47 +1686,338 @@
 
     revealElements.forEach(el => revealObserver.observe(el));
 
-    // Gallery drag scroll
-    const gallery = document.querySelector('.gallery__scroll');
-    let isDown = false;
-    let startX;
-    let scrollLeft;
+    // ============================================
+    // GALLERY - PARALLAX HORIZONTAL SCROLL
+    // ============================================
 
-    if (gallery) {
-      gallery.addEventListener('mousedown', (e) => {
-        isDown = true;
-        gallery.style.cursor = 'grabbing';
-        startX = e.pageX - gallery.offsetLeft;
-        scrollLeft = gallery.scrollLeft;
+    const galleryScroll = document.getElementById('gallery-scroll');
+    const galleryItems = document.querySelectorAll('.gallery__item');
+    const galleryProgress = document.getElementById('gallery-progress');
+    const galleryCurrent = document.getElementById('gallery-current');
+    const galleryTotal = document.getElementById('gallery-total');
+
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Gallery data for lightbox
+    const galleryData = [
+      { src: './images/gallery/portfolio-01.jpg' },
+      { src: './images/gallery/portfolio-02.jpg' },
+      { src: './images/gallery/portfolio-03.jpg' },
+      { src: './images/gallery/portfolio-04.jpg' },
+      { src: './images/gallery/portfolio-05.jpg' },
+      { src: './images/gallery/portfolio-06.jpg' },
+      { src: './images/gallery/portfolio-07.jpg' },
+      { src: './images/gallery/portfolio-08.jpg' },
+      { src: './images/gallery/portfolio-09.jpg' },
+      { src: './images/gallery/portfolio-10.jpg' },
+      { src: './images/gallery/portfolio-11.jpg' },
+      { src: './images/gallery/portfolio-12.jpg' }
+    ];
+
+    if (galleryScroll) {
+      // Drag scroll state
+      let isDragging = false;
+      let startX = 0;
+      let scrollStart = 0;
+      let hasDragged = false;
+
+      // Parallax animation state
+      let currentScroll = 0;
+      let targetScroll = 0;
+      const smoothing = 0.12;
+      let rafId = null;
+
+      // Update total count
+      if (galleryTotal) {
+        galleryTotal.textContent = galleryData.length.toString().padStart(2, '0');
+      }
+
+      // Damping function for smooth animation
+      const damp = (current, target, factor) => {
+        return current + (target - current) * factor;
+      };
+
+      // Parallax animation loop
+      const animateGallery = () => {
+        if (!galleryScroll) return;
+
+        currentScroll = damp(currentScroll, targetScroll, smoothing);
+        const containerWidth = galleryScroll.offsetWidth;
+        const scrollWidth = galleryScroll.scrollWidth - containerWidth;
+
+        // Update progress bar
+        if (galleryProgress && scrollWidth > 0) {
+          const progress = (galleryScroll.scrollLeft / scrollWidth) * 100;
+          galleryProgress.style.width = `${Math.min(100, Math.max(0, progress))}%`;
+        }
+
+        // Skip parallax effects if user prefers reduced motion
+        if (prefersReducedMotion) {
+          // Just update counter without animations
+          let currentIndex = 0;
+          galleryItems.forEach((item, index) => {
+            const rect = item.getBoundingClientRect();
+            const containerRect = galleryScroll.getBoundingClientRect();
+            const itemCenter = rect.left + rect.width / 2;
+            const containerCenter = containerRect.left + containerRect.width / 2;
+            if (itemCenter < containerCenter + rect.width / 2) {
+              currentIndex = index;
+            }
+          });
+          if (galleryCurrent) {
+            galleryCurrent.textContent = (currentIndex + 1).toString().padStart(2, '0');
+          }
+          rafId = requestAnimationFrame(animateGallery);
+          return;
+        }
+
+        // Calculate current image index for counter
+        let currentIndex = 0;
+        galleryItems.forEach((item, index) => {
+          const rect = item.getBoundingClientRect();
+          const containerRect = galleryScroll.getBoundingClientRect();
+          const itemCenter = rect.left + rect.width / 2;
+          const containerCenter = containerRect.left + containerRect.width / 2;
+
+          if (itemCenter < containerCenter + rect.width / 2) {
+            currentIndex = index;
+          }
+
+          // Calculate distance from center (normalized -1 to 1)
+          const viewportProgress = (itemCenter - containerCenter) / (containerWidth / 2);
+          const distanceFromCenter = Math.abs(viewportProgress);
+
+          // Apply parallax transforms
+          const image = item.querySelector('.gallery__item-image');
+          if (image) {
+            // Pan effect - image moves opposite to scroll direction
+            const panAmount = -viewportProgress * 15;
+            // Scale effect - images at center are slightly larger
+            const scale = 1.15 - distanceFromCenter * 0.08;
+            image.style.transform = `translate(calc(-50% + ${panAmount}px), -50%) scale(${scale})`;
+          }
+
+          // Container scale and opacity
+          const containerScale = 1.0 - Math.min(distanceFromCenter, 1) * 0.08;
+          const opacity = Math.max(0.5, 1 - distanceFromCenter * 0.5);
+          item.style.transform = `scale(${containerScale})`;
+          item.style.opacity = opacity;
+        });
+
+        // Update counter
+        if (galleryCurrent) {
+          galleryCurrent.textContent = (currentIndex + 1).toString().padStart(2, '0');
+        }
+
+        rafId = requestAnimationFrame(animateGallery);
+      };
+
+      // Start animation loop
+      animateGallery();
+
+      // Scroll event to update target
+      galleryScroll.addEventListener('scroll', () => {
+        targetScroll = galleryScroll.scrollLeft;
+      }, { passive: true });
+
+      // Mouse drag functionality
+      galleryScroll.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        hasDragged = false;
+        startX = e.pageX - galleryScroll.offsetLeft;
+        scrollStart = galleryScroll.scrollLeft;
+        galleryScroll.classList.add('is-dragging');
       });
 
-      gallery.addEventListener('mouseleave', () => {
-        isDown = false;
-        gallery.style.cursor = 'grab';
+      galleryScroll.addEventListener('mouseleave', () => {
+        isDragging = false;
+        galleryScroll.classList.remove('is-dragging');
       });
 
-      gallery.addEventListener('mouseup', () => {
-        isDown = false;
-        gallery.style.cursor = 'grab';
+      galleryScroll.addEventListener('mouseup', () => {
+        isDragging = false;
+        galleryScroll.classList.remove('is-dragging');
       });
 
-      gallery.addEventListener('mousemove', (e) => {
-        if (!isDown) return;
+      galleryScroll.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
         e.preventDefault();
-        const x = e.pageX - gallery.offsetLeft;
-        const walk = (x - startX) * 2;
-        gallery.scrollLeft = scrollLeft - walk;
+        const x = e.pageX - galleryScroll.offsetLeft;
+        const walk = (x - startX) * 1.5;
+        if (Math.abs(walk) > 5) hasDragged = true;
+        galleryScroll.scrollLeft = scrollStart - walk;
+        targetScroll = galleryScroll.scrollLeft;
       });
+
+      // Touch support
+      let touchStartX = 0;
+      let touchScrollStart = 0;
+
+      galleryScroll.addEventListener('touchstart', (e) => {
+        touchStartX = e.touches[0].pageX;
+        touchScrollStart = galleryScroll.scrollLeft;
+        hasDragged = false;
+      }, { passive: true });
+
+      galleryScroll.addEventListener('touchmove', (e) => {
+        const x = e.touches[0].pageX;
+        const walk = (touchStartX - x) * 1.2;
+        if (Math.abs(walk) > 10) hasDragged = true;
+        galleryScroll.scrollLeft = touchScrollStart + walk;
+        targetScroll = galleryScroll.scrollLeft;
+      }, { passive: true });
 
       // Keyboard navigation
-      gallery.addEventListener('keydown', (e) => {
+      galleryScroll.addEventListener('keydown', (e) => {
+        const scrollAmount = 350;
         if (e.key === 'ArrowRight') {
-          gallery.scrollBy({ left: 300, behavior: 'smooth' });
+          e.preventDefault();
+          galleryScroll.scrollBy({ left: scrollAmount, behavior: 'smooth' });
         } else if (e.key === 'ArrowLeft') {
-          gallery.scrollBy({ left: -300, behavior: 'smooth' });
+          e.preventDefault();
+          galleryScroll.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+        }
+      });
+
+      // Click to open lightbox (only if not dragging)
+      galleryItems.forEach((item, index) => {
+        item.addEventListener('click', (e) => {
+          if (!hasDragged) {
+            openLightbox(index);
+          }
+        });
+      });
+    }
+
+    // ============================================
+    // LIGHTBOX
+    // ============================================
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxCurrent = document.getElementById('lightbox-current');
+    const lightboxTotal = document.getElementById('lightbox-total');
+    const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
+    const lightboxClose = document.getElementById('lightbox-close');
+    const lightboxPrev = document.getElementById('lightbox-prev');
+    const lightboxNext = document.getElementById('lightbox-next');
+
+    let currentLightboxIndex = 0;
+
+    // Build thumbnails
+    if (lightboxThumbnails && galleryData) {
+      galleryData.forEach((item, index) => {
+        const thumb = document.createElement('button');
+        thumb.className = 'lightbox__thumb';
+        thumb.setAttribute('aria-label', `View photo ${index + 1}`);
+        thumb.innerHTML = `<img src="${item.src}" alt="Photo ${index + 1}" loading="lazy">`;
+        thumb.addEventListener('click', () => showLightboxImage(index));
+        lightboxThumbnails.appendChild(thumb);
+      });
+
+      if (lightboxTotal) {
+        lightboxTotal.textContent = galleryData.length.toString().padStart(2, '0');
+      }
+    }
+
+    function openLightbox(index) {
+      if (!lightbox) return;
+      currentLightboxIndex = index;
+      showLightboxImage(index);
+      lightbox.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+
+      // Focus the lightbox for keyboard nav
+      lightbox.focus();
+    }
+
+    function closeLightbox() {
+      if (!lightbox) return;
+      lightbox.classList.remove('is-open');
+      document.body.style.overflow = '';
+    }
+
+    function showLightboxImage(index) {
+      if (!galleryData[index]) return;
+
+      const item = galleryData[index];
+      currentLightboxIndex = index;
+
+      // Update image
+      if (lightboxImage) {
+        lightboxImage.src = item.src;
+        lightboxImage.alt = `Photo ${index + 1}`;
+      }
+
+      // Update counter
+      if (lightboxCurrent) {
+        lightboxCurrent.textContent = (index + 1).toString().padStart(2, '0');
+      }
+
+      // Update thumbnails active state
+      const thumbs = lightboxThumbnails?.querySelectorAll('.lightbox__thumb');
+      thumbs?.forEach((thumb, i) => {
+        thumb.classList.toggle('is-active', i === index);
+      });
+
+      // Scroll thumbnail into view
+      const activeThumb = thumbs?.[index];
+      if (activeThumb) {
+        activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+    }
+
+    function nextLightboxImage() {
+      const nextIndex = (currentLightboxIndex + 1) % galleryData.length;
+      showLightboxImage(nextIndex);
+    }
+
+    function prevLightboxImage() {
+      const prevIndex = (currentLightboxIndex - 1 + galleryData.length) % galleryData.length;
+      showLightboxImage(prevIndex);
+    }
+
+    // Lightbox event listeners
+    if (lightboxClose) {
+      lightboxClose.addEventListener('click', closeLightbox);
+    }
+
+    if (lightboxPrev) {
+      lightboxPrev.addEventListener('click', prevLightboxImage);
+    }
+
+    if (lightboxNext) {
+      lightboxNext.addEventListener('click', nextLightboxImage);
+    }
+
+    // Close on backdrop click
+    if (lightbox) {
+      lightbox.addEventListener('click', (e) => {
+        if (e.target === lightbox || e.target.classList.contains('lightbox__main')) {
+          closeLightbox();
         }
       });
     }
+
+    // Keyboard navigation for lightbox
+    document.addEventListener('keydown', (e) => {
+      if (!lightbox?.classList.contains('is-open')) return;
+
+      switch (e.key) {
+        case 'Escape':
+          closeLightbox();
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          nextLightboxImage();
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          prevLightboxImage();
+          break;
+      }
+    });
 
     // Smooth scroll for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
