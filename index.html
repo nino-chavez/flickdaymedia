@@ -833,16 +833,16 @@
     }
 
     /* ============================================
-       EVENTS - DIAGONAL CUT
+       COVERAGE - RECENT WORK / EVENT ARCHIVE
        ============================================ */
 
-    .events {
+    .coverage {
       position: relative;
       padding: 8rem 0;
       background: var(--gray-dark);
     }
 
-    .events::before {
+    .coverage::before {
       content: '';
       position: absolute;
       top: 0;
@@ -853,23 +853,34 @@
       clip-path: polygon(0 0, 100% 0, 100% 0%, 0 100%);
     }
 
-    .events__inner {
+    .coverage__inner {
       max-width: 1400px;
       margin: 0 auto;
       padding: 0 2rem;
     }
 
     @media (min-width: 768px) {
-      .events__inner {
+      .coverage__inner {
         padding: 0 4rem;
       }
     }
 
-    .events__header {
+    .coverage__header {
       margin-bottom: 4rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
 
-    .events__label {
+    @media (min-width: 768px) {
+      .coverage__header {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+    }
+
+    .coverage__label {
       font-family: var(--font-display);
       font-size: 0.875rem;
       letter-spacing: 0.2em;
@@ -877,98 +888,167 @@
       margin-bottom: 1rem;
     }
 
-    .events__title {
+    .coverage__title {
       font-family: var(--font-display);
       font-size: clamp(3rem, 10vw, 7rem);
       line-height: 0.9;
     }
 
-    .events__grid {
-      display: grid;
-      gap: 2rem;
+    .coverage__stats {
+      font-family: var(--font-display);
+      font-size: 1rem;
+      color: var(--gray-light);
+      letter-spacing: 0.1em;
     }
 
-    @media (min-width: 768px) {
-      .events__grid {
+    .coverage__stats-number {
+      color: var(--yellow);
+      font-size: 1.5rem;
+    }
+
+    .coverage__grid {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 640px) {
+      .coverage__grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    .event-card {
+    @media (min-width: 1024px) {
+      .coverage__grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .coverage-card {
       position: relative;
       background: var(--black);
-      padding: 2rem;
       border: 1px solid var(--gray-mid);
-      transition: border-color var(--transition-fast);
+      transition: all var(--transition-fast);
       text-decoration: none;
       color: inherit;
-      display: block;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    .event-card:hover,
-    .event-card:focus {
+    .coverage-card:hover,
+    .coverage-card:focus {
       border-color: var(--yellow);
       outline: none;
+      transform: translateY(-4px);
     }
 
-    .event-card:focus-visible {
+    .coverage-card:focus-visible {
       outline: 3px solid var(--yellow);
       outline-offset: 3px;
     }
 
-    .event-card__date {
-      display: flex;
-      align-items: baseline;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .event-card__day {
+    .coverage-card__badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      z-index: 5;
+      padding: 0.25rem 0.75rem;
       font-family: var(--font-display);
-      font-size: 4rem;
-      line-height: 1;
-      color: var(--yellow);
-    }
-
-    .event-card__month {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      color: var(--gray-light);
+      font-size: 0.625rem;
+      letter-spacing: 0.15em;
       text-transform: uppercase;
     }
 
-    .event-card__title {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      line-height: 1;
-      margin-bottom: 0.5rem;
+    .coverage-card__badge--photos {
+      background: var(--yellow);
+      color: var(--black);
     }
 
-    .event-card__subtitle {
-      font-size: 0.875rem;
+    .coverage-card__badge--video {
+      background: #f97316;
+      color: var(--white);
+    }
+
+    .coverage-card__badge--reels {
+      background: #ec4899;
+      color: var(--white);
+    }
+
+    .coverage-card__image {
+      aspect-ratio: 16/10;
+      overflow: hidden;
+      background: var(--gray-mid);
+    }
+
+    .coverage-card__image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition-medium);
+    }
+
+    .coverage-card:hover .coverage-card__image img {
+      transform: scale(1.08);
+    }
+
+    .coverage-card__content {
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex: 1;
+    }
+
+    .coverage-card__event {
+      font-size: 0.625rem;
       color: var(--gray-light);
-      margin-bottom: 1.5rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
     }
 
-    .event-card__cta {
+    .coverage-card__title {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      line-height: 1.1;
+      flex: 1;
+    }
+
+    .coverage-card__cta {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
       color: var(--yellow);
       font-family: var(--font-display);
-      font-size: 1rem;
-      letter-spacing: 0.05em;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      margin-top: 0.5rem;
     }
 
-    .event-card__cta-arrow {
+    .coverage-card__cta-arrow {
       transition: transform var(--transition-fast);
     }
 
-    .event-card:hover .event-card__cta-arrow {
+    .coverage-card:hover .coverage-card__cta-arrow {
       transform: translateX(4px);
     }
 
-    .events__promo {
+    /* Featured card spans 2 columns on larger screens */
+    @media (min-width: 1024px) {
+      .coverage-card--featured {
+        grid-column: span 2;
+      }
+
+      .coverage-card--featured .coverage-card__image {
+        aspect-ratio: 21/10;
+      }
+
+      .coverage-card--featured .coverage-card__title {
+        font-size: 1.75rem;
+      }
+    }
+
+    .coverage__promo {
       margin-top: 4rem;
       padding: 2rem;
       border: 2px dashed var(--gray-mid);
@@ -979,25 +1059,25 @@
     }
 
     @media (min-width: 768px) {
-      .events__promo {
+      .coverage__promo {
         flex-direction: row;
         align-items: center;
         justify-content: space-between;
       }
     }
 
-    .events__promo-text h3 {
+    .coverage__promo-text h3 {
       font-family: var(--font-display);
       font-size: 1.5rem;
       margin-bottom: 0.25rem;
     }
 
-    .events__promo-text p {
+    .coverage__promo-text p {
       color: var(--gray-light);
       font-size: 0.875rem;
     }
 
-    .events__promo-cta {
+    .coverage__promo-cta {
       padding: 1rem 2rem;
       background: var(--yellow);
       color: var(--black);
@@ -1011,8 +1091,28 @@
       align-items: center;
     }
 
-    .events__promo-cta:hover {
+    .coverage__promo-cta:hover {
       background: var(--yellow-bright);
+    }
+
+    /* Upcoming teaser card */
+    .coverage-card--upcoming {
+      background: linear-gradient(135deg, var(--gray-mid) 0%, var(--black) 100%);
+      border-style: dashed;
+    }
+
+    .coverage-card--upcoming .coverage-card__image {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+
+    .coverage-card--upcoming .coverage-card__coming {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: var(--gray-light);
+      letter-spacing: 0.1em;
     }
 
     /* ============================================
@@ -1467,52 +1567,239 @@
     <div class="lightbox__thumbnails" id="lightbox-thumbnails"></div>
   </div>
 
-  <!-- ====== EVENTS ====== -->
-  <section class="events reveal" aria-labelledby="events-title">
-    <div class="events__inner">
-      <header class="events__header">
-        <span class="events__label">UPCOMING</span>
-        <h2 id="events-title" class="events__title">ON THE<br>SCHEDULE</h2>
+  <!-- ====== RECENT COVERAGE ====== -->
+  <section class="coverage reveal" aria-labelledby="coverage-title">
+    <div class="coverage__inner">
+      <header class="coverage__header">
+        <div>
+          <span class="coverage__label">EVENT ARCHIVE</span>
+          <h2 id="coverage-title" class="coverage__title">RECENT<br>COVERAGE</h2>
+        </div>
+        <div class="coverage__stats">
+          <span class="coverage__stats-number">11</span> EVENTS COVERED
+        </div>
       </header>
 
-      <div class="events__grid">
-        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="event-card">
-          <div class="event-card__date">
-            <time class="event-card__day" datetime="2025-07-19">19</time>
-            <span class="event-card__month">JUL 2025</span>
+      <div class="coverage__grid">
+        <!-- Featured: Bell Pepper Open -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/LPO/Bell-Pepper-Open-20250719" target="_blank" rel="noopener noreferrer" class="coverage-card coverage-card--featured">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-06.jpg" alt="Bell Pepper Open coverage" loading="lazy">
           </div>
-          <h3 class="event-card__title">LET'S PEPPER OPEN</h3>
-          <p class="event-card__subtitle">Grass 3s · Full Media Coverage</p>
-          <span class="event-card__cta">
-            REGISTER NOW
-            <svg class="event-card__cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">LET'S PEPPER SERIES · JULY 2025</span>
+            <h3 class="coverage-card__title">BELL PEPPER OPEN</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
         </a>
 
-        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="event-card">
-          <div class="event-card__date">
-            <time class="event-card__day">TBD</time>
-            <span class="event-card__month">2025</span>
+        <!-- Bell Pepper Video Highlights -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/LPO/2025-Bell-Pepper-Open-Video-Highlights" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--video">VIDEO</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-12.jpg" alt="Bell Pepper Open video highlights" loading="lazy">
           </div>
-          <h3 class="event-card__title">BELL PEPPER OPEN</h3>
-          <p class="event-card__subtitle">19 Teams · One Division · All the Spice</p>
-          <span class="event-card__cta">
-            GET NOTIFIED
-            <svg class="event-card__cta-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </span>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">LET'S PEPPER SERIES · JULY 2025</span>
+            <h3 class="coverage-card__title">BELL PEPPER HIGHLIGHTS</h3>
+            <span class="coverage-card__cta">
+              WATCH VIDEO
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
         </a>
+
+        <!-- Chicago AVP SD Smash -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Beach-Sand/2025-Chicago-AVP-sdsmash" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-15.jpg" alt="Chicago AVP SD Smash coverage" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">AVP TOUR · CHICAGO 2025</span>
+            <h3 class="coverage-card__title">AVP CHICAGO SD SMASH</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- AVP Miami Mayhem -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Beach-Sand/2025-AVP-Chicago-Miami-Mayhem" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-20.jpg" alt="AVP Miami Mayhem coverage" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">AVP TOUR · CHICAGO 2025</span>
+            <h3 class="coverage-card__title">AVP MIAMI MAYHEM</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Player Appreciation Turf 4s -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/Players-Player-Appreciation-Turf-4s-20250920" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-25.jpg" alt="Player Appreciation Turf 4s" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">TURF VOLLEYBALL · SEPT 2025</span>
+            <h3 class="coverage-card__title">PLAYER APPRECIATION 4S</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Krush Suburban Slam -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/KrushSuburbanSlam2025" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-30.jpg" alt="Krush Suburban Slam coverage" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">KRUSH VOLLEYBALL · 2025</span>
+            <h3 class="coverage-card__title">KRUSH SUBURBAN SLAM</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Krush Reverse Co-Ed -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/Krush-Reverse-CoEd-20250720" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-35.jpg" alt="Krush Reverse Co-Ed coverage" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">KRUSH VOLLEYBALL · JULY 2025</span>
+            <h3 class="coverage-card__title">KRUSH REVERSE CO-ED</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Krush Reverse Co-Ed 2 -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/Krush-Reverse-Co-Ed-2-20250817" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-40.jpg" alt="Krush Reverse Co-Ed 2 coverage" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">KRUSH VOLLEYBALL · AUG 2025</span>
+            <h3 class="coverage-card__title">KRUSH REVERSE CO-ED 2</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Cookout Grass Tournament -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/2025-Cookout-Volleyball-Grass-Tournament" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-45.jpg" alt="Cookout Grass Tournament coverage" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">GRASS VOLLEYBALL · 2025</span>
+            <h3 class="coverage-card__title">COOKOUT GRASS TOURNEY</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Cookout Reels -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/2025-Cookout-Grass-Tourney-Reels" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--reels">REELS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-50.jpg" alt="Cookout Grass Tourney Reels" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">GRASS VOLLEYBALL · 2025</span>
+            <h3 class="coverage-card__title">COOKOUT REELS</h3>
+            <span class="coverage-card__cta">
+              WATCH REELS
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Grass Launch 2025 -->
+        <a href="https://gallery.ninochavez.co/Sports/Volleyball/Grass/LPO/GrassLaunch2025" target="_blank" rel="noopener noreferrer" class="coverage-card">
+          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
+          <div class="coverage-card__image">
+            <img src="./images/gallery/portfolio-55.jpg" alt="Grass Launch 2025 coverage" loading="lazy">
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">LET'S PEPPER SERIES · 2025</span>
+            <h3 class="coverage-card__title">GRASS LAUNCH 2025</h3>
+            <span class="coverage-card__cta">
+              VIEW GALLERY
+              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </span>
+          </div>
+        </a>
+
+        <!-- Coming Soon: Let's Pepper Open Summer -->
+        <div class="coverage-card coverage-card--upcoming">
+          <div class="coverage-card__image">
+            <span class="coverage-card__coming">SUMMER 2026</span>
+          </div>
+          <div class="coverage-card__content">
+            <span class="coverage-card__event">COMING UP</span>
+            <h3 class="coverage-card__title">LET'S PEPPER OPEN</h3>
+            <span class="coverage-card__cta" style="color: var(--gray-light);">
+              STAY TUNED
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div class="events__promo">
-        <div class="events__promo-text">
+      <div class="coverage__promo">
+        <div class="coverage__promo-text">
           <h3>RUNNING A TOURNAMENT?</h3>
           <p>Let Flickday handle your media so you can focus on the event.</p>
         </div>
-        <a href="#contact" class="events__promo-cta">BOOK COVERAGE</a>
+        <a href="#contact" class="coverage__promo-cta">BOOK COVERAGE</a>
       </div>
     </div>
   </section>
