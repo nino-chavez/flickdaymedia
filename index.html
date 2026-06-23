@@ -16,6 +16,9 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="./flickday-assets/icon-favicon.png">
 
+  <!-- Hero LCP preload: fetch the hero before the inline CSS is parsed. Type-gated so AVIF-capable browsers (the majority) preload only the AVIF the <picture> will select. -->
+  <link rel="preload" as="image" href="./images/gallery/portfolio-06.avif" type="image/avif" fetchpriority="high">
+
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -201,6 +204,11 @@
       position: absolute;
       inset: 0;
       z-index: 1;
+    }
+
+    /* picture is a format-selection wrapper only; dissolve its box so .hero__image sizes against .hero__media */
+    .hero__media picture {
+      display: contents;
     }
 
     .hero__image {
@@ -1373,7 +1381,11 @@
   <!-- ====== HERO ====== -->
   <section class="hero" aria-label="Hero">
     <div class="hero__media">
-      <img src="./images/gallery/portfolio-06.jpg" alt="Volleyball celebration - champagne spray" class="hero__image" loading="eager" fetchpriority="high">
+      <picture>
+        <source srcset="./images/gallery/portfolio-06.avif" type="image/avif">
+        <source srcset="./images/gallery/portfolio-06.webp" type="image/webp">
+        <img src="./images/gallery/portfolio-06.jpg" alt="Volleyball celebration - champagne spray" class="hero__image" loading="eager" fetchpriority="high" width="1365" height="2048">
+      </picture>
       <div class="hero__overlay"></div>
       <div class="hero__grain"></div>
     </div>
