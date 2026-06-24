@@ -93,6 +93,34 @@ vectorize "$ASSETS/outro/motion-icon-transparent.png"   "motion" no
 vectorize "$ASSETS/outro/lockup-transparent.png"        "lockup" no
 vectorize "$TMP/slogan-src.png"                          "slogan" no
 
+# ── type-based marks: secondary wordmark + f-stop monogram ──────────────────
+# Built live from Poppins + the brand iris (make-iris.mjs), as flat 2-colour
+# (yellow letters + black aperture blades) so they trace like every other mark.
+# The composite offsets below are tuned for these exact fonts + point sizes;
+# re-tune the matching -geometry if you change a size.
+FONTS="$HERE/fonts"
+node "$HERE/make-iris.mjs" "$TMP/iris.svg"
+rsvg-convert -w 360 "$TMP/iris.svg" -o "$TMP/iris-wm.png"
+rsvg-convert -w 470 "$TMP/iris.svg" -o "$TMP/iris-fs.png"
+
+# secondary wordmark: lowercase "flickday" with the iris filling the d bowl
+magick -background none -fill "$YELLOW" -font "$FONTS/Poppins-SemiBold.ttf" \
+  -pointsize 600 label:flickday "$TMP/wm.png"
+magick "$TMP/wm.png" "$TMP/iris-wm.png" -geometry +1254+306 -composite \
+  -trim +repage "$TMP/wordmark-src.png"
+
+# f-stop monogram: f / aperture (reads as an f-number, e.g. f/2.8)
+magick -background none -fill "$YELLOW" -font "$FONTS/Poppins-Bold.ttf" -pointsize 700 label:'f' "$TMP/f.png"
+magick -background none -fill "$YELLOW" -font "$FONTS/Poppins-Bold.ttf" -pointsize 700 label:'/' "$TMP/sl.png"
+magick -size 1000x981 xc:none \
+  "$TMP/f.png"       -gravity NorthWest -geometry +0+0     -composite \
+  "$TMP/sl.png"      -gravity NorthWest -geometry +150+0   -composite \
+  "$TMP/iris-fs.png" -gravity NorthWest -geometry +405+345 -composite \
+  -trim +repage "$TMP/fstop-src.png"
+
+vectorize "$TMP/wordmark-src.png" "wordmark" no
+vectorize "$TMP/fstop-src.png"    "fstop"    no
+
 # tag every output with 300 DPI so DTF software reads the true print size (px/300 = inches)
 find "$OUT" -name '*.png' -exec magick mogrify -units PixelsPerInch -density 300 {} +
 
@@ -102,7 +130,7 @@ cell() { # <art> <bg> <out>
     -gravity center -composite "$3"
 }
 rows=()
-for name in icon motion lockup slogan; do
+for name in icon motion lockup slogan wordmark fstop; do
   d="$OUT/$name"
   cell "$d/$name-fullcolor.png"  "#f4f2ec" "$TMP/${name}_a.png"
   cell "$d/$name-mono-black.png" "#f4f2ec" "$TMP/${name}_b.png"
