@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Flickday Media — Outro Card</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --yellow: #facc15;
+    --yellow-bright: #fde047;
+    --orange: #f97316;
+  }
+
+  html, body { background: #000; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    color: #fff;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Brand glow — Flickday yellow from center */
+  .glow {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 50% 42%, rgba(250, 204, 21, 0.16) 0%, transparent 58%),
+      radial-gradient(ellipse at 50% 100%, rgba(249, 115, 22, 0.10) 0%, transparent 60%);
+  }
+
+  /* Shutter / contact-sheet grid */
+  .grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.022) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.022) 1px, transparent 1px);
+    background-size: 64px 64px;
+    mask-image: radial-gradient(ellipse at center, black 35%, transparent 78%);
+  }
+
+  /* Sprocket-hole film edges (top + bottom) */
+  .sprockets {
+    position: absolute;
+    left: 0; right: 0;
+    height: 22px;
+    display: flex;
+    gap: 26px;
+    padding: 0 40px;
+    align-items: center;
+    opacity: 0.5;
+  }
+  .sprockets.top { top: 38px; }
+  .sprockets.bot { bottom: 38px; }
+  .sprockets span {
+    flex: 1;
+    height: 12px;
+    background: rgba(250, 204, 21, 0.16);
+    border-radius: 2px;
+  }
+
+  .frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  /* Top decorative label */
+  .kicker {
+    font-family: 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.5);
+    font-weight: 500;
+  }
+
+  .lockup { display: block; }
+
+  .slogan {
+    font-family: 'Bebas Neue', sans-serif;
+    color: var(--yellow);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    text-shadow: 0 0 40px rgba(250, 204, 21, 0.35);
+  }
+
+  /* Decorative camera readout */
+  .readout {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(250, 204, 21, 0.85);
+    text-transform: uppercase;
+  }
+  .readout .sep { color: rgba(255,255,255,0.25); }
+
+  .handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700;
+    color: #fff;
+    text-transform: lowercase;
+    letter-spacing: 0.04em;
+  }
+  .site {
+    font-family: 'JetBrains Mono', monospace;
+    color: rgba(255,255,255,0.45);
+    text-transform: lowercase;
+    letter-spacing: 0.06em;
+  }
+
+  .divider {
+    width: 80px;
+    height: 3px;
+    background: var(--yellow);
+    border-radius: 2px;
+    box-shadow: 0 0 20px rgba(250,204,21,0.6);
+  }
+</style>
+</head>
+<body>
+  <div class="glow"></div>
+  <div class="grid"></div>
+  <div class="sprockets top" id="spr-top"></div>
+  <div class="sprockets bot" id="spr-bot"></div>
+  <div class="frame" id="frame"></div>
+</body>
+</html>
