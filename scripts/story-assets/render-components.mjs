@@ -59,6 +59,21 @@ const ELEMENTS = {
 
 const svgFile = (inner, vb = '0 0 120 120') => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${vb}">${inner}</svg>`
 
+// FD scoreboard (LED grid spelling FD) — SVG rects, colorway-aware
+const fdScoreInner = (lit, dim) => {
+  const F = ['1111', '1000', '1000', '1110', '1000', '1000', '1000']
+  const D = ['11100', '10010', '10001', '10001', '10001', '10010', '11100']
+  const cell = 10, gap = 3
+  let s = ''
+  for (let r = 0; r < 7; r++) {
+    const row = F[r] + '0' + D[r]
+    for (let c = 0; c < 10; c++) {
+      s += `<rect x="${c * (cell + gap)}" y="${r * (cell + gap)}" width="${cell}" height="${cell}" rx="2.4" fill="${row[c] === '1' ? lit : dim}"/>`
+    }
+  }
+  return s
+}
+
 // ── type atoms (HTML) ──
 const mono = (t, fs, color, ls = '0.3em', weight = 700) => `<span style="font-family:'JetBrains Mono',monospace;font-weight:${weight};font-size:${fs}px;letter-spacing:${ls};text-transform:uppercase;color:${color};white-space:nowrap">${t}</span>`
 const bebas = (t, fs, color) => `<span style="font-family:'Bebas Neue',sans-serif;font-size:${fs}px;line-height:0.82;letter-spacing:0.02em;color:${color};white-space:nowrap">${t}</span>`
@@ -125,6 +140,12 @@ const jobs = []
 for (const [cwName, color] of [['on-dark', YELLOW], ['on-light', INK]]) {
   writeFileSync(join(outDir, `icon-play-${cwName}.svg`), playIcon(1024, { color }))
   jobs.push({ name: `icon-play-${cwName}`, kind: 'svg', svg: playIcon(1024, { color }) })
+}
+// FD scoreboard element — svg + png, both colorways
+for (const [cwName, lit, dim] of [['on-dark', YELLOW, '#23252b'], ['on-light', INK, '#dcdcd5']]) {
+  const inner = fdScoreInner(lit, dim)
+  writeFileSync(join(outDir, `element-fd-scoreboard-${cwName}.svg`), svgFile(inner, '0 0 127 88'))
+  jobs.push({ name: `element-fd-scoreboard-${cwName}`, kind: 'svg', svg: `<svg viewBox="0 0 127 88" width="760" style="display:block">${inner}</svg>` })
 }
 // graphic elements: svg + png (single colorway)
 for (const [name, fn] of Object.entries(ELEMENTS)) {

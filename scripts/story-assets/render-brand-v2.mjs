@@ -13,7 +13,7 @@
  */
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
-import { YELLOW, page, ground, wordmark, playIcon, streak, renderJobs } from './_brand-v2.mjs'
+import { YELLOW, page, ground, wordmark, playIcon, renderJobs } from './_brand-v2.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(HERE, '..', '..')
@@ -32,9 +32,6 @@ function ogCard() {
       </div>
       <div style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:22px;letter-spacing:0.36em;
         text-transform:uppercase;color:#a3a3a3;margin-top:18px">Every day&rsquo;s a Flickday</div>
-    </div>
-    <div style="position:absolute;left:50%;bottom:46px;transform:translateX(-50%);opacity:0.85">
-      ${streak(3, 22, { cell: 14, gap: 5 })}
     </div>`
   return page(body, { w: 1200, h: 675 })
 }
