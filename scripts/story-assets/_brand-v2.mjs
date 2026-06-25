@@ -126,7 +126,7 @@ export function gridFD({ cell = 22, gap = 6, lit = YELLOW, dim = '#23252b' } = {
 
 // ── outro end card — shared by the outro kit + the reel-overlay kit ──
 // Vertical (reel, h>w) or landscape. Avatar play · wordmark · streak · handle.
-export function outroCard(w, h, { handle = 'flickday.media', cta = 'See the full set →' } = {}) {
+export function outroCard(w, h, { handle = 'flickday.media', cta = 'Find your photos →' } = {}) {
   const reel = h > w
   const avPx = reel ? 150 : 132
   const wmW = reel ? 660 : 820

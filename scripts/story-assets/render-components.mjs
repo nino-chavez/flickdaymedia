@@ -87,7 +87,7 @@ const TYPE = {
   'slogan': (c) => bebas("Every Day&rsquo;s a Flickday", 150, c.accent),
   'handle': (c) => handle(70, { text: c.text, at: c.accent }),
   'url': (c) => mono('flickdaymedia.com', 64, c.text, '0.12em', 700),
-  'cta': (c) => mono('See the full set &rarr;', 44, c.accent, '0.34em', 600),
+  'cta': (c) => mono('Find your photos &rarr;', 44, c.accent, '0.34em', 600),
   'shot-by': (c) => mono('Shot by Flickday Media', 40, c.accent, '0.22em', 500),
 }
 

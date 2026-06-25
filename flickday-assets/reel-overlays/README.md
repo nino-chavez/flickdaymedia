@@ -33,7 +33,7 @@ asset is the ghost, and it's built on pure black specifically for that.
 | `bug-reel` | transparent | **Normal** 100% | Persistent corner mark (`flickday` + `MEDIA`) |
 | `hud-frame-reel` | transparent | **Normal** 100% | Persistent edge frame — bug + day strip + faint top/bottom scrims, middle clear |
 | `lowerthird-nameplate-reel` | transparent | **Normal** 100% | **Blank** name/subject plate — type the name in CapCut (see below) |
-| `lowerthird-gallery-reel` | transparent | **Normal** 100% | Evergreen "see the full set" gallery CTA — fixed copy |
+| `lowerthird-gallery-reel` | transparent | **Normal** 100% | Evergreen "find your photos" gallery CTA — fixed copy |
 | `outro-reel` | opaque | **Normal** 100% | Full-frame end card — masthead + streak + handle |
 | `outro-overlay-reel` | transparent | **Normal** 100% | Closing brand block over a slowed/frozen final shot |
 | `outro-swipe-reel` | opaque (yellow) | **Normal** 100% | Punchy full-bleed end card for a wipe/swipe reveal |

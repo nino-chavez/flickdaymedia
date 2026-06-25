@@ -1,0 +1,8 @@
+# Cloudflare Pages redirects for flickdaymedia.com
+#
+# Gallery handoff: the IG content is Flickday-branded, so the link people follow
+# stays in the Flickday namespace. The photos are hosted on ninochavez.co for now,
+# so /gallery (and /photos) bounce there. 302 (not 301) so the destination can move
+# later without browsers caching the redirect permanently.
+/gallery   https://ninochavez.co/photography   302
+/photos    https://ninochavez.co/photography   302

@@ -9,7 +9,7 @@
  *   intro-letterbox-reel    alpha   — cinematic top/bottom bars (Normal)
  *   intro-ghost-reel        opaque  — double-exposure title on pure #000 (SCREEN blend)
  *   lowerthird-nameplate-*  alpha   — blank name plate (type the name in CapCut)
- *   lowerthird-gallery-*    alpha   — evergreen "see the full set" CTA
+ *   lowerthird-gallery-*    alpha   — evergreen "find your photos" gallery CTA
  *   bug-reel                alpha   — persistent corner mark (flickday + MEDIA)
  *   hud-frame-reel          alpha   — persistent edge frame, middle clear
  *   outro-reel              opaque  — hard-cut end card (shared outroCard)
@@ -276,7 +276,7 @@ function outroOverlay(w, h) {
       <div class="wm">${wordmark(330, { color: '#fff' })}<span class="md">Media</span></div>
       <div class="rule"></div>
       <div class="tag">Every day&rsquo;s a Flickday</div>
-      <div class="cta"><span class="h">${handleMarkup}</span><span class="see">See the full set &rarr;</span></div>
+      <div class="cta"><span class="h">${handleMarkup}</span><span class="see">Find your photos &rarr;</span></div>
       <div class="accent">${streak(3, 16, { cell: 20, gap: 6, taper: false })}</div>
     </div>`
   return page(body, { w, h, alpha: true, extraCss: css })
@@ -293,16 +293,16 @@ function outroSwipe(w, h) {
     .wm{display:flex;flex-direction:column;align-items:center;gap:16px}
     .wm .md{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:30px;letter-spacing:0.55em;text-transform:uppercase;color:${DARKINK}}
     .rule{width:210px;height:5px;background:${DARKINK};border-radius:3px;margin:48px 0 38px;opacity:0.88}
-    .h{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:48px;letter-spacing:0.02em;color:${DARKINK}}
-    .see{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:26px;letter-spacing:0.28em;
-      text-transform:uppercase;color:rgba(11,9,7,0.72);margin-top:26px}`
+    .h{font-family:'JetBrains Mono',monospace;font-weight:800;font-size:46px;letter-spacing:0.04em;text-transform:uppercase;color:${DARKINK}}
+    .see{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:25px;letter-spacing:0.22em;
+      text-transform:uppercase;color:rgba(11,9,7,0.72);margin-top:24px}`
   const body = `<div class="yc"></div>
     <div class="c">
       <div class="play">${playIcon(96, { color: YELLOW })}</div>
       <div class="wm">${wordmark(440, { color: DARKINK })}<span class="md">Media</span></div>
       <div class="rule"></div>
-      <div class="h">${E.handle}</div>
-      <div class="see">See the full set &rarr;</div>
+      <div class="h">Find your photos</div>
+      <div class="see">${E.handle} &middot; link in bio</div>
     </div>`
   return page(body, { w, h, alpha: false, extraCss: css })
 }
@@ -318,7 +318,7 @@ const jobs = [
   { name: 'lowerthird-nameplate-reel', w: 1080, h: 1920, alpha: true,
     html: lowerThird(1080, 1920, { tag: 'Feature', blank: true, sub: '<b>flickdaymedia.com</b>' }) },
   { name: 'lowerthird-gallery-reel', w: 1080, h: 1920, alpha: true,
-    html: lowerThird(1080, 1920, { tag: 'See the full set', lead: 'FLICKDAYMEDIA.COM', accent: true, sub: '<b>@flickday.media</b>' }) },
+    html: lowerThird(1080, 1920, { tag: 'Find your photos', lead: 'FLICKDAYMEDIA.COM', accent: true, sub: '<b>link in bio</b>' }) },
   { name: 'bug-reel', w: 1080, h: 1920, alpha: true, html: bug(1080, 1920) },
   { name: 'hud-frame-reel', w: 1080, h: 1920, alpha: true, html: frame(1080, 1920) },
   // ── OUTRO ──
