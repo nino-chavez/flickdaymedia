@@ -36,14 +36,15 @@ function ogCard() {
   return page(body, { w: 1200, h: 675 })
 }
 
-// ── site header logo — wordmark + compact MEDIA; canvas hugs the wordmark height
-// so it still renders ~52px tall in the bar (the dense old lockup is gone) ──
+// ── site header logo — wordmark + compact MEDIA. Canvas hugs the cropped content
+// (≈1238×270 at this size) with a small uniform margin, so the bar's height-based
+// CSS sizing renders the lockup tight, not floating in dead space ──
 function headerLockup() {
-  const body = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:44px">
+  const body = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:52px">
       ${wordmark(820, { color: '#ffffff' })}
       <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:78px;letter-spacing:0.36em;text-transform:uppercase;color:${YELLOW};line-height:1">Media</span>
     </div>`
-  return page(body, { w: 1360, h: 380, alpha: true })
+  return page(body, { w: 1300, h: 322, alpha: true })
 }
 
 // ── favicon — 512×512 opaque FD·play tile ──
@@ -86,7 +87,7 @@ function sloganPro() {
 
 const jobs = [
   { name: 'lockup-flickday-media-v2b', w: 1200, h: 675, alpha: false, html: ogCard(), scale: 2 },
-  { name: 'lockup-header', w: 1360, h: 380, alpha: true, html: headerLockup(), scale: 2 },
+  { name: 'lockup-header', w: 1300, h: 322, alpha: true, html: headerLockup(), scale: 2 },
   { name: 'icon-favicon', w: 512, h: 512, alpha: false, html: favicon(), scale: 2 },
   { name: 'icon-footer', w: 550, h: 550, alpha: true, html: footerMark(), scale: 2 },
   { name: 'icon-social-circle', w: 512, h: 512, alpha: true, html: socialCircle(), scale: 2 },

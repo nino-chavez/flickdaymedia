@@ -29,7 +29,9 @@ function loadMark(file) {
     .replace(/^[\s\S]*?<svg[^>]*>/, '')
     .replace(/<\/svg>\s*$/, '')
     .replace(/<metadata>[\s\S]*?<\/metadata>/, '')
-  return { w: vb[2], h: vb[3], inner }
+  // x/y default to the artboard origin; a crop override (below) can tighten the
+  // emitted viewBox to the mark's true ink bbox without touching the artwork.
+  return { x: vb[0], y: vb[1], w: vb[2], h: vb[3], inner }
 }
 
 export const YELLOW = '#facc15'
@@ -51,9 +53,16 @@ export const ground = () => `<div class="v2warm"></div><div class="v2vign"></div
 
 // ── LOCKED MARKS: traced flickday wordmark + play icon ──
 const _WORDMARK = loadMark('wordmark.svg')
+// potrace exported the wordmark on a loose artboard — its ink fills only
+// x≈488–3421 of a 3846-wide viewBox (~13% dead space each side, plus top/bottom).
+// That phantom padding pushed MEDIA off every lockup and broke true centering.
+// Crop the emit to the measured ink bbox + a small uniform optical margin so
+// wordmark(px) means px of REAL wordmark width. Measured via _measure-bbox.mjs;
+// the play/twotone/reel marks are already tight, so they keep their full box.
+Object.assign(_WORDMARK, { x: 463, y: 315, w: 2982, h: 983 })
 const _PLAY = loadMark('icon-play.svg')
 const _emit = (m, px, color) =>
-  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${m.w} ${m.h}" width="${px}" height="${Math.round((px * m.h) / m.w)}" style="display:block">${m.inner.replace(/#facc15/gi, color)}</svg>`
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${m.x} ${m.y} ${m.w} ${m.h}" width="${px}" height="${Math.round((px * m.h) / m.w)}" style="display:block">${m.inner.replace(/#facc15/gi, color)}</svg>`
 // wordmark(width) — the flickday logotype. playIcon(width) — the play mark.
 export const wordmark = (px, { color = '#ffffff' } = {}) => _emit(_WORDMARK, px, color)
 export const playIcon = (px, { color = YELLOW } = {}) => _emit(_PLAY, px, color)
