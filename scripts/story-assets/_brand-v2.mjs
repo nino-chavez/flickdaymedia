@@ -99,6 +99,22 @@ export function streak(rows, cols, { cell = 22, gap = 6, taper = true } = {}) {
   return `<div class="stk" style="grid-template-rows:repeat(${rows},${cell}px);grid-auto-columns:${cell}px;gap:${gap}px">${cells}</div>`
 }
 
+// ── FD scoreboard — the daily-cadence grid that actually spells FD (LED look) ──
+// Reads as a sports scoreboard (grassroots sports) + the every-day grid + the brand.
+export function gridFD({ cell = 22, gap = 6, lit = YELLOW, dim = '#23252b' } = {}) {
+  const F = ['1111', '1000', '1000', '1110', '1000', '1000', '1000']
+  const D = ['11100', '10010', '10001', '10001', '10001', '10010', '11100']
+  let cells = ''
+  for (let r = 0; r < 7; r++) {
+    const row = F[r] + '0' + D[r] // 10 cols: F(4) · gap(1) · D(5)
+    for (let c = 0; c < 10; c++) {
+      const on = row[c] === '1'
+      cells += `<i style="width:${cell}px;height:${cell}px;border-radius:${Math.round(cell * 0.24)}px;background:${on ? lit : dim}"></i>`
+    }
+  }
+  return `<div style="display:grid;grid-template-columns:repeat(10,${cell}px);gap:${gap}px">${cells}</div>`
+}
+
 // ── outro end card — shared by the outro kit + the reel-overlay kit ──
 // Vertical (reel, h>w) or landscape. Avatar play · wordmark · streak · handle.
 export function outroCard(w, h, { handle = 'flickday.media', cta = 'See the full set →' } = {}) {
@@ -106,17 +122,15 @@ export function outroCard(w, h, { handle = 'flickday.media', cta = 'See the full
   const avPx = reel ? 150 : 132
   const wmW = reel ? 660 : 820
   const pad = reel ? '120px 0 96px' : '64px 0 56px'
-  const rows = reel ? 5 : 4
-  const cols = reel ? 18 : 26
   const handleClean = handle.replace('@', '')
   return `${ground()}
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:${pad}">
       <div class="tile round" style="width:${avPx}px;height:${avPx}px;display:flex;align-items:center;justify-content:center">
-        ${playIcon(Math.round(avPx * 0.6))}
+        ${playIcon(Math.round(avPx * 0.74))}
       </div>
       <div style="display:flex;flex-direction:column;align-items:center">
         ${wordmark(wmW, { color: YELLOW })}
-        <div style="display:flex;align-items:center;gap:16px;margin-top:${reel ? 28 : 22}px">
+        <div style="display:flex;align-items:center;gap:16px;margin-top:${reel ? 18 : 14}px">
           <span style="width:${reel ? 150 : 130}px;height:2px;background:#3f3a1a"></span>
           <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:${reel ? 26 : 22}px;letter-spacing:0.5em;text-transform:uppercase;color:${YELLOW};padding-left:0.5em">Media</span>
           <span style="width:${reel ? 150 : 130}px;height:2px;background:#3f3a1a"></span>
@@ -124,7 +138,7 @@ export function outroCard(w, h, { handle = 'flickday.media', cta = 'See the full
         <span style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:${reel ? 20 : 17}px;letter-spacing:0.34em;text-transform:uppercase;color:#9ca3af;margin-top:14px">Every day&rsquo;s a Flickday</span>
       </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:${reel ? 54 : 40}px">
-        <div style="opacity:0.9">${streak(rows, cols, { cell: reel ? 26 : 22, gap: 8 })}</div>
+        <div>${gridFD({ cell: reel ? 30 : 26, gap: 9 })}</div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
           <span style="font-family:'JetBrains Mono',monospace;font-weight:800;font-size:${reel ? 42 : 38}px;
             letter-spacing:0.02em;color:#fff"><span style="color:${YELLOW}">@</span>${handleClean}</span>
