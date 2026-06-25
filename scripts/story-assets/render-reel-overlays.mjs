@@ -46,7 +46,7 @@ const E = {
   kicker: 'Grassroots Sports Media',
   title: 'GAME<br><b>DAY</b>', // <b> = yellow accent line
   meta: 'Season 2026', // event/date line — keep it true; a bare city reads as filler
-  day: 'Day 247 / 365', // daily-cadence token (replaces the EXIF readout)
+  day: 'Day 176 / 365', // daily-cadence token (replaces the EXIF readout) — 2026-06-25
   handle: '@flickday.media',
   site: 'flickdaymedia.com',
 }
