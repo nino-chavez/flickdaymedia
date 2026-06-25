@@ -1,21 +1,21 @@
 # Flickday Media — Reel Overlay Kit
 
 Drop-in overlays for Instagram **Reels + Stories** (all 1080×1920 vertical — no
-landscape). Built from Flickday's own visual language: **the camera viewfinder.**
+landscape). Built from Flickday's v2 visual language.
 
-Not a recolored hype reel. Flickday is a photography brand, so every overlay reads
-like a frame seen through the camera's EVF:
+This is the kinetic/editorial system, **not** the old camera-viewfinder kit (no
+crop marks, no EXIF readout, no AF reticle, no aperture glyph). Every overlay is
+built from the brand's own parts:
 
-- corner **crop marks** (registration brackets) frame the action
-- a faint **rule-of-thirds** guide
-- a top **OSD bar** — aperture glyph + `FLICKDAY MEDIA` · `REC ●` timecode
-- a bottom **OSD bar** — the live EXIF readout (`f/2.8 · 1/2000 · ISO 200 · 200mm`)
-- an **anamorphic lens flare** for energy (the camera's "sizzle" — no radial
-  speed-lines, no mascot; those belong to Let's Pepper)
-- **left-anchored editorial** type, never centered title cards
+- the **solid F glyph** + `FLICKDAY MEDIA` wordmark as the persistent bug
+- a left **accent bar** (yellow→orange) framing captions — not crop brackets
+- a **streak-grid** strip as the daily-cadence signature
+- a **day counter** (`Day 247 / 365`) where the f-stop EXIF line used to be
+- the **kinetic K wordmark** + **masthead nameplate** on the end card
 
-Yellow `#facc15` → orange `#f97316` on near-black. The `FLICKDAY MEDIA` wordmark is
-a real PNG (custom letterforms — never rebuilt in CSS).
+Yellow `#facc15` → orange `#f97316` on near-black. **left-anchored** editorial type,
+never centered title cards. No radial speed-lines, no mascot — those belong to
+Let's Pepper. This is Flickday speaking for itself.
 
 ## What's here
 
@@ -24,13 +24,13 @@ a real PNG (custom letterforms — never rebuilt in CSS).
 | `intro-reel` | opaque | Title card at the top of a reel |
 | `lowerthird-nameplate-reel` | transparent | **Blank** name/subject plate — type the name in CapCut (see below) |
 | `lowerthird-gallery-reel` | transparent | Evergreen "see the full set" gallery CTA — fixed copy, no editing |
-| `bug-reel` | transparent | Persistent corner mark (viewfinder bracket + wordmark) |
-| `hud-viewfinder-reel` | transparent | Persistent full viewfinder frame for the whole clip |
-| `outro-reel` | opaque | End card → lockup + slogan + handle |
+| `bug-reel` | transparent | Persistent corner mark (F glyph + `FLICKDAY MEDIA`) |
+| `hud-frame-reel` | transparent | Persistent edge frame for the whole clip — bug + day strip + top/bottom scrims |
+| `outro-reel` | opaque | End card → masthead nameplate + streak + handle |
 
-`bug-reel` vs `hud-viewfinder-reel`: the bug is a quiet corner credit; the HUD wraps
-the whole frame like a live viewfinder (crop marks, OSD bars, REC, a small centre AF
-reticle) and leaves the middle clear so it never blocks the action. Pick one per clip.
+`bug-reel` vs `hud-frame-reel`: the bug is a quiet corner credit; the frame adds the
+bottom handle/day strip and faint top+bottom scrims so type stays legible over busy
+footage — and leaves the middle clear so it never blocks the action. Pick one per clip.
 
 ### The name-plate is a blank template
 
@@ -38,28 +38,29 @@ reticle) and leaves the middle clear so it never blocks the action. Pick one per
 baseline shows where the name sits) so you add the subject as a CapCut text layer —
 it isn't baked in. That keeps it sport-agnostic: type a player name, a team, a
 location, whatever the clip needs. Set the CapCut text left-aligned, sitting on the
-baseline, in Anton/Impact white. If you'd rather bake the text in instead, pass
+baseline, in Bebas Neue / Impact white. To bake the text in instead, pass
 `{ tag, lead, sub }` (no `blank`) to `lowerThird()` in the render queue and re-render.
 
 ## CapCut layering
 
 1. Footage on the base track.
-2. `bug-reel` **or** `hud-viewfinder-reel` on a track above it for the whole clip.
+2. `bug-reel` **or** `hud-frame-reel` on a track above it for the whole clip.
 3. `lowerthird-*` over the relevant shot — alpha, so it composites straight on.
 4. `intro-reel` / `outro-reel` as full-frame opaque clips at head / tail.
 
 ## Regenerate / customize
 
-Edit the `E` block in `scripts/story-assets/render-reel-overlays.mjs` (event title,
-date/location, readout) and run:
+The brand language lives in `scripts/story-assets/_brand-v2.mjs` (one source of
+truth for the F glyph, kinetic wordmark, streak grid, masthead, and end card).
+Fonts are embedded (offline-safe) via `_fonts.mjs` — rebuild with `_build-fonts.mjs`
+only if the font set changes.
+
+Edit the `E` block in `render-reel-overlays.mjs` (event title, meta, day counter,
+handle) and run:
 
 ```
 node scripts/story-assets/render-reel-overlays.mjs   # this kit
 node scripts/story-assets/render-social-bugs.mjs     # ../social-bugs/  (@handle pills)
+node scripts/story-assets/render-outro-v2.mjs        # ../outro/  (end cards + lockups)
+node scripts/story-assets/render-brand-v2.mjs        # ../  (site marks: og, header, favicon, footer)
 ```
-
-Lower-third copy (`PLAYER NAME`, tags, sub lines) is set in the render queue at the
-bottom of the overlay script — swap per shoot. Defaults are placeholders.
-
-> Rendering reuses Playwright from the sibling `letspepper` repo, so that repo must
-> be installed (`pnpm i`) for a regenerate to work.
