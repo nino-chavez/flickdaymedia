@@ -39,17 +39,12 @@ function ogCard() {
   return page(body, { w: 1200, h: 675 })
 }
 
-// ── site header logo — 1100×280 transparent ──
+// ── site header logo — wordmark only, fills the height so it reads at ~48px ──
 function headerLockup() {
-  const body = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:34px">
-      ${wordmark(540, { color: YELLOW })}
-      <span style="width:2px;height:150px;background:#374151"></span>
-      <span style="display:flex;flex-direction:column;gap:12px;font-family:'JetBrains Mono',monospace">
-        <span style="font-weight:700;font-size:36px;letter-spacing:0.4em;text-transform:uppercase;color:${YELLOW}">Media</span>
-        <span style="font-weight:500;font-size:20px;letter-spacing:0.26em;text-transform:uppercase;color:#9ca3af">Every day&rsquo;s a Flickday</span>
-      </span>
+  const body = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+      ${wordmark(1000, { color: '#ffffff' })}
     </div>`
-  return page(body, { w: 1100, h: 280, alpha: true })
+  return page(body, { w: 1080, h: 440, alpha: true })
 }
 
 // ── favicon — 512×512 opaque FD·play tile ──
@@ -60,10 +55,10 @@ function favicon() {
   return page(body, { w: 512, h: 512 })
 }
 
-// ── footer mark — 550×550 transparent FD·play ──
+// ── footer mark — play icon, filling the square ──
 function footerMark() {
   const body = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-      ${playIcon(420)}
+      ${playIcon(520)}
     </div>`
   return page(body, { w: 550, h: 550, alpha: true })
 }
@@ -92,7 +87,7 @@ function sloganPro() {
 
 const jobs = [
   { name: 'lockup-flickday-media-v2b', w: 1200, h: 675, alpha: false, html: ogCard(), scale: 2 },
-  { name: 'lockup-header', w: 1100, h: 280, alpha: true, html: headerLockup(), scale: 2 },
+  { name: 'lockup-header', w: 1080, h: 440, alpha: true, html: headerLockup(), scale: 2 },
   { name: 'icon-favicon', w: 512, h: 512, alpha: false, html: favicon(), scale: 2 },
   { name: 'icon-footer', w: 550, h: 550, alpha: true, html: footerMark(), scale: 2 },
   { name: 'icon-social-circle', w: 512, h: 512, alpha: true, html: socialCircle(), scale: 2 },
