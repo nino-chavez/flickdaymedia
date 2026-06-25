@@ -4,10 +4,10 @@ Drop-in overlays for Instagram **Reels + Stories** (all 1080×1920 vertical — 
 landscape). Built from Flickday's v2 visual language.
 
 This is the kinetic/editorial system, **not** the old camera-viewfinder kit (no
-crop marks, no EXIF readout, no AF reticle, no aperture glyph). Every overlay is
-built from the brand's own parts:
+crop marks, no EXIF readout, no AF reticle, no aperture glyph, no standalone F).
+Every overlay is built from the brand's own parts:
 
-- the **solid F glyph** + `FLICKDAY MEDIA` wordmark as the persistent bug
+- the **flickday wordmark** (play-in-the-'d') + `MEDIA` as the persistent bug
 - a left **accent bar** (yellow→orange) framing captions — not crop brackets
 - a **streak-grid** strip as the daily-cadence signature
 - a **day counter** (`Day 247 / 365`) where the f-stop EXIF line used to be
@@ -24,7 +24,7 @@ Let's Pepper. This is Flickday speaking for itself.
 | `intro-reel` | opaque | Title card at the top of a reel |
 | `lowerthird-nameplate-reel` | transparent | **Blank** name/subject plate — type the name in CapCut (see below) |
 | `lowerthird-gallery-reel` | transparent | Evergreen "see the full set" gallery CTA — fixed copy, no editing |
-| `bug-reel` | transparent | Persistent corner mark (F glyph + `FLICKDAY MEDIA`) |
+| `bug-reel` | transparent | Persistent corner mark (`flickday` wordmark + `MEDIA`) |
 | `hud-frame-reel` | transparent | Persistent edge frame for the whole clip — bug + day strip + top/bottom scrims |
 | `outro-reel` | opaque | End card → masthead nameplate + streak + handle |
 

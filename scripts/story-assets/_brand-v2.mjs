@@ -1,23 +1,36 @@
 /**
  * Flickday Media — brand system v2, shared source of truth.
  *
- * The five concept territories resolved into reusable components so every
- * generator (site marks, social bugs, outro, reel overlays) speaks one language
- * and can't drift:
- *   • kinetic K wordmark (kWord)   → the logotype
- *   • chronophoto initial (chrono) → the F glyph + motion/photo treatment
- *   • masthead (masthead)          → editorial nameplate
- *   • streak grid (streak)         → daily-cadence texture
- *   • handle bug (handleBug)       → @flickday.media credit
+ * Shared source of truth so every generator (site marks, social bugs, outro,
+ * reel overlays, components) speaks one language and can't drift:
+ *   • wordmark(width)  → the flickday logotype (traced; play in the 'd')
+ *   • playIcon(width)  → the play icon (traced)
+ *   • streak()         → daily-cadence heatmap texture
+ *   • outroCard()      → shared end card
+ *   • page() / ground() / renderJobs() → render plumbing
  *
- * Replaces the old aperture / viewfinder (EVF) language. Palette + type are
- * unchanged from DESIGN.md. Reuses Playwright from the sibling letspepper repo.
+ * Locked marks load from flickday-assets/brand/*.svg and recolor by fill.
+ * Palette + type unchanged from DESIGN.md. Reuses Playwright from letspepper.
  */
 import { createRequire } from 'node:module'
-import { writeFileSync, rmSync } from 'node:fs'
-import { join } from 'node:path'
-import { pathToFileURL } from 'node:url'
+import { writeFileSync, rmSync, readFileSync } from 'node:fs'
+import { dirname, join, resolve } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { FONTS as EMBEDDED_FONTS } from './_fonts.mjs'
+
+// ── locked brand vectors (traced from the chosen Firefly marks) ──
+// flickday wordmark (play-in-the-d) + play icon. Single-fill SVGs with holes
+// preserved → recolor the whole fill for colorways; size by width.
+const BRAND_DIR = resolve(dirname(fileURLToPath(import.meta.url)), '..', '..', 'flickday-assets', 'brand')
+function loadMark(file) {
+  const raw = readFileSync(join(BRAND_DIR, file), 'utf8')
+  const vb = raw.match(/viewBox="([\d.\s]+)"/)[1].trim().split(/\s+/).map(Number)
+  const inner = raw
+    .replace(/^[\s\S]*?<svg[^>]*>/, '')
+    .replace(/<\/svg>\s*$/, '')
+    .replace(/<metadata>[\s\S]*?<\/metadata>/, '')
+  return { w: vb[2], h: vb[3], inner }
+}
 
 export const YELLOW = '#facc15'
 export const AMBER = '#fbbf24'
@@ -36,38 +49,31 @@ export const groundCss = `
   .v2vign{position:absolute;inset:0;box-shadow:inset 0 0 340px 80px rgba(0,0,0,0.72);pointer-events:none}`
 export const ground = () => `<div class="v2warm"></div><div class="v2vign"></div>`
 
-// ── chronophoto text: ghost copies trail left + fade, crisp yellow frame on top ──
-const GH = [
-  { xr: -0.28, sk: -7, op: 0.5, c: AMBER },
-  { xr: -0.6, sk: -9, op: 0.33, c: '#f59e0b' },
-  { xr: -0.96, sk: -11, op: 0.2, c: ORANGE },
-  { xr: -1.37, sk: -13, op: 0.12, c: ORANGE },
-  { xr: -1.84, sk: -15, op: 0.06, c: EMBER },
-]
-export function chrono(text, fs, { spread = 1, n = 5, glow = 0.4 } = {}) {
-  const ghosts = [...GH.slice(0, n)]
-    .reverse()
-    .map(
-      (g) =>
-        `<span class="cg" style="opacity:${g.op};color:${g.c};
-        transform:translateX(${Math.round(g.xr * fs * spread)}px) skewX(${g.sk}deg)">${text}</span>`
-    )
-    .join('')
-  return `<span class="cx" style="font-size:${fs}px"><span class="cstage">${ghosts}<span class="ch" style="text-shadow:0 0 ${Math.round(fs * 0.42)}px rgba(250,204,21,${glow})">${text}</span></span></span>`
-}
+// ── LOCKED MARKS: traced flickday wordmark + play icon ──
+const _WORDMARK = loadMark('wordmark.svg')
+const _PLAY = loadMark('icon-play.svg')
+const _emit = (m, px, color) =>
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${m.w} ${m.h}" width="${px}" height="${Math.round((px * m.h) / m.w)}" style="display:block">${m.inner.replace(/#facc15/gi, color)}</svg>`
+// wordmark(width) — the flickday logotype. playIcon(width) — the play mark.
+export const wordmark = (px, { color = '#ffffff' } = {}) => _emit(_WORDMARK, px, color)
+export const playIcon = (px, { color = YELLOW } = {}) => _emit(_PLAY, px, color)
+export const WORDMARK_RATIO = _WORDMARK.w / _WORDMARK.h
+export const PLAY_RATIO = _PLAY.w / _PLAY.h
 
-// ── kinetic wordmark: FLIC[K]DAY, the K leans + kicks a rising streak ──
-export function kWord(fs) {
-  const bars = [
-    { w: 0.4, o: 0.95, c: YELLOW },
-    { w: 0.32, o: 0.62, c: AMBER },
-    { w: 0.24, o: 0.42, c: ORANGE },
-    { w: 0.17, o: 0.26, c: ORANGE },
-  ]
-    .map((b) => `<i style="width:${Math.round(b.w * fs)}px;opacity:${b.o};background:${b.c}"></i>`)
-    .join('')
-  return `<span class="kw" style="font-size:${fs}px">FLIC<span class="kk">K<span class="kstreak">${bars}</span></span>DAY</span>`
+// two-tone wordmark variant — letters in one color, the 'd' (+ circle play) in the
+// accent, so the d pops. Two fills → recolor letters + accent independently.
+const _WORDMARK2 = loadMark('wordmark-twotone.svg')
+export const wordmarkTwo = (px, { letters = '#ffffff', accent = YELLOW } = {}) => {
+  const h = Math.round((px * _WORDMARK2.h) / _WORDMARK2.w)
+  const inner = _WORDMARK2.inner.replace(/#ffffff/gi, letters).replace(/#facc15/gi, accent)
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${_WORDMARK2.w} ${_WORDMARK2.h}" width="${px}" height="${h}" style="display:block">${inner}</svg>`
 }
+export const WORDMARK2_RATIO = _WORDMARK2.w / _WORDMARK2.h
+
+// film-reel wordmark variant — all one color, a film reel in the 'd' (cinema / "flick")
+const _WORDMARK_REEL = loadMark('wordmark-reel.svg')
+export const wordmarkReel = (px, { color = YELLOW } = {}) => _emit(_WORDMARK_REEL, px, color)
+export const WORDMARK_REEL_RATIO = _WORDMARK_REEL.w / _WORDMARK_REEL.h
 
 // ── streak grid (contribution heatmap), deterministic fill ──
 export function streak(rows, cols, { cell = 22, gap = 6, taper = true } = {}) {
@@ -93,43 +99,30 @@ export function streak(rows, cols, { cell = 22, gap = 6, taper = true } = {}) {
   return `<div class="stk" style="grid-template-rows:repeat(${rows},${cell}px);grid-auto-columns:${cell}px;gap:${gap}px">${cells}</div>`
 }
 
-// ── masthead: editorial nameplate — dateline rule, big yellow FLICKDAY, base rule ──
-export function masthead(fs, { width = 760, top = 'Vol. I · No. 365', loc = 'Chicago', sub = "Every day's a Flickday" } = {}) {
-  return `<div class="mh" style="--mw:${width}px">
-    <div class="mh-top"><span>${top}</span><span>${loc}</span></div>
-    <div class="mh-rule"></div>
-    <div class="mh-title" style="font-size:${fs}px">FLICKDAY</div>
-    <div class="mh-rule"></div>
-    <div class="mh-bot"><span>Media</span><span class="hot">${sub}</span></div>
-  </div>`
-}
-
-// ── handle bug: solid F + @handle ──
-export function handleBug(fs, { handle = '@flickday.media' } = {}) {
-  return `<span class="hb" style="font-size:${fs}px"><span class="hb-f">F</span><span class="hb-at">${handle}</span></span>`
-}
-
-// solid F glyph (small sizes)
-export const solidF = (fs) => `<span class="solidF" style="font-size:${fs}px">F</span>`
-
 // ── outro end card — shared by the outro kit + the reel-overlay kit ──
-// Vertical (reel, h>w) or landscape. Avatar F · masthead nameplate · streak · handle.
+// Vertical (reel, h>w) or landscape. Avatar play · wordmark · streak · handle.
 export function outroCard(w, h, { handle = 'flickday.media', cta = 'See the full set →' } = {}) {
   const reel = h > w
-  const titleFs = reel ? 200 : 156
   const avPx = reel ? 150 : 132
-  const fFs = Math.round(avPx * 0.62)
-  const mw = reel ? 760 : 900
+  const wmW = reel ? 660 : 820
   const pad = reel ? '120px 0 96px' : '64px 0 56px'
   const rows = reel ? 5 : 4
   const cols = reel ? 18 : 26
   const handleClean = handle.replace('@', '')
   return `${ground()}
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:${pad}">
-      <div class="tile round" style="width:${avPx}px;height:${avPx}px">
-        <div style="transform:translateX(${Math.round(avPx * 0.06)}px)">${chrono('F', fFs, { spread: 0.42, n: 3, glow: 0.5 })}</div>
+      <div class="tile round" style="width:${avPx}px;height:${avPx}px;display:flex;align-items:center;justify-content:center">
+        ${playIcon(Math.round(avPx * 0.6))}
       </div>
-      ${masthead(titleFs, { width: mw })}
+      <div style="display:flex;flex-direction:column;align-items:center">
+        ${wordmark(wmW, { color: YELLOW })}
+        <div style="display:flex;align-items:center;gap:16px;margin-top:${reel ? 28 : 22}px">
+          <span style="width:${reel ? 150 : 130}px;height:2px;background:#3f3a1a"></span>
+          <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:${reel ? 26 : 22}px;letter-spacing:0.5em;text-transform:uppercase;color:${YELLOW};padding-left:0.5em">Media</span>
+          <span style="width:${reel ? 150 : 130}px;height:2px;background:#3f3a1a"></span>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace;font-weight:500;font-size:${reel ? 20 : 17}px;letter-spacing:0.34em;text-transform:uppercase;color:#9ca3af;margin-top:14px">Every day&rsquo;s a Flickday</span>
+      </div>
       <div style="display:flex;flex-direction:column;align-items:center;gap:${reel ? 54 : 40}px">
         <div style="opacity:0.9">${streak(rows, cols, { cell: reel ? 26 : 22, gap: 8 })}</div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:16px">
@@ -146,32 +139,8 @@ export function outroCard(w, h, { handle = 'flickday.media', cta = 'See the full
 export const CSS = `
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'Inter',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
-  .cx{display:inline-block;font-family:'Bebas Neue',sans-serif;line-height:0.8;letter-spacing:0.02em}
-  .cx .cstage{position:relative;display:inline-block}
-  .cx span.cg,.cx span.ch{display:block;white-space:nowrap}
-  .cx .cg{position:absolute;right:0;bottom:0;transform-origin:bottom right}
-  .cx .ch{position:relative;color:${YELLOW}}
-  .kw{display:inline-flex;align-items:baseline;font-family:'Bebas Neue',sans-serif;line-height:0.8;letter-spacing:0.02em;color:#fff}
-  .kw .kk{display:inline-block;color:${YELLOW};transform:skewX(-12deg);transform-origin:bottom left;
-    text-shadow:0 0 0.3em rgba(250,204,21,0.5);position:relative;margin-right:0.42em}
-  .kw .kstreak{position:absolute;left:74%;bottom:0.12em;display:flex;flex-direction:column;gap:0.045em;
-    transform:rotate(-32deg);transform-origin:left bottom;pointer-events:none}
-  .kw .kstreak i{height:0.042em;border-radius:0.03em;display:block}
   .stk{display:grid;grid-auto-flow:column}
   .stk i{display:block;border-radius:5px}
-  .mh{width:var(--mw);display:flex;flex-direction:column;align-items:center}
-  .mh-rule{width:100%;height:1px;background:#3f3a1a}
-  .mh-top,.mh-bot{width:100%;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;
-    font-weight:600;letter-spacing:0.3em;text-transform:uppercase;color:#9ca3af;font-size:calc(var(--mw)*0.024)}
-  .mh-top{padding-bottom:0.7em}.mh-bot{padding-top:0.7em}
-  .mh-bot .hot{color:${YELLOW};font-weight:700}
-  .mh-title{font-family:'Bebas Neue',sans-serif;line-height:0.82;letter-spacing:0.015em;color:${YELLOW};
-    margin:0.12em 0;text-shadow:0 0 0.4em rgba(250,204,21,0.4)}
-  .solidF{font-family:'Bebas Neue',sans-serif;color:${YELLOW};line-height:0.8}
-  .hb{display:inline-flex;align-items:center;gap:0.46em;font-family:'JetBrains Mono',monospace;font-weight:800;
-    letter-spacing:0.02em;color:#fff;white-space:nowrap}
-  .hb .hb-f{font-family:'Bebas Neue',sans-serif;color:${YELLOW};font-weight:400;font-size:1.36em;line-height:0.7}
-  .hb .hb-at{}
   .tile{position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;
     background:radial-gradient(120% 120% at 38% 30%,#1a180f,#0a0a0a 60%,#050505)}
   .tile.round{border-radius:50%}`

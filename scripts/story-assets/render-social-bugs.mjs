@@ -22,7 +22,7 @@ import { createRequire } from 'node:module'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
 import { writeFileSync, rmSync, mkdirSync } from 'node:fs'
-import { FONTS, YELLOW, ORANGE } from './_brand-v2.mjs'
+import { FONTS, YELLOW, ORANGE, playIcon } from './_brand-v2.mjs'
 
 const require = createRequire('/Users/nino/Workspace/dev/apps/letspepper/package.json')
 const { chromium } = require('playwright')
@@ -34,10 +34,9 @@ mkdirSync(outDir, { recursive: true })
 
 const HANDLE = 'flickday.media'
 
-// F glyph — Bebas Neue cap, the brand's active mark
-const fmark = (color, glow) =>
-  `<span style="font-family:'Bebas Neue',sans-serif;font-size:74px;line-height:0.66;color:${color};
-    ${glow ? `text-shadow:0 0 14px ${glow};` : ''}">F</span>`
+// play icon in a chip — the icon as a contained logo lozenge (ink play on yellow chip)
+const chip = `<span style="display:inline-flex;align-items:center;justify-content:center;width:86px;height:86px;
+    border-radius:20px;background:${YELLOW};flex:none">${playIcon(62, { color: '#0b0b0c' })}</span>`
 
 const reset = `*{margin:0;padding:0;box-sizing:border-box}
   html,body{background:transparent}
@@ -45,32 +44,32 @@ const reset = `*{margin:0;padding:0;box-sizing:border-box}
   .pad{display:inline-block;padding:48px}`
 
 function solid(handle) {
-  return `<div class="pad"><div style="position:relative;display:inline-flex;align-items:center;gap:22px;
-      padding:26px 46px 26px 40px;border-radius:18px;overflow:hidden;
+  return `<div class="pad"><div style="position:relative;display:inline-flex;align-items:center;gap:24px;
+      padding:24px 48px 24px 36px;border-radius:22px;overflow:hidden;
       background:#0b0b0c;box-shadow:0 16px 46px rgba(0,0,0,0.55)">
     <span style="position:absolute;left:0;top:0;bottom:0;width:12px;background:linear-gradient(180deg,${YELLOW},${ORANGE})"></span>
-    ${fmark(YELLOW, 'rgba(250,204,21,0.4)')}
+    ${chip}
     <span style="font-weight:800;font-size:52px;letter-spacing:0.01em;color:#fff;white-space:nowrap">
       <span style="color:${YELLOW}">@</span>${handle}</span>
   </div></div>`
 }
 
 function glass(handle) {
-  return `<div class="pad"><div style="display:inline-flex;align-items:center;gap:22px;
-      padding:26px 46px 26px 36px;border-radius:999px;
+  return `<div class="pad"><div style="display:inline-flex;align-items:center;gap:24px;
+      padding:24px 48px 24px 30px;border-radius:999px;
       background:rgba(8,8,8,0.62);border:2px solid rgba(250,204,21,0.45);
       box-shadow:0 14px 50px rgba(0,0,0,0.5),0 0 30px rgba(250,204,21,0.20)">
-    ${fmark(YELLOW, 'rgba(250,204,21,0.5)')}
+    ${chip}
     <span style="font-weight:800;font-size:52px;letter-spacing:0.01em;color:#f6f6f1;white-space:nowrap">
       <span style="color:${YELLOW}">@</span>${handle}</span>
   </div></div>`
 }
 
 function light(handle) {
-  return `<div class="pad"><div style="display:inline-flex;align-items:center;gap:20px;
-      padding:24px 44px 24px 32px;border-radius:999px;
+  return `<div class="pad"><div style="display:inline-flex;align-items:center;gap:24px;
+      padding:22px 48px 22px 30px;border-radius:999px;
       background:#fbfbf7;box-shadow:0 16px 46px rgba(0,0,0,0.4)">
-    ${fmark('#16110f', null)}
+    ${chip}
     <span style="font-weight:800;font-size:50px;letter-spacing:0.01em;color:#16110f;white-space:nowrap">@${handle}</span>
   </div></div>`
 }

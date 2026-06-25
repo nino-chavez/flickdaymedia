@@ -13,7 +13,7 @@
  */
 import { fileURLToPath } from 'node:url'
 import { dirname, join, resolve } from 'node:path'
-import { YELLOW, page, ground, kWord, chrono, streak, solidF, renderJobs } from './_brand-v2.mjs'
+import { YELLOW, page, ground, wordmark, playIcon, streak, renderJobs } from './_brand-v2.mjs'
 
 const HERE = dirname(fileURLToPath(import.meta.url))
 const ROOT = resolve(HERE, '..', '..')
@@ -23,7 +23,7 @@ const outDir = join(ROOT, 'flickday-assets')
 function ogCard() {
   const body = `${ground()}
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
-      ${kWord(168)}
+      ${wordmark(720, { color: YELLOW })}
       <div style="display:flex;align-items:center;gap:18px;width:620px;margin-top:30px">
         <span style="flex:1;height:1px;background:#374151"></span>
         <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:24px;
@@ -42,8 +42,8 @@ function ogCard() {
 // ── site header logo — 1100×280 transparent ──
 function headerLockup() {
   const body = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:34px">
-      ${kWord(150)}
-      <span style="width:2px;height:142px;background:#374151"></span>
+      ${wordmark(540, { color: YELLOW })}
+      <span style="width:2px;height:150px;background:#374151"></span>
       <span style="display:flex;flex-direction:column;gap:12px;font-family:'JetBrains Mono',monospace">
         <span style="font-weight:700;font-size:36px;letter-spacing:0.4em;text-transform:uppercase;color:${YELLOW}">Media</span>
         <span style="font-weight:500;font-size:20px;letter-spacing:0.26em;text-transform:uppercase;color:#9ca3af">Every day&rsquo;s a Flickday</span>
@@ -52,26 +52,26 @@ function headerLockup() {
   return page(body, { w: 1100, h: 280, alpha: true })
 }
 
-// ── favicon — 512×512 opaque solid-F tile (legible tiny) ──
+// ── favicon — 512×512 opaque FD·play tile ──
 function favicon() {
-  const body = `<div class="tile" style="position:absolute;inset:0;border-radius:112px">
-      ${solidF(360)}
+  const body = `<div class="tile" style="position:absolute;inset:0;border-radius:112px;display:flex;align-items:center;justify-content:center">
+      ${playIcon(340)}
     </div>`
   return page(body, { w: 512, h: 512 })
 }
 
-// ── footer mark — 550×550 transparent chronophoto F ──
+// ── footer mark — 550×550 transparent FD·play ──
 function footerMark() {
   const body = `<div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
-      <div style="transform:translateX(34px)">${chrono('F', 360, { spread: 0.42, n: 3, glow: 0.5 })}</div>
+      ${playIcon(420)}
     </div>`
   return page(body, { w: 550, h: 550, alpha: true })
 }
 
-// ── avatar circle — 512×512 (transparent corners), chronophoto F on dark disc ──
+// ── avatar circle — 512×512 (transparent corners), FD·play on dark disc ──
 function socialCircle() {
-  const body = `<div class="tile round" style="position:absolute;inset:0">
-      <div style="transform:translateX(28px)">${chrono('F', 300, { spread: 0.42, n: 3, glow: 0.5 })}</div>
+  const body = `<div class="tile round" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+      ${playIcon(320)}
     </div>`
   return page(body, { w: 512, h: 512, alpha: true })
 }
@@ -80,7 +80,7 @@ function socialCircle() {
 function sloganPro() {
   const body = `${ground()}
     <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px">
-      ${kWord(120)}
+      ${wordmark(560, { color: YELLOW })}
       <div style="font-family:'Bebas Neue',sans-serif;font-size:150px;line-height:0.82;letter-spacing:0.02em;
         color:${YELLOW};text-align:center;text-shadow:0 0 70px rgba(250,204,21,0.35)">EVERY DAY&rsquo;S<br>A FLICKDAY</div>
     </div>
