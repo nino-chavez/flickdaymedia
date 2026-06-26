@@ -51,13 +51,20 @@ const E = {
   site: 'flickdaymedia.com',
 }
 
-// persistent corner bug — the flickday wordmark + MEDIA
+// persistent corner bug — play-tile anchored flickday/MEDIA lockup. The dark tile
+// is the legibility anchor (reads over bright OR busy footage where bare white
+// washed out) and gives the always-on mark real presence without covering the
+// action or colliding with IG's bottom-right UI buttons.
 const bugMark = (reel) => `
-  <div style="position:absolute;top:${reel ? 60 : 64}px;left:${reel ? 60 : 70}px;display:flex;flex-direction:column;
-    align-items:flex-start;gap:9px;filter:drop-shadow(0 2px 9px rgba(0,0,0,0.85))">
-    ${wordmark(reel ? 230 : 210, { color: '#ffffff' })}
-    <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:${reel ? 19 : 17}px;
-      letter-spacing:0.46em;text-transform:uppercase;color:rgba(245,245,240,0.72)">Media</span>
+  <div style="position:absolute;top:${reel ? 62 : 64}px;left:${reel ? 58 : 70}px;display:flex;align-items:center;gap:22px;
+    filter:drop-shadow(0 2px 11px rgba(0,0,0,0.85))">
+    <div style="width:104px;height:104px;border-radius:24px;background:rgba(11,9,7,0.62);
+      display:flex;align-items:center;justify-content:center">${playIcon(60, { color: YELLOW })}</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      ${wordmark(248, { color: '#ffffff' })}
+      <span style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:19px;
+        letter-spacing:0.46em;text-transform:uppercase;color:${YELLOW}">Media</span>
+    </div>
   </div>`
 
 // bottom strip — handle + day counter (replaces the EXIF / frame-counter bar)
