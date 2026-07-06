@@ -11,14 +11,16 @@
   <meta property="og:description" content="Raw, fast, and player-first sports media. Tournament coverage for volleyball and action sports.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://flickdaymedia.com">
-  <meta property="og:image" content="./flickday-assets/lockup-flickday-media-v2b.png?v=4">
+  <meta property="og:image" content="./flickday-assets/site/og-share-card.png?v=2">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
 
   <!-- Favicon / app icons -->
-  <link rel="icon" href="./flickday-assets/favicon/favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="./flickday-assets/favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="./flickday-assets/favicon/favicon-16x16.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="./flickday-assets/favicon/apple-touch-icon.png">
-  <link rel="manifest" href="./flickday-assets/favicon/site.webmanifest">
+  <link rel="icon" type="image/png" sizes="32x32" href="./flickday-assets/site/favicon/favicon-32x32.png?v=2">
+  <link rel="icon" type="image/png" sizes="16x16" href="./flickday-assets/site/favicon/favicon-16x16.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="./flickday-assets/site/favicon/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="./flickday-assets/site/favicon/site.webmanifest?v=2">
   <meta name="theme-color" content="#0a0a0a">
 
   <!-- Hero LCP preload: fetch the hero before the inline CSS is parsed. Type-gated so AVIF-capable browsers (the majority) preload only the AVIF the <picture> will select. -->
@@ -27,7 +29,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 
   <style>
     /* ============================================
@@ -50,8 +52,10 @@
       --gray-mid: #333;
       --gray-light: #888;
 
-      --font-display: 'Bebas Neue', Impact, sans-serif;
-      --font-body: system-ui, -apple-system, sans-serif;
+      --font-display: 'Anton', Impact, sans-serif;
+      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-label: 'JetBrains Mono', ui-monospace, monospace;
+      --font-tag: 'Barlow Condensed', 'Oswald', sans-serif;
 
       --transition-fast: 0.2s ease;
       --transition-medium: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -113,13 +117,14 @@
     }
 
     .site-header__logo {
-      height: 48px;
+      height: 34px;
       width: auto;
+      display: block;
     }
 
     @media (min-width: 768px) {
       .site-header__logo {
-        height: 58px;
+        height: 40px;
       }
     }
 
@@ -146,7 +151,7 @@
         padding: 0.75rem 1rem;
       }
       .site-header__logo {
-        height: 42px;
+        height: 30px;
       }
       .site-header__cta {
         padding: 0.5rem 1rem;
@@ -161,8 +166,8 @@
     .display-massive {
       font-family: var(--font-display);
       font-size: clamp(4rem, 20vw, 18rem);
-      line-height: 0.85;
-      letter-spacing: -0.02em;
+      line-height: 0.94;
+      letter-spacing: 0.005em;
       text-transform: uppercase;
     }
 
@@ -1183,8 +1188,8 @@
     .contact__title {
       font-family: var(--font-display);
       font-size: clamp(4rem, 18vw, 14rem);
-      line-height: 0.85;
-      letter-spacing: -0.04em;
+      line-height: 0.94;
+      letter-spacing: 0.005em;
       margin-bottom: 2rem;
     }
 
@@ -1368,6 +1373,51 @@
       opacity: 1;
       transform: translateY(0);
     }
+
+    /* ============================================
+       TYPE ROLES v2  —  Anton (display) · Inter (body) ·
+       JetBrains Mono (labels/counters/CTAs) · Barlow Condensed Italic (motion)
+       Headlines keep var(--font-display); this block routes the small
+       label/UI system to mono and the marquee to the italic accent.
+       ============================================ */
+    .site-header__cta,
+    .hero__badge,
+    .hero__cta,
+    .hero__scroll,
+    .split__label,
+    .split__link,
+    .gallery__counter,
+    .gallery__hint,
+    .lightbox__counter,
+    .coverage__label,
+    .coverage__stats,
+    .coverage-card__badge,
+    .coverage-card__event,
+    .coverage-card__cta,
+    .coverage__promo-cta,
+    .contact__status,
+    .contact__link,
+    .footer__copyright,
+    .footer__link,
+    .placeholder-image {
+      font-family: var(--font-label);
+    }
+
+    /* Buttons/CTAs want the heavier mono cut for punch */
+    .site-header__cta,
+    .hero__cta,
+    .coverage__promo-cta,
+    .contact__link {
+      font-weight: 700;
+    }
+
+    /* Marquee = the site's motion element → Barlow Condensed Italic (velocity) */
+    .marquee__content {
+      font-family: var(--font-tag);
+      font-style: italic;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
   </style>
 </head>
 
@@ -1377,7 +1427,7 @@
   <header class="site-header" id="site-header">
     <div class="site-header__inner">
       <a href="#hero" aria-label="Flickday Media - Back to top">
-        <img src="./flickday-assets/lockup-header.png?v=5" alt="Flickday Media" class="site-header__logo">
+        <img src="./flickday-assets/site/header-logo.svg?v=2" alt="Flickday Media" class="site-header__logo">
       </a>
       <a href="#contact" class="site-header__cta">BOOK US</a>
     </div>
@@ -1899,7 +1949,6 @@
   <footer class="footer">
     <div class="footer__inner">
       <div class="footer__brand">
-        <img src="./flickday-assets/icon-footer.png?v=3" alt="Flickday Media" class="footer__logo">
         <span class="footer__copyright">© 2026 FLICKDAY MEDIA</span>
       </div>
 
