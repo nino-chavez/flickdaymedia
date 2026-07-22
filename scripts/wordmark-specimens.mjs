@@ -86,14 +86,35 @@ async function fetchFace(family, weight) {
   return { b64: buf.toString('base64'), subset: latin.subset };
 }
 
-/** The existing logotype, as the reference row. Outlined — no font identity. */
-function referenceSvg() {
-  const p = join(ROOT, 'flickday-assets', 'brand', 'modular-wordmarks', 'flickday-core-color.svg');
+/**
+ * The incumbent is not one mark. Glyph-outline fingerprints across the
+ * shipped assets show at least three separate letterform systems: the
+ * modular set (set from a font, then outlined — core, play-d and shutter-i
+ * share identical glyphs), the traced play/plain wordmark, and the traced
+ * reel and twotone marks, which are lighter and wider again.
+ *
+ * So both surviving systems get a reference row. Anchoring the comparison
+ * to whichever one happened to be picked would rank the specimens against
+ * an arbitrary member of the drift rather than against "the" wordmark —
+ * there is no "the" wordmark, which is the reason this gate exists.
+ */
+const REFS = [
+  ['REF-A', 'modular set · font-derived', ['brand', 'modular-wordmarks', 'flickday-core-color.svg']],
+  ['REF-B', 'traced play mark', ['wordmarks', 'wordmark-play.svg']],
+].map(([code, label, rel]) => {
+  const p = join(ROOT, 'flickday-assets', ...rel);
   if (!existsSync(p)) throw new Error(`Reference wordmark missing: ${p}`);
-  return 'data:image/svg+xml;base64,' + readFileSync(p).toString('base64');
-}
 
-const REF = referenceSvg();
+  // Each incumbent carries its own fill — one near-white, one yellow — and
+  // colour changes apparent weight enough to bias a weight comparison.
+  // Force both to the specimen colour so the only variable is the shape.
+  const svg = readFileSync(p, 'utf-8').replace(/(fill=")(?!none)[^"]*(")/g, `$1${YELLOW}$2`);
+  return {
+    code,
+    label,
+    uri: 'data:image/svg+xml;base64,' + Buffer.from(svg).toString('base64'),
+  };
+});
 
 async function build() {
   const faces = [];
@@ -146,14 +167,16 @@ function screenSheet(specimens, fontFaces) {
     <div class="cell tiny"><span style="font-family:'${code}'">${WORD}</span></div>
   </div>`;
 
-  const refRow = `
-  <div class="row ref">
-    <div class="code">REF</div>
-    <div class="cell big"><img src="${REF}" style="height:52px"></div>
-    <div class="cell shot"><img src="${REF}" class="wm" style="height:15px"></div>
-    <div class="cell avatar"><img src="${REF}" style="width:74px"></div>
-    <div class="cell tiny"><img src="${REF}" style="height:11px"></div>
-  </div>`;
+  const refRow = REFS.map(
+    (r, i) => `
+  <div class="row ref${i === REFS.length - 1 ? ' last' : ''}">
+    <div class="code">${r.code}<br><span class="reflbl">${r.label}</span></div>
+    <div class="cell big"><img src="${r.uri}" style="height:52px"></div>
+    <div class="cell shot"><img src="${r.uri}" class="wm" style="height:15px"></div>
+    <div class="cell avatar"><img src="${r.uri}" style="width:74px"></div>
+    <div class="cell tiny"><img src="${r.uri}" style="height:11px"></div>
+  </div>`,
+  ).join('');
 
   const css = `
 body{background:#0f0f12;color:#fff;padding:44px 48px}
@@ -161,7 +184,10 @@ h1{color:${YELLOW}}
 .head{display:flex;gap:20px;padding:0 0 10px 52px;font-size:11px;opacity:.45;text-transform:uppercase;letter-spacing:.08em}
 .head div{flex:none}
 .row{display:flex;align-items:center;gap:20px;border-bottom:1px solid #212126;padding:16px 0}
-.row.ref{border-bottom:2px solid ${YELLOW}66;margin-bottom:6px}
+.row.ref{border-bottom:1px solid ${YELLOW}33}
+.row.ref.last{border-bottom:2px solid ${YELLOW}66;margin-bottom:6px}
+.code{line-height:1.35}
+.reflbl{font-size:9px;opacity:.5}
 .cell{flex:none;display:flex;align-items:center}
 .big{width:420px;font-size:54px;line-height:1;color:${YELLOW};letter-spacing:-.01em}
 .shot{width:360px;height:92px;border-radius:6px;position:relative;overflow:hidden;
@@ -183,7 +209,7 @@ h1{color:${YELLOW}}
 
   return shell(
     'flickday — wordmark specimens (blind)',
-    'Coded rows. The key is in specimens-KEY.json — judge before opening it. REF is the existing logotype, outlined, no font identity. ' +
+    'Coded rows. The key is in specimens-KEY.json — judge before opening it. REF-A and REF-B are both incumbents: the shipped assets carry at least three different letterform systems, all outlined, so none can be regenerated. ' +
       'Ask at each scale: do the counters stay open, does the ck pair hold, does the y descender survive.',
     css,
     head + refRow + specimens.map((s) => row(s.code)).join(''),
@@ -201,19 +227,24 @@ function apparelSheet(specimens, fontFaces) {
     <div class="cell light sm"><span style="font-family:'${code}'">${WORD}</span></div>
   </div>`;
 
-  const refRow = `
-  <div class="row ref">
-    <div class="code">REF</div>
-    <div class="cell light"><img src="${REF}" style="height:44px;filter:brightness(0)"></div>
-    <div class="cell dark"><img src="${REF}" style="height:44px;filter:brightness(0) invert(1)"></div>
-    <div class="cell light sm"><img src="${REF}" style="height:14px;filter:brightness(0)"></div>
-  </div>`;
+  const refRow = REFS.map(
+    (r, i) => `
+  <div class="row ref${i === REFS.length - 1 ? ' last' : ''}">
+    <div class="code">${r.code}<br><span class="reflbl">${r.label}</span></div>
+    <div class="cell light"><img src="${r.uri}" style="height:44px;filter:brightness(0)"></div>
+    <div class="cell dark"><img src="${r.uri}" style="height:44px;filter:brightness(0) invert(1)"></div>
+    <div class="cell light sm"><img src="${r.uri}" style="height:14px;filter:brightness(0)"></div>
+  </div>`,
+  ).join('');
 
   const css = `
 body{background:#fbfaf8;color:#111;padding:44px 48px}
 .head{display:flex;gap:20px;padding:0 0 10px 52px;font-size:11px;opacity:.5;text-transform:uppercase;letter-spacing:.08em}
 .row{display:flex;align-items:center;gap:20px;border-bottom:1px solid #e5e2dc;padding:14px 0}
-.row.ref{border-bottom:2px solid #111;margin-bottom:6px}
+.row.ref{border-bottom:1px solid #bbb}
+.row.ref.last{border-bottom:2px solid #111;margin-bottom:6px}
+.code{line-height:1.35}
+.reflbl{font-size:9px;opacity:.55}
 .cell{flex:none;display:flex;align-items:center;justify-content:center;height:86px;border-radius:6px}
 .light{width:420px;background:${GARMENT_LIGHT};color:${INK}}
 .dark{width:420px;background:${GARMENT_DARK};color:#fff}
