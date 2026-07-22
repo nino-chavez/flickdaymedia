@@ -2,6 +2,7 @@
   "note": "Blind key for round 2. Do not open until the sheet has been judged. Controls are labelled on the sheet already.",
   "kerning": "native — no algorithmic correction applied",
   "degular": "degular-variable tops out at wght 800, so this row is Degular Display 800 — the family maximum, judged as itself rather than as an approximation of Black. Obviously and Roc Grotesk are at their specified weights.",
+  "normalisationTolerance": "Measured ink lands 1px over each target (41/31/16/33 against 40/30/15/32). That is the inclusive pixel-row count including the antialias fringe, and it is uniform across every row, so it shifts all candidates equally rather than favouring any.",
   "normalisation": "Every row is scaled so the word measures equal ink height: 40px desktop header, 30px mobile, 15px watermark, 32px apparel. Measured by rasterising and counting lit pixel rows, because canvas TextMetrics ignores font-variation-settings and the kit woff2 URLs answer 400 to a direct fetch.",
   "axisCalibration": {
     "method": "variable axis values matched by measuring against the kit static cuts at 700",
@@ -24,7 +25,7 @@
       "weight": 800,
       "variation": null,
       "note": null,
-      "inkAt200px": 181
+      "inkAt200px": 189
     },
     {
       "code": "N-03",
@@ -32,7 +33,7 @@
       "weight": 800,
       "variation": null,
       "note": "round-1 baseline",
-      "inkAt200px": 181
+      "inkAt200px": 201
     },
     {
       "code": "N-04",
@@ -48,7 +49,7 @@
       "weight": 800,
       "variation": null,
       "note": "boundary candidate",
-      "inkAt200px": 181
+      "inkAt200px": 190
     },
     {
       "code": "N-06",
@@ -56,7 +57,7 @@
       "weight": 900,
       "variation": null,
       "note": "historical control — modular-set base",
-      "inkAt200px": 181
+      "inkAt200px": 208
     },
     {
       "code": "N-07",
@@ -72,7 +73,7 @@
       "weight": 800,
       "variation": "'wdth' 100",
       "note": "wdth 100 (normal), wght 800",
-      "inkAt200px": 181
+      "inkAt200px": 206
     },
     {
       "code": "N-09",
@@ -80,7 +81,7 @@
       "weight": 900,
       "variation": null,
       "note": null,
-      "inkAt200px": 181
+      "inkAt200px": 200
     }
   ],
   "controls": [

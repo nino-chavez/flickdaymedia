@@ -193,6 +193,7 @@ async function measureAt(browser, fontFaces, faces, sizeFor) {
 
   await page.setContent(
     `<link rel="stylesheet" href="${TYPEKIT}"><style>
+     ${fontFaces}
      *{margin:0;padding:0}
      body{background:#000;width:2600px}
      .p{color:#fff;line-height:2.4;white-space:nowrap;height:520px;display:flex;align-items:center}
@@ -200,6 +201,34 @@ async function measureAt(browser, fontFaces, faces, sizeFor) {
     { waitUntil: 'networkidle' },
   );
   await page.evaluate(() => document.fonts.ready);
+
+  // The measurement page needs the same @font-face block as the sheet.
+  // Without it the anonymous aliases resolve to fallback, every non-kit row
+  // measures the same fallback ink, and — because the verification pass calls
+  // this same function — the check confirms itself. Six blind rows and a
+  // control all returned exactly 181px, which is not something distinct
+  // typefaces do. Prove each probe differs from serif before counting pixels.
+  const fellBack = await page.evaluate(
+    ([word, probes]) => {
+      const el = document.createElement('span');
+      el.textContent = word;
+      document.body.appendChild(el);
+      const measure = (css) => {
+        el.style.cssText = `position:absolute;visibility:hidden;font-size:200px;${css}`;
+        return el.getBoundingClientRect().width;
+      };
+      const control = measure('font-family:serif');
+      const bad = probes
+        .filter((p) => Math.abs(measure(`font-family:'${p.family}',serif;font-weight:${p.weight}`) - control) < 0.5)
+        .map((p) => p.code);
+      el.remove();
+      return bad;
+    },
+    [WORD, faces.map((f) => ({ code: f.code, family: f.cssFamily, weight: f.weight }))],
+  );
+  if (fellBack.length) {
+    throw new Error(`Measurement page fell back to serif for: ${fellBack.join(', ')}`);
+  }
 
   const boxes = await page.evaluate(() =>
     [...document.querySelectorAll('.p')].map((el) => {
@@ -345,16 +374,20 @@ async function main() {
   // assumes ink is linear in font-size, and it was not: with the default
   // font-optical-sizing:auto, Chromium re-derived opsz from font-size and the
   // Degular row came out 46px against a 40px target.
-  const rendered = await measureRow(browser, fontFaces, [...prepared, ...controls], TARGETS.hdr);
-  const off = Object.entries(rendered).filter(([, v]) => Math.abs(v - TARGETS.hdr) > 2);
-  if (off.length) {
-    throw new Error(
-      `Rows are not normalised: ${off.map(([k, v]) => `${k}=${v}px vs ${TARGETS.hdr}`).join(', ')}`,
+  for (const [name, target] of Object.entries(TARGETS)) {
+    const got = await measureRow(browser, fontFaces, [...prepared, ...controls], target);
+    // 1px is the floor set by rasterisation. At the 15px watermark that is
+    // already 7%, so it is reported per row rather than summarised.
+    const off = Object.entries(got).filter(([, v]) => Math.abs(v - target) > 1);
+    if (off.length) {
+      throw new Error(
+        `${name} not normalised to ${target}px: ${off.map(([k, v]) => `${k}=${v}`).join(', ')}`,
+      );
+    }
+    console.log(
+      `  verified ${name}@${target}px: ${Object.entries(got).map(([k, v]) => `${k}=${v}`).join(' ')}`,
     );
   }
-  console.log(
-    `  verified ink@header: ${Object.entries(rendered).map(([k, v]) => `${k}=${v}`).join(' ')}`,
-  );
 
   const h = await page.evaluate(() => document.body.scrollHeight);
   await page.setViewportSize({ width: 1400, height: h });
@@ -370,6 +403,8 @@ async function main() {
         kerning: 'native — no algorithmic correction applied',
         degular:
           'degular-variable tops out at wght 800, so this row is Degular Display 800 — the family maximum, judged as itself rather than as an approximation of Black. Obviously and Roc Grotesk are at their specified weights.',
+        normalisationTolerance:
+          'Measured ink lands 1px over each target (41/31/16/33 against 40/30/15/32). That is the inclusive pixel-row count including the antialias fringe, and it is uniform across every row, so it shifts all candidates equally rather than favouring any.',
         normalisation:
           'Every row is scaled so the word measures equal ink height: 40px desktop header, 30px mobile, 15px watermark, 32px apparel. Measured by rasterising and counting lit pixel rows, because canvas TextMetrics ignores font-variation-settings and the kit woff2 URLs answer 400 to a direct fetch.',
         axisCalibration: {
