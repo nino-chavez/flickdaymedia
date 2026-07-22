@@ -111,7 +111,22 @@ const CONTROLS = [
 ];
 
 // Fixed permutation so two runs are comparable. Changing this reshuffles.
-const ORDER = [7, 3, 0, 8, 5, 1, 6, 4, 2];
+const FIXED_ORDER = [7, 3, 0, 8, 5, 1, 6, 4, 2];
+
+// With FLICKDAY_SHUFFLE=1 the order is drawn at random and never printed.
+// Both reviewers had learned the fixed mapping by reviewing the code that
+// produced it, so the sheet was no longer blind to either of them. The only
+// way back is a permutation neither has seen — which means the script must
+// not narrate it, and nobody may open the key until a shortlist is written.
+const ORDER = (() => {
+  if (!process.env.FLICKDAY_SHUFFLE) return FIXED_ORDER;
+  const a = CANDIDATES.map((_, i) => i);
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+})();
 
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
@@ -142,11 +157,9 @@ async function prepare(entries, prefix) {
       // binaries in a committed file would be redistribution, and the licence
       // covers use through the kit.
       out.push({ ...e, code, css: '', cssFamily: e.family });
-      console.log(`  kit     ${e.family} ${e.weight}`);
     } else if (e.local) {
       const srcs = e.local.map((n) => `local('${n}')`).join(',');
       out.push({ ...e, code, cssFamily: code, css: `@font-face{font-family:'${code}';src:${srcs};font-weight:${e.weight}}` });
-      console.log(`  local   ${e.family} ${e.weight}`);
     } else {
       const b64 = await fetchFace(e.family, e.weight, e.googleAxis);
       out.push({
@@ -157,7 +170,6 @@ async function prepare(entries, prefix) {
           `@font-face{font-family:'${code}';font-weight:${e.weight};font-display:block;` +
           `src:url(data:font/woff2;base64,${b64}) format('woff2')}`,
       });
-      console.log(`  fetched ${e.family} ${e.weight}`);
     }
   }
   return out;
@@ -286,6 +298,10 @@ async function measureRow(browser, fontFaces, faces, target) {
 
 async function main() {
   const blind = ORDER.map((i) => CANDIDATES[i]);
+  // Alphabetical, so the roster is visible and the assignment is not.
+  console.log(
+    '  roster: ' + CANDIDATES.map((c) => `${c.family} ${c.weight}`).sort().join(' · '),
+  );
   const prepared = await prepare(blind, 'N');
   const controls = await prepare(CONTROLS, 'CTRL');
 
