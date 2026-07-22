@@ -1,0 +1,48 @@
+{
+  "note": "Per-pair optical offsets in em, measured by equalising inter-letter white area. Pairs are fl li ic ck kd da ay.",
+  "word": "flickday",
+  "finalists": [
+    {
+      "id": "W-S06",
+      "family": "Sora",
+      "weight": 800,
+      "offsetsEm": [
+        0.0098,
+        0.0194,
+        0.0211,
+        -0.0482,
+        -0.1155,
+        -0.0127,
+        0
+      ]
+    },
+    {
+      "id": "W-S10",
+      "family": "Rubik",
+      "weight": 800,
+      "offsetsEm": [
+        0.007,
+        0.051,
+        0.0308,
+        -0.0348,
+        -0.0885,
+        0,
+        -0.0253
+      ]
+    },
+    {
+      "id": "W-S08",
+      "family": "Figtree",
+      "weight": 900,
+      "offsetsEm": [
+        0,
+        0.0399,
+        0.0182,
+        -0.0283,
+        -0.103,
+        0.0046,
+        -0.0449
+      ]
+    }
+  ]
+}
