@@ -50,7 +50,16 @@ const CANDIDATES = [
   },
   { family: 'Schibsted Grotesk', weight: 900 },
   { family: 'Bricolage Grotesque', weight: 800 },
-  { family: 'Anybody', weight: 800, note: 'restrained width' },
+  {
+    family: 'Anybody',
+    weight: 800,
+    // Anybody carries a width axis, so "restrained width" had to become a
+    // number rather than an adjective. Fetched with the axis and pinned at
+    // wdth 100, matching how the kit faces are specified.
+    googleAxis: 'wdth,wght@100,800',
+    variation: "'wdth' 100",
+    note: 'wdth 100 (normal), wght 800',
+  },
   { family: 'Syne', weight: 800, note: 'boundary candidate' },
   // Variable cuts, with axis values calibrated against the kit's own static
   // width and optical-size families rather than guessed. Static cuts serve
@@ -59,29 +68,29 @@ const CANDIDATES = [
     family: 'degular-variable',
     weight: 800,
     kit: true,
-    variation: '"opsz" 68',
+    variation: "'opsz' 68",
     // opsz 68 reproduces static degular-display at 700 to within 0.1px.
     // The weight axis stops at 800: asking for 900 returns 800 unchanged,
     // so Black is still out of reach and this row runs one step light.
-    note: 'display opsz · 800, axis max',
+    note: 'Degular Display 800 — the family maximum, a production candidate in its own right, not a stand-in for Black',
   },
   {
     family: 'roc-grotesk-variable',
     weight: 800,
     kit: true,
-    variation: '"wdth" 126',
+    variation: "'wdth' 126",
     // Width calibration against the static cuts: compressed 58, condensed 80,
     // normal 104, wide 126, extrawide ~150. 126 is the Wide cut.
-    note: 'wide axis · extrabold',
+    note: 'Roc Grotesk Wide ExtraBold — wdth 126 = the Wide cut',
   },
   {
     family: 'obviously-variable',
     weight: 900,
     kit: true,
-    variation: '"wdth" 100',
+    variation: "'wdth' 100",
     // Obviously maps exactly: compressed 50, condensed 60, narrow 80,
     // normal 100, wide 150, extended 200. Normal Black is reachable as asked.
-    note: 'normal width · black',
+    note: 'Obviously Normal Black — wdth 100 = the Normal cut',
   },
 ];
 
@@ -107,8 +116,9 @@ const ORDER = [7, 3, 0, 8, 5, 1, 6, 4, 2];
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
 
-async function fetchFace(family, weight) {
-  const url = `https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@${weight}&display=block`;
+async function fetchFace(family, weight, axis) {
+  const spec = axis ?? `wght@${weight}`;
+  const url = `https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:${spec}&display=block`;
   const res = await fetch(url, { headers: { 'User-Agent': UA } });
   if (!res.ok) throw new Error(`Google Fonts ${res.status} for ${family} ${weight}`);
   const css = await res.text();
@@ -138,7 +148,7 @@ async function prepare(entries, prefix) {
       out.push({ ...e, code, cssFamily: code, css: `@font-face{font-family:'${code}';src:${srcs};font-weight:${e.weight}}` });
       console.log(`  local   ${e.family} ${e.weight}`);
     } else {
-      const b64 = await fetchFace(e.family, e.weight);
+      const b64 = await fetchFace(e.family, e.weight, e.googleAxis);
       out.push({
         ...e,
         code,
@@ -153,19 +163,119 @@ async function prepare(entries, prefix) {
   return out;
 }
 
+/**
+ * Measured ink height per face, by rasterising and counting pixels.
+ *
+ * Every cheaper route fails on these candidates. Canvas TextMetrics ignores
+ * font-variation-settings, so the three kit faces would measure at their
+ * default instance; the kit's own woff2 URLs answer 400 to a direct fetch, so
+ * they cannot be re-declared with a variation descriptor; and SVG getBBox
+ * returns the em box rather than the ink, and did not pick up the variations
+ * either. Screenshot and count.
+ *
+ * Returns ink height in CSS px at font-size 200, which scales linearly, so one
+ * measurement per face sizes every row.
+ */
+async function measureInk(browser, fontFaces, faces) {
+  return measureAt(browser, fontFaces, faces, () => 200);
+}
+
+async function measureAt(browser, fontFaces, faces, sizeFor) {
+  const page = await browser.newPage({ viewport: { width: 2600, height: 400 }, deviceScaleFactor: 1 });
+  const probes = faces
+    .map(
+      (f) =>
+        `<div class="p" data-code="${f.code}" style="font-size:${sizeFor(f).toFixed(3)}px;` +
+        `font-family:'${f.cssFamily}';font-weight:${f.weight};` +
+        `font-optical-sizing:none${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</div>`,
+    )
+    .join('');
+
+  await page.setContent(
+    `<link rel="stylesheet" href="${TYPEKIT}"><style>
+     *{margin:0;padding:0}
+     body{background:#000;width:2600px}
+     .p{color:#fff;line-height:2.4;white-space:nowrap;height:520px;display:flex;align-items:center}
+     </style>${probes}`,
+    { waitUntil: 'networkidle' },
+  );
+  await page.evaluate(() => document.fonts.ready);
+
+  const boxes = await page.evaluate(() =>
+    [...document.querySelectorAll('.p')].map((el) => {
+      const r = el.getBoundingClientRect();
+      return { code: el.dataset.code, top: Math.round(r.top), bottom: Math.round(r.bottom) };
+    }),
+  );
+
+  await page.setViewportSize({ width: 2600, height: await page.evaluate(() => document.body.scrollHeight) });
+  const shot = (await page.screenshot({ fullPage: true })).toString('base64');
+  await page.close();
+
+  // Scan the raster back inside a page, since decoding a PNG here would mean
+  // a new dependency for something the browser already does.
+  const scanner = await browser.newPage();
+  await scanner.setContent('<canvas id=c></canvas>');
+  const ink = await scanner.evaluate(
+    async ([b64, boxes]) => {
+      const img = new Image();
+      img.src = 'data:image/png;base64,' + b64;
+      await img.decode();
+      const cv = document.getElementById('c');
+      cv.width = img.width;
+      cv.height = img.height;
+      const ctx = cv.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0);
+      const d = ctx.getImageData(0, 0, cv.width, cv.height).data;
+      const out = {};
+      for (const b of boxes) {
+        let first = null, last = null;
+        for (let y = Math.max(0, b.top); y < Math.min(cv.height, b.bottom); y++) {
+          let lit = false;
+          for (let x = 0; x < cv.width; x++) {
+            if (d[(y * cv.width + x) * 4] > 40) { lit = true; break; }
+          }
+          if (lit) { if (first === null) first = y; last = y; }
+        }
+        out[b.code] = first === null ? null : last - first + 1;
+      }
+      return out;
+    },
+    [shot, boxes],
+  );
+  await scanner.close();
+
+  const blank = Object.entries(ink).filter(([, v]) => !v).map(([k]) => k);
+  if (blank.length) throw new Error(`No ink found for: ${blank.join(', ')}`);
+  return ink;
+}
+
+/** Ink height of each face as actually rendered at `target`. */
+async function measureRow(browser, fontFaces, faces, target) {
+  return measureAt(browser, fontFaces, faces, (f) => (200 * target) / f.ink200);
+}
+
 async function main() {
   const blind = ORDER.map((i) => CANDIDATES[i]);
   const prepared = await prepare(blind, 'N');
   const controls = await prepare(CONTROLS, 'CTRL');
 
   const fontFaces = [...prepared, ...controls].map((f) => f.css).join('\n');
-  const html = sheet(prepared, controls, fontFaces);
 
   mkdirSync(OUT, { recursive: true });
+  const browser = await chromium.launch();
+
+  const ink = await measureInk(browser, fontFaces, [...prepared, ...controls]);
+  for (const f of [...prepared, ...controls]) f.ink200 = ink[f.code];
+  console.log(
+    '  ink@200px: ' +
+      [...prepared, ...controls].map((f) => `${f.code}=${f.ink200}`).join(' '),
+  );
+
+  const html = sheet(prepared, controls, fontFaces);
   const tmp = join(OUT, '_round2.html');
   writeFileSync(tmp, html);
 
-  const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 2 });
   await page.goto(pathToFileURL(tmp).href, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
@@ -211,6 +321,41 @@ async function main() {
     throw new Error('Two faces measure identically — at least one resolved to a shared fallback');
   }
 
+  // The sheet claims equal ink height and applied axis values. Check both on
+  // the rendered page rather than trusting the string that was written: a
+  // double quote inside style="" once terminated the attribute early, which
+  // dropped font-size and left four rows at the inherited 16px while the
+  // banner still said "normalised".
+  const applied = await page.evaluate(() =>
+    [...document.querySelectorAll('.hdr span')].map((el) => ({
+      size: parseFloat(getComputedStyle(el).fontSize),
+      axes: getComputedStyle(el).fontVariationSettings,
+    })),
+  );
+  const unsized = applied.filter((a) => !a.size || a.size === 16);
+  if (unsized.length) throw new Error(`${unsized.length} rows never received a computed font-size`);
+
+  const wantAxes = [...prepared, ...controls].filter((f) => f.variation).length;
+  const gotAxes = applied.filter((a) => a.axes && a.axes !== 'normal').length;
+  if (gotAxes < wantAxes) {
+    throw new Error(`${wantAxes - gotAxes} rows lost their font-variation-settings`);
+  }
+
+  // Re-measure the header row as rendered. Scaling from one measurement
+  // assumes ink is linear in font-size, and it was not: with the default
+  // font-optical-sizing:auto, Chromium re-derived opsz from font-size and the
+  // Degular row came out 46px against a 40px target.
+  const rendered = await measureRow(browser, fontFaces, [...prepared, ...controls], TARGETS.hdr);
+  const off = Object.entries(rendered).filter(([, v]) => Math.abs(v - TARGETS.hdr) > 2);
+  if (off.length) {
+    throw new Error(
+      `Rows are not normalised: ${off.map(([k, v]) => `${k}=${v}px vs ${TARGETS.hdr}`).join(', ')}`,
+    );
+  }
+  console.log(
+    `  verified ink@header: ${Object.entries(rendered).map(([k, v]) => `${k}=${v}`).join(' ')}`,
+  );
+
   const h = await page.evaluate(() => document.body.scrollHeight);
   await page.setViewportSize({ width: 1400, height: h });
   await page.screenshot({ path: join(OUT, 'round2.png') });
@@ -223,8 +368,10 @@ async function main() {
       {
         note: 'Blind key for round 2. Do not open until the sheet has been judged. Controls are labelled on the sheet already.',
         kerning: 'native — no algorithmic correction applied',
-        weightCaveat:
-          'degular-variable weight axis stops at 800, so Degular Black (900) is unreachable and that row runs one step light. Obviously and Roc Grotesk are at their specified weights.',
+        degular:
+          'degular-variable tops out at wght 800, so this row is Degular Display 800 — the family maximum, judged as itself rather than as an approximation of Black. Obviously and Roc Grotesk are at their specified weights.',
+        normalisation:
+          'Every row is scaled so the word measures equal ink height: 40px desktop header, 30px mobile, 15px watermark, 32px apparel. Measured by rasterising and counting lit pixel rows, because canvas TextMetrics ignores font-variation-settings and the kit woff2 URLs answer 400 to a direct fetch.',
         axisCalibration: {
           method: 'variable axis values matched by measuring against the kit static cuts at 700',
           'degular opsz': '68 = static degular-display (0.1px), 14 = degular, 6 = degular-text',
@@ -237,6 +384,7 @@ async function main() {
           weight: f.weight,
           variation: f.variation ?? null,
           note: f.note ?? null,
+          inkAt200px: f.ink200,
         })),
         controls: controls.map((f) => ({ code: f.code, family: f.family, weight: f.weight })),
         blocked: BLOCKED.map(([name, why]) => ({ name, why })),
@@ -248,16 +396,26 @@ async function main() {
   console.log('✓ round2-KEY.json (sealed)');
 }
 
+// Ink heights, not font sizes. The live site constrains the logo image to a
+// height, so equal font-size hands extra presence to whichever face has the
+// larger x-height — which is exactly the bias this sheet exists to avoid.
+const TARGETS = { hdr: 40, mob: 30, wm: 15, app: 32 };
+
 function sheet(blind, controls, fontFaces) {
+  const typeCss = (f, targetInk) =>
+    `font-size:${((200 * targetInk) / f.ink200).toFixed(3)}px;` +
+    `font-family:'${f.cssFamily}';font-weight:${f.weight};font-optical-sizing:none` +
+    (f.variation ? `;font-variation-settings:${f.variation}` : '');
+
   // font-kerning:normal and no letter-spacing anywhere — this round is about
   // what the faces do untouched.
   const row = (f, label) => `
   <div class="row">
-    <div class="code">${label}${f.note ? `<br><span class="n">${f.note}</span>` : ''}</div>
-    <div class="cell hdr"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</span></div>
-    <div class="cell mob"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</span></div>
-    <div class="cell shot"><span class="wm" style="font-family:'${f.cssFamily}';font-weight:${f.weight}${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</span></div>
-    <div class="cell app"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</span></div>
+    <div class="code">${label}</div>
+    <div class="cell hdr"><span style="${typeCss(f, TARGETS.hdr)}">${WORD}</span></div>
+    <div class="cell mob"><span style="${typeCss(f, TARGETS.mob)}">${WORD}</span></div>
+    <div class="cell shot"><span class="wm" style="${typeCss(f, TARGETS.wm)}">${WORD}</span></div>
+    <div class="cell app"><span style="${typeCss(f, TARGETS.app)}">${WORD}</span></div>
   </div>`;
 
   const blockedRows = BLOCKED.map(
@@ -285,16 +443,16 @@ h1{color:${YELLOW};font-size:22px;margin-bottom:4px}
 .n{font-size:9px;opacity:.55}
 .cell{flex:none;display:flex;align-items:center;font-kerning:normal;letter-spacing:normal}
 .hdr{width:300px}
-.hdr span{font-size:40px;color:${YELLOW};line-height:1}
+.hdr span{color:${YELLOW};line-height:1}
 .mob{width:215px}
-.mob span{font-size:30px;color:${YELLOW};line-height:1}
+.mob span{color:${YELLOW};line-height:1}
 .shot{width:272px;height:84px;border-radius:6px;overflow:hidden;position:relative;
   background:linear-gradient(115deg,#3d4a58,#6b7a63 40%,#242a31 75%,#4a4038);
   align-items:flex-end;justify-content:flex-end;padding:9px 11px}
-.wm{font-size:15px;color:#fff;opacity:.75;line-height:1}
+.wm{color:#fff;opacity:.75;line-height:1}
 .app{width:250px;height:74px;border-radius:6px;background:${GARMENT_LIGHT};
   align-items:center;justify-content:center}
-.app span{font-size:30px;color:${INK};line-height:1}
+.app span{color:${INK};line-height:1}
 .strip{margin-top:30px;border-top:1px dashed #33333c;padding-top:22px}
 .strip h2{font-size:14px;color:#8a8a93;font-weight:400;margin-bottom:6px}
 .snote{font-size:12px;opacity:.5;margin-bottom:14px;line-height:1.5}
@@ -308,18 +466,17 @@ h1{color:${YELLOW};font-size:22px;margin-bottom:4px}
   more than twice as tight as c-k. Equal area is not equal rhythm — correct by eye, after finalists.
 </div>
 <div class="warn">
-  <strong>One row still runs a weight light.</strong> The kit's variable cuts unlock the real weights, and their
-  axis values were calibrated against the kit's own static families rather than guessed &mdash; Obviously Normal Black
-  and Roc Grotesk Wide ExtraBold are now exactly as specified. Degular is not: its weight axis stops at 800, and
-  asking for 900 returns 800 unchanged.
-  ${blockedRows}
-  <div style="margin-top:10px;opacity:.8">Axis values in use: degular <code>opsz 68</code> (= static Display, matched to 0.1px), roc-grotesk <code>wdth 126</code> (= Wide), obviously <code>wdth 100</code> (= Normal).</div>
+  <strong>Sizes are normalised by measured ink height, not font-size.</strong> The live site constrains the logo to a
+  height, so every row below is scaled until the word measures the same number of pixels tall &mdash; 40px desktop
+  header, 30px mobile, 15px watermark, 32px apparel. Native kerning, no optical correction.
+  Provenance, axis values and per-face caveats are in the sealed key, not here.
+</div>
 </div>
 <div class="head">
-  <div style="width:300px">header · 40px desktop</div>
-  <div style="width:215px">header · 30px mobile</div>
-  <div style="width:272px">watermark</div>
-  <div style="width:250px">one-colour apparel</div>
+  <div style="width:300px">header · 40px ink</div>
+  <div style="width:215px">mobile · 30px ink</div>
+  <div style="width:272px">watermark · 15px ink</div>
+  <div style="width:250px">apparel · 32px ink</div>
 </div>
 ${blind.map((f) => row(f, f.code)).join('')}
 <section class="strip">

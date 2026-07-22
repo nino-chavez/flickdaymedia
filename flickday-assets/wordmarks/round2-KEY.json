@@ -1,7 +1,8 @@
 {
   "note": "Blind key for round 2. Do not open until the sheet has been judged. Controls are labelled on the sheet already.",
   "kerning": "native — no algorithmic correction applied",
-  "weightCaveat": "degular-variable weight axis stops at 800, so Degular Black (900) is unreachable and that row runs one step light. Obviously and Roc Grotesk are at their specified weights.",
+  "degular": "degular-variable tops out at wght 800, so this row is Degular Display 800 — the family maximum, judged as itself rather than as an approximation of Black. Obviously and Roc Grotesk are at their specified weights.",
+  "normalisation": "Every row is scaled so the word measures equal ink height: 40px desktop header, 30px mobile, 15px watermark, 32px apparel. Measured by rasterising and counting lit pixel rows, because canvas TextMetrics ignores font-variation-settings and the kit woff2 URLs answer 400 to a direct fetch.",
   "axisCalibration": {
     "method": "variable axis values matched by measuring against the kit static cuts at 700",
     "degular opsz": "68 = static degular-display (0.1px), 14 = degular, 6 = degular-text",
@@ -13,64 +14,73 @@
       "code": "N-01",
       "family": "roc-grotesk-variable",
       "weight": 800,
-      "variation": "\"wdth\" 126",
-      "note": "wide axis · extrabold"
+      "variation": "'wdth' 126",
+      "note": "Roc Grotesk Wide ExtraBold — wdth 126 = the Wide cut",
+      "inkAt200px": 191
     },
     {
       "code": "N-02",
       "family": "Bricolage Grotesque",
       "weight": 800,
       "variation": null,
-      "note": null
+      "note": null,
+      "inkAt200px": 181
     },
     {
       "code": "N-03",
       "family": "Sora",
       "weight": 800,
       "variation": null,
-      "note": "round-1 baseline"
+      "note": "round-1 baseline",
+      "inkAt200px": 181
     },
     {
       "code": "N-04",
       "family": "obviously-variable",
       "weight": 900,
-      "variation": "\"wdth\" 100",
-      "note": "normal width · black"
+      "variation": "'wdth' 100",
+      "note": "Obviously Normal Black — wdth 100 = the Normal cut",
+      "inkAt200px": 191
     },
     {
       "code": "N-05",
       "family": "Syne",
       "weight": 800,
       "variation": null,
-      "note": "boundary candidate"
+      "note": "boundary candidate",
+      "inkAt200px": 181
     },
     {
       "code": "N-06",
       "family": "Avenir Next",
       "weight": 900,
       "variation": null,
-      "note": "historical control — modular-set base"
+      "note": "historical control — modular-set base",
+      "inkAt200px": 181
     },
     {
       "code": "N-07",
       "family": "degular-variable",
       "weight": 800,
-      "variation": "\"opsz\" 68",
-      "note": "display opsz · 800, axis max"
+      "variation": "'opsz' 68",
+      "note": "Degular Display 800 — the family maximum, a production candidate in its own right, not a stand-in for Black",
+      "inkAt200px": 160
     },
     {
       "code": "N-08",
       "family": "Anybody",
       "weight": 800,
-      "variation": null,
-      "note": "restrained width"
+      "variation": "'wdth' 100",
+      "note": "wdth 100 (normal), wght 800",
+      "inkAt200px": 181
     },
     {
       "code": "N-09",
       "family": "Schibsted Grotesk",
       "weight": 900,
       "variation": null,
-      "note": null
+      "note": null,
+      "inkAt200px": 181
     }
   ],
   "controls": [
