@@ -1,60 +1,75 @@
 {
   "note": "Blind key for round 2. Do not open until the sheet has been judged. Controls are labelled on the sheet already.",
   "kerning": "native — no algorithmic correction applied",
-  "weightCaveat": "degular-display, roc-grotesk-wide and obviously render at 700 because kit tgm3xnd serves 400/700 only. They compete a weight light.",
+  "weightCaveat": "degular-variable weight axis stops at 800, so Degular Black (900) is unreachable and that row runs one step light. Obviously and Roc Grotesk are at their specified weights.",
+  "axisCalibration": {
+    "method": "variable axis values matched by measuring against the kit static cuts at 700",
+    "degular opsz": "68 = static degular-display (0.1px), 14 = degular, 6 = degular-text",
+    "roc-grotesk wdth": "58 compressed, 80 condensed, 104 normal, 126 wide, ~150 extrawide",
+    "obviously wdth": "50 compressed, 60 condensed, 80 narrow, 100 normal, 150 wide, 200 extended"
+  },
   "blind": [
     {
       "code": "N-01",
-      "family": "roc-grotesk-wide",
-      "weight": 700,
-      "note": "kit serves 700 only"
+      "family": "roc-grotesk-variable",
+      "weight": 800,
+      "variation": "\"wdth\" 126",
+      "note": "wide axis · extrabold"
     },
     {
       "code": "N-02",
       "family": "Bricolage Grotesque",
       "weight": 800,
+      "variation": null,
       "note": null
     },
     {
       "code": "N-03",
       "family": "Sora",
       "weight": 800,
+      "variation": null,
       "note": "round-1 baseline"
     },
     {
       "code": "N-04",
-      "family": "obviously",
-      "weight": 700,
-      "note": "kit serves 700 only"
+      "family": "obviously-variable",
+      "weight": 900,
+      "variation": "\"wdth\" 100",
+      "note": "normal width · black"
     },
     {
       "code": "N-05",
       "family": "Syne",
       "weight": 800,
+      "variation": null,
       "note": "boundary candidate"
     },
     {
       "code": "N-06",
       "family": "Avenir Next",
       "weight": 900,
+      "variation": null,
       "note": "historical control — modular-set base"
     },
     {
       "code": "N-07",
-      "family": "degular-display",
-      "weight": 700,
-      "note": "kit serves 700 only"
+      "family": "degular-variable",
+      "weight": 800,
+      "variation": "\"opsz\" 68",
+      "note": "display opsz · 800, axis max"
     },
     {
       "code": "N-08",
       "family": "Anybody",
       "weight": 800,
+      "variation": null,
       "note": "restrained width"
     },
     {
       "code": "N-09",
       "family": "Schibsted Grotesk",
       "weight": 900,
+      "variation": null,
       "note": null
     }
   ],
@@ -78,15 +93,7 @@
   "blocked": [
     {
       "name": "Degular Display Black (900)",
-      "why": "kit tgm3xnd serves 400/700 only — rendering at 700"
-    },
-    {
-      "name": "Roc Grotesk Wide ExtraBold (800)",
-      "why": "kit tgm3xnd serves 400/700 only — rendering at 700"
-    },
-    {
-      "name": "Obviously Normal Black (900)",
-      "why": "kit tgm3xnd serves 400/700 only — rendering at 700"
+      "why": "degular-variable weight axis stops at 800 — rendering at 800"
     }
   ]
 }

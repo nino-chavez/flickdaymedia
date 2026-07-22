@@ -52,25 +52,46 @@ const CANDIDATES = [
   { family: 'Bricolage Grotesque', weight: 800 },
   { family: 'Anybody', weight: 800, note: 'restrained width' },
   { family: 'Syne', weight: 800, note: 'boundary candidate' },
-  { family: 'degular-display', weight: 700, kit: true, note: 'kit serves 700 only' },
-  { family: 'roc-grotesk-wide', weight: 700, kit: true, note: 'kit serves 700 only' },
-  { family: 'obviously', weight: 700, kit: true, note: 'kit serves 700 only' },
+  // Variable cuts, with axis values calibrated against the kit's own static
+  // width and optical-size families rather than guessed. Static cuts serve
+  // 400/700 only, so the variables are the only route to these weights.
+  {
+    family: 'degular-variable',
+    weight: 800,
+    kit: true,
+    variation: '"opsz" 68',
+    // opsz 68 reproduces static degular-display at 700 to within 0.1px.
+    // The weight axis stops at 800: asking for 900 returns 800 unchanged,
+    // so Black is still out of reach and this row runs one step light.
+    note: 'display opsz · 800, axis max',
+  },
+  {
+    family: 'roc-grotesk-variable',
+    weight: 800,
+    kit: true,
+    variation: '"wdth" 126',
+    // Width calibration against the static cuts: compressed 58, condensed 80,
+    // normal 104, wide 126, extrawide ~150. 126 is the Wide cut.
+    note: 'wide axis · extrabold',
+  },
+  {
+    family: 'obviously-variable',
+    weight: 900,
+    kit: true,
+    variation: '"wdth" 100',
+    // Obviously maps exactly: compressed 50, condensed 60, narrow 80,
+    // normal 100, wide 150, extended 200. Normal Black is reachable as asked.
+    note: 'normal width · black',
+  },
 ];
 
-// Adobe Fonts kit. The three families are in it, but it is configured with
-// 400 and 700 only — asking for 900 silently returns the 700 face, verified
-// by measuring: degular-display at 700 and at 900 come back the same width.
-// So they compete a weight light against 800/900 rivals, which is a handicap
-// on weight rather than on the typeface.
 const TYPEKIT = 'https://use.typekit.net/tgm3xnd.css';
 
 // Requested, and not renderable here. Named on the sheet rather than quietly
 // dropped, because a missing candidate looks identical to a candidate that
 // lost.
 const BLOCKED = [
-  ['Degular Display Black (900)', 'kit tgm3xnd serves 400/700 only — rendering at 700'],
-  ['Roc Grotesk Wide ExtraBold (800)', 'kit tgm3xnd serves 400/700 only — rendering at 700'],
-  ['Obviously Normal Black (900)', 'kit tgm3xnd serves 400/700 only — rendering at 700'],
+  ['Degular Display Black (900)', 'degular-variable weight axis stops at 800 — rendering at 800'],
 ];
 
 // Labelled, below the blind rows. Not competing.
@@ -154,23 +175,33 @@ async function main() {
   // set that silently collapsed onto one shared fallback.
   const report = await page.evaluate(
     ([word, codes]) => {
-      const measure = (fam) => {
+      const measure = (fam, variation) => {
         const el = document.createElement('span');
         el.textContent = word;
-        el.style.cssText = `position:absolute;visibility:hidden;font:${fam}`;
+        el.style.cssText =
+          `position:absolute;visibility:hidden;font:${fam}` +
+          (variation ? `;font-variation-settings:${variation}` : '');
         document.body.appendChild(el);
         const w = el.getBoundingClientRect().width;
         el.remove();
         return w;
       };
-      const control = measure('200px serif');
-      return codes.map(({ code, family, weight }) => ({
+      const control = measure('200px serif', '');
+      return codes.map(({ code, family, weight, variation }) => ({
         code,
-        width: measure(`${weight} 200px '${family}',serif`),
+        width: measure(`${weight} 200px '${family}',serif`, variation),
         control,
       }));
     },
-    [WORD, [...prepared, ...controls].map((f) => ({ code: f.code, family: f.cssFamily, weight: f.weight }))],
+    [
+      WORD,
+      [...prepared, ...controls].map((f) => ({
+        code: f.code,
+        family: f.cssFamily,
+        weight: f.weight,
+        variation: f.variation ?? '',
+      })),
+    ],
   );
 
   const fellBack = report.filter((r) => Math.abs(r.width - r.control) < 0.5).map((r) => r.code);
@@ -193,8 +224,20 @@ async function main() {
         note: 'Blind key for round 2. Do not open until the sheet has been judged. Controls are labelled on the sheet already.',
         kerning: 'native — no algorithmic correction applied',
         weightCaveat:
-          'degular-display, roc-grotesk-wide and obviously render at 700 because kit tgm3xnd serves 400/700 only. They compete a weight light.',
-        blind: prepared.map((f) => ({ code: f.code, family: f.family, weight: f.weight, note: f.note ?? null })),
+          'degular-variable weight axis stops at 800, so Degular Black (900) is unreachable and that row runs one step light. Obviously and Roc Grotesk are at their specified weights.',
+        axisCalibration: {
+          method: 'variable axis values matched by measuring against the kit static cuts at 700',
+          'degular opsz': '68 = static degular-display (0.1px), 14 = degular, 6 = degular-text',
+          'roc-grotesk wdth': '58 compressed, 80 condensed, 104 normal, 126 wide, ~150 extrawide',
+          'obviously wdth': '50 compressed, 60 condensed, 80 narrow, 100 normal, 150 wide, 200 extended',
+        },
+        blind: prepared.map((f) => ({
+          code: f.code,
+          family: f.family,
+          weight: f.weight,
+          variation: f.variation ?? null,
+          note: f.note ?? null,
+        })),
         controls: controls.map((f) => ({ code: f.code, family: f.family, weight: f.weight })),
         blocked: BLOCKED.map(([name, why]) => ({ name, why })),
       },
@@ -211,10 +254,10 @@ function sheet(blind, controls, fontFaces) {
   const row = (f, label) => `
   <div class="row">
     <div class="code">${label}${f.note ? `<br><span class="n">${f.note}</span>` : ''}</div>
-    <div class="cell hdr"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}">${WORD}</span></div>
-    <div class="cell mob"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}">${WORD}</span></div>
-    <div class="cell shot"><span class="wm" style="font-family:'${f.cssFamily}';font-weight:${f.weight}">${WORD}</span></div>
-    <div class="cell app"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}">${WORD}</span></div>
+    <div class="cell hdr"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</span></div>
+    <div class="cell mob"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</span></div>
+    <div class="cell shot"><span class="wm" style="font-family:'${f.cssFamily}';font-weight:${f.weight}${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</span></div>
+    <div class="cell app"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</span></div>
   </div>`;
 
   const blockedRows = BLOCKED.map(
@@ -265,12 +308,12 @@ h1{color:${YELLOW};font-size:22px;margin-bottom:4px}
   more than twice as tight as c-k. Equal area is not equal rhythm — correct by eye, after finalists.
 </div>
 <div class="warn">
-  <strong>Three rows compete a weight light.</strong> The Typekit kit carries all three families but is configured
-  with 400 and 700 only — asking for 900 silently returns the 700 face, verified by measuring
-  (degular-display at 700 and at 900 come back byte-identical in width). Their rows are marked
-  &ldquo;kit serves 700 only&rdquo;, so a loss on weight there is the kit's, not the typeface's.
+  <strong>One row still runs a weight light.</strong> The kit's variable cuts unlock the real weights, and their
+  axis values were calibrated against the kit's own static families rather than guessed &mdash; Obviously Normal Black
+  and Roc Grotesk Wide ExtraBold are now exactly as specified. Degular is not: its weight axis stops at 800, and
+  asking for 900 returns 800 unchanged.
   ${blockedRows}
-  <div style="margin-top:10px;opacity:.8">Add Black / ExtraBold to kit <code>tgm3xnd</code> in Adobe Fonts, then re-run — the sheet picks up whatever the kit serves.</div>
+  <div style="margin-top:10px;opacity:.8">Axis values in use: degular <code>opsz 68</code> (= static Display, matched to 0.1px), roc-grotesk <code>wdth 126</code> (= Wide), obviously <code>wdth 100</code> (= Normal).</div>
 </div>
 <div class="head">
   <div style="width:300px">header · 40px desktop</div>
