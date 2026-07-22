@@ -1,0 +1,73 @@
+{
+  "note": "Blind key for round 2. Do not open until the sheet has been judged. Controls are labelled on the sheet already.",
+  "kerning": "native — no algorithmic correction applied",
+  "blind": [
+    {
+      "code": "N-01",
+      "family": "Bricolage Grotesque",
+      "weight": 800,
+      "note": null
+    },
+    {
+      "code": "N-02",
+      "family": "Sora",
+      "weight": 800,
+      "note": "round-1 baseline"
+    },
+    {
+      "code": "N-03",
+      "family": "Syne",
+      "weight": 800,
+      "note": "boundary candidate"
+    },
+    {
+      "code": "N-04",
+      "family": "Avenir Next",
+      "weight": 900,
+      "note": "historical control — modular-set base"
+    },
+    {
+      "code": "N-05",
+      "family": "Anybody",
+      "weight": 800,
+      "note": "restrained width"
+    },
+    {
+      "code": "N-06",
+      "family": "Schibsted Grotesk",
+      "weight": 900,
+      "note": null
+    }
+  ],
+  "controls": [
+    {
+      "code": "CTRL-01",
+      "family": "Anton",
+      "weight": 400
+    },
+    {
+      "code": "CTRL-02",
+      "family": "Barlow Condensed",
+      "weight": 700
+    },
+    {
+      "code": "CTRL-03",
+      "family": "Archivo Black",
+      "weight": 400
+    }
+  ],
+  "blocked": [
+    {
+      "name": "Degular Display Black",
+      "why": "Adobe Fonts — not activated on this machine"
+    },
+    {
+      "name": "Roc Grotesk Wide ExtraBold",
+      "why": "Adobe Fonts — not activated on this machine"
+    },
+    {
+      "name": "Obviously Normal Black",
+      "why": "Adobe Fonts — not activated on this machine"
+    }
+  ]
+}
