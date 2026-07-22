@@ -1,39 +1,58 @@
 {
   "note": "Blind key for round 2. Do not open until the sheet has been judged. Controls are labelled on the sheet already.",
   "kerning": "native — no algorithmic correction applied",
+  "weightCaveat": "degular-display, roc-grotesk-wide and obviously render at 700 because kit tgm3xnd serves 400/700 only. They compete a weight light.",
   "blind": [
     {
       "code": "N-01",
+      "family": "roc-grotesk-wide",
+      "weight": 700,
+      "note": "kit serves 700 only"
+    },
+    {
+      "code": "N-02",
       "family": "Bricolage Grotesque",
       "weight": 800,
       "note": null
     },
     {
-      "code": "N-02",
+      "code": "N-03",
       "family": "Sora",
       "weight": 800,
       "note": "round-1 baseline"
     },
     {
-      "code": "N-03",
+      "code": "N-04",
+      "family": "obviously",
+      "weight": 700,
+      "note": "kit serves 700 only"
+    },
+    {
+      "code": "N-05",
       "family": "Syne",
       "weight": 800,
       "note": "boundary candidate"
     },
     {
-      "code": "N-04",
+      "code": "N-06",
       "family": "Avenir Next",
       "weight": 900,
       "note": "historical control — modular-set base"
     },
     {
-      "code": "N-05",
+      "code": "N-07",
+      "family": "degular-display",
+      "weight": 700,
+      "note": "kit serves 700 only"
+    },
+    {
+      "code": "N-08",
       "family": "Anybody",
       "weight": 800,
       "note": "restrained width"
     },
     {
-      "code": "N-06",
+      "code": "N-09",
       "family": "Schibsted Grotesk",
       "weight": 900,
       "note": null
@@ -58,16 +77,16 @@
   ],
   "blocked": [
     {
-      "name": "Degular Display Black",
-      "why": "Adobe Fonts — not activated on this machine"
+      "name": "Degular Display Black (900)",
+      "why": "kit tgm3xnd serves 400/700 only — rendering at 700"
     },
     {
-      "name": "Roc Grotesk Wide ExtraBold",
-      "why": "Adobe Fonts — not activated on this machine"
+      "name": "Roc Grotesk Wide ExtraBold (800)",
+      "why": "kit tgm3xnd serves 400/700 only — rendering at 700"
     },
     {
-      "name": "Obviously Normal Black",
-      "why": "Adobe Fonts — not activated on this machine"
+      "name": "Obviously Normal Black (900)",
+      "why": "kit tgm3xnd serves 400/700 only — rendering at 700"
     }
   ]
 }

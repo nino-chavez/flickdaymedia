@@ -52,15 +52,25 @@ const CANDIDATES = [
   { family: 'Bricolage Grotesque', weight: 800 },
   { family: 'Anybody', weight: 800, note: 'restrained width' },
   { family: 'Syne', weight: 800, note: 'boundary candidate' },
+  { family: 'degular-display', weight: 700, kit: true, note: 'kit serves 700 only' },
+  { family: 'roc-grotesk-wide', weight: 700, kit: true, note: 'kit serves 700 only' },
+  { family: 'obviously', weight: 700, kit: true, note: 'kit serves 700 only' },
 ];
+
+// Adobe Fonts kit. The three families are in it, but it is configured with
+// 400 and 700 only — asking for 900 silently returns the 700 face, verified
+// by measuring: degular-display at 700 and at 900 come back the same width.
+// So they compete a weight light against 800/900 rivals, which is a handicap
+// on weight rather than on the typeface.
+const TYPEKIT = 'https://use.typekit.net/tgm3xnd.css';
 
 // Requested, and not renderable here. Named on the sheet rather than quietly
 // dropped, because a missing candidate looks identical to a candidate that
 // lost.
 const BLOCKED = [
-  ['Degular Display Black', 'Adobe Fonts — not activated on this machine'],
-  ['Roc Grotesk Wide ExtraBold', 'Adobe Fonts — not activated on this machine'],
-  ['Obviously Normal Black', 'Adobe Fonts — not activated on this machine'],
+  ['Degular Display Black (900)', 'kit tgm3xnd serves 400/700 only — rendering at 700'],
+  ['Roc Grotesk Wide ExtraBold (800)', 'kit tgm3xnd serves 400/700 only — rendering at 700'],
+  ['Obviously Normal Black (900)', 'kit tgm3xnd serves 400/700 only — rendering at 700'],
 ];
 
 // Labelled, below the blind rows. Not competing.
@@ -71,7 +81,7 @@ const CONTROLS = [
 ];
 
 // Fixed permutation so two runs are comparable. Changing this reshuffles.
-const ORDER = [3, 0, 5, 1, 4, 2];
+const ORDER = [7, 3, 0, 8, 5, 1, 6, 4, 2];
 
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Safari/537.36';
@@ -96,15 +106,22 @@ async function prepare(entries, prefix) {
   const out = [];
   for (const [i, e] of entries.entries()) {
     const code = `${prefix}-${String(i + 1).padStart(2, '0')}`;
-    if (e.local) {
+    if (e.kit) {
+      // Served by the linked Typekit stylesheet. Not re-hosted: embedding the
+      // binaries in a committed file would be redistribution, and the licence
+      // covers use through the kit.
+      out.push({ ...e, code, css: '', cssFamily: e.family });
+      console.log(`  kit     ${e.family} ${e.weight}`);
+    } else if (e.local) {
       const srcs = e.local.map((n) => `local('${n}')`).join(',');
-      out.push({ ...e, code, css: `@font-face{font-family:'${code}';src:${srcs};font-weight:${e.weight}}` });
+      out.push({ ...e, code, cssFamily: code, css: `@font-face{font-family:'${code}';src:${srcs};font-weight:${e.weight}}` });
       console.log(`  local   ${e.family} ${e.weight}`);
     } else {
       const b64 = await fetchFace(e.family, e.weight);
       out.push({
         ...e,
         code,
+        cssFamily: code,
         css:
           `@font-face{font-family:'${code}';font-weight:${e.weight};font-display:block;` +
           `src:url(data:font/woff2;base64,${b64}) format('woff2')}`,
@@ -129,7 +146,7 @@ async function main() {
 
   const browser = await chromium.launch();
   const page = await browser.newPage({ viewport: { width: 1400, height: 900 }, deviceScaleFactor: 2 });
-  await page.goto(pathToFileURL(tmp).href, { waitUntil: 'load' });
+  await page.goto(pathToFileURL(tmp).href, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
 
   // Two independent checks, because each has caught a different failure.
@@ -140,16 +157,20 @@ async function main() {
       const measure = (fam) => {
         const el = document.createElement('span');
         el.textContent = word;
-        el.style.cssText = `position:absolute;visibility:hidden;font-size:200px;font-family:${fam}`;
+        el.style.cssText = `position:absolute;visibility:hidden;font:${fam}`;
         document.body.appendChild(el);
         const w = el.getBoundingClientRect().width;
         el.remove();
         return w;
       };
-      const control = measure('serif');
-      return codes.map((c) => ({ code: c, width: measure(`'${c}',serif`), control }));
+      const control = measure('200px serif');
+      return codes.map(({ code, family, weight }) => ({
+        code,
+        width: measure(`${weight} 200px '${family}',serif`),
+        control,
+      }));
     },
-    [WORD, [...prepared, ...controls].map((f) => f.code)],
+    [WORD, [...prepared, ...controls].map((f) => ({ code: f.code, family: f.cssFamily, weight: f.weight }))],
   );
 
   const fellBack = report.filter((r) => Math.abs(r.width - r.control) < 0.5).map((r) => r.code);
@@ -171,6 +192,8 @@ async function main() {
       {
         note: 'Blind key for round 2. Do not open until the sheet has been judged. Controls are labelled on the sheet already.',
         kerning: 'native — no algorithmic correction applied',
+        weightCaveat:
+          'degular-display, roc-grotesk-wide and obviously render at 700 because kit tgm3xnd serves 400/700 only. They compete a weight light.',
         blind: prepared.map((f) => ({ code: f.code, family: f.family, weight: f.weight, note: f.note ?? null })),
         controls: controls.map((f) => ({ code: f.code, family: f.family, weight: f.weight })),
         blocked: BLOCKED.map(([name, why]) => ({ name, why })),
@@ -188,10 +211,10 @@ function sheet(blind, controls, fontFaces) {
   const row = (f, label) => `
   <div class="row">
     <div class="code">${label}${f.note ? `<br><span class="n">${f.note}</span>` : ''}</div>
-    <div class="cell hdr"><span style="font-family:'${f.code}'">${WORD}</span></div>
-    <div class="cell mob"><span style="font-family:'${f.code}'">${WORD}</span></div>
-    <div class="cell shot"><span class="wm" style="font-family:'${f.code}'">${WORD}</span></div>
-    <div class="cell app"><span style="font-family:'${f.code}'">${WORD}</span></div>
+    <div class="cell hdr"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}">${WORD}</span></div>
+    <div class="cell mob"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}">${WORD}</span></div>
+    <div class="cell shot"><span class="wm" style="font-family:'${f.cssFamily}';font-weight:${f.weight}">${WORD}</span></div>
+    <div class="cell app"><span style="font-family:'${f.cssFamily}';font-weight:${f.weight}">${WORD}</span></div>
   </div>`;
 
   const blockedRows = BLOCKED.map(
@@ -199,7 +222,9 @@ function sheet(blind, controls, fontFaces) {
     <div class="brow"><div class="bname">${name}</div><div class="bwhy">${why}</div></div>`,
   ).join('');
 
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+  return `<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="${TYPEKIT}">
+<style>
 *{margin:0;padding:0;box-sizing:border-box}
 ${fontFaces}
 body{background:#0f0f12;color:#fff;font-family:ui-monospace,monospace;width:1400px;padding:44px 48px}
@@ -240,9 +265,12 @@ h1{color:${YELLOW};font-size:22px;margin-bottom:4px}
   more than twice as tight as c-k. Equal area is not equal rhythm — correct by eye, after finalists.
 </div>
 <div class="warn">
-  <strong>Three requested candidates are missing, and a missing candidate looks exactly like one that lost.</strong>
+  <strong>Three rows compete a weight light.</strong> The Typekit kit carries all three families but is configured
+  with 400 and 700 only — asking for 900 silently returns the 700 face, verified by measuring
+  (degular-display at 700 and at 900 come back byte-identical in width). Their rows are marked
+  &ldquo;kit serves 700 only&rdquo;, so a loss on weight there is the kit's, not the typeface's.
   ${blockedRows}
-  <div style="margin-top:10px;opacity:.8">Activate them in the Creative Cloud desktop app and re-run this script; they will be picked up locally.</div>
+  <div style="margin-top:10px;opacity:.8">Add Black / ExtraBold to kit <code>tgm3xnd</code> in Adobe Fonts, then re-run — the sheet picks up whatever the kit serves.</div>
 </div>
 <div class="head">
   <div style="width:300px">header · 40px desktop</div>
