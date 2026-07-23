@@ -40,23 +40,14 @@ const KITS = ['https://use.typekit.net/tgm3xnd.css', 'https://use.typekit.net/fj
 const KIT_LINKS = KITS.map((u) => `<link rel="stylesheet" href="${u}">`).join('');
 
 // Gap labels, for reference: [f|l, l|i, i|c, c|k, k|d, d|a, a|y]
-// All ten survivors in the card treatment: the three finalists (Roc,
-// Schibsted, Bebas) plus the seven new-kit faces that outlived Varietta —
-// including the three I'd have cut, at Nino's call. `hand` (kd/ck) is the
-// large-size fix, `wmTrack` the small-size one at 15px. For the new-kit faces
-// the values are provisional starting points, tuned per face on the winner.
+// Eight faces. Ordered by the current design read — Config, Schibsted, Peridot
+// to advance, Roc as reserve, then the four kept for contrast. `hand` (kd/ck)
+// is the large-size fix, `wmTrack` the small-size one at 15px. Roc's kd was
+// pulled back from -0.045 (read too tight) to -0.025; Peridot from -0.035 to
+// -0.03. These are still provisional — the real tuning is the kd/ck/track
+// matrix once the field is down to the final few.
 const FACES = [
-  // --- the three finalists ---
-  {
-    id: 'roc',
-    label: 'Roc Grotesk (normal)',
-    cssFamily: 'roc-grotesk-variable',
-    weight: 800,
-    kit: true,
-    variation: "'wdth' 104",
-    hand: [0, 0, 0, 0.012, -0.045, 0, -0.01],
-    wmTrack: 0.035,
-  },
+  { id: 'config', label: 'Config 900', cssFamily: 'config-variable', weight: 900, kit: true, hand: [0, 0, 0, 0.01, -0.035, 0, 0], wmTrack: 0.03 },
   {
     id: 'schibsted',
     label: 'Schibsted Grotesk 900',
@@ -66,9 +57,17 @@ const FACES = [
     hand: [0.01, 0, 0, 0.012, -0.05, 0, 0],
     wmTrack: 0.02,
   },
-  // --- new kit (fju5pyz), heaviest instance, kd/track provisional ---
-  { id: 'config', label: 'Config 900', cssFamily: 'config-variable', weight: 900, kit: true, hand: [0, 0, 0, 0.01, -0.035, 0, 0], wmTrack: 0.03 },
-  { id: 'peridot', label: 'Peridot PE 950', cssFamily: 'peridot-pe-variable', weight: 950, kit: true, hand: [0, 0, 0, 0.01, -0.035, 0, 0], wmTrack: 0.03 },
+  { id: 'peridot', label: 'Peridot PE 950', cssFamily: 'peridot-pe-variable', weight: 950, kit: true, hand: [0, 0, 0, 0.01, -0.03, 0, 0], wmTrack: 0.03 },
+  {
+    id: 'roc',
+    label: 'Roc Grotesk (normal)',
+    cssFamily: 'roc-grotesk-variable',
+    weight: 800,
+    kit: true,
+    variation: "'wdth' 104",
+    hand: [0, 0, 0, 0.012, -0.025, 0, -0.01],
+    wmTrack: 0.035,
+  },
   { id: 'latino', label: 'Latino Gothic 100 (axis max, wide)', cssFamily: 'latino-gothic-variable', weight: 100, kit: true, hand: [0, 0, 0, 0.008, -0.03, 0, 0], wmTrack: 0.035 },
   { id: 'nextexit', label: 'Next Exit 900', cssFamily: 'nextexit-variable', weight: 900, kit: true, hand: [0, 0, 0, 0.01, -0.035, 0, 0], wmTrack: 0.03 },
   { id: 'bananas', label: 'Bananas 800 (axis max)', cssFamily: 'bananas-variable', weight: 800, kit: true, hand: [0, 0, 0, 0.01, -0.03, 0, 0], wmTrack: 0.03 },
@@ -100,20 +99,29 @@ function spans(cssFamily, weight, variation, hand) {
     .join('');
 }
 
-async function measureInk(page, faces) {
+// Ink height per face at a chosen font-size, measured by rasterising and
+// counting lit pixel rows. Runs on a DEDICATED deviceScaleFactor:1 page: the
+// box coordinates come from getBoundingClientRect (CSS px), so the screenshot
+// canvas must be 1:1 with CSS px or the scan window lands on the wrong rows —
+// which on the old dsf:2 page silently mixed each face with its neighbour and
+// halved the real sizes. Each face gets a tall, well-separated band so no
+// face's ink can bleed into another's scan window.
+async function measureAt(browser, faces, sizeFor) {
+  const page = await browser.newPage({ viewport: { width: 2000, height: 400 }, deviceScaleFactor: 1 });
   const probes = faces
     .map(
       (f) =>
-        `<div class="m" data-id="${f.id}" style="font-size:200px;font-family:'${f.cssFamily}';` +
+        `<div class="m" data-id="${f.id}" style="font-size:${sizeFor(f).toFixed(3)}px;font-family:'${f.cssFamily}';` +
         `font-weight:${f.weight};font-optical-sizing:none${f.variation ? `;font-variation-settings:${f.variation}` : ''}">${WORD}</div>`,
     )
     .join('');
   await page.setContent(
     `${KIT_LINKS}<style>${faces.map((f) => f.css ?? '').join('\n')}
-     *{margin:0;padding:0}body{background:#000}.m{color:#fff;line-height:2.4;white-space:nowrap;height:520px}</style>${probes}`,
+     *{margin:0;padding:0}body{background:#000}.m{color:#fff;line-height:3;white-space:nowrap;height:640px;display:flex;align-items:center}</style>${probes}`,
     { waitUntil: 'networkidle' },
   );
   await page.evaluate(() => document.fonts.ready);
+
   const control = await page.evaluate((w) => {
     const s = document.createElement('span');
     s.textContent = w;
@@ -141,10 +149,10 @@ async function measureInk(page, faces) {
       return { id: el.dataset.id, top: Math.round(r.top), bottom: Math.round(r.bottom) };
     }),
   );
-  const shot = (
-    await page.screenshot({ fullPage: true, clip: undefined })
-  ).toString('base64');
-  const ink = await page.evaluate(
+  const shot = (await page.screenshot({ fullPage: true })).toString('base64');
+  await page.close();
+
+  const ink = await (await browser.newPage()).evaluate(
     async ([b64, boxes]) => {
       const img = new Image();
       img.src = 'data:image/png;base64,' + b64;
@@ -177,7 +185,34 @@ async function measureInk(page, faces) {
     },
     [shot, boxes],
   );
-  return ink; // px at 200
+  return ink;
+}
+
+const measureInk = (browser, faces) => measureAt(browser, faces, () => 200);
+
+// Exact font-size each face needs to hit each target ink height. Linear
+// scaling from one 200px measurement drifts 1-2px at small sizes because the
+// antialias fringe is a near-constant pixel, not a constant fraction. Start
+// from the linear estimate, measure, correct until within a pixel.
+async function calibrateSizes(browser, faces, targets) {
+  const sizes = Object.fromEntries(faces.map((f) => [f.id, {}]));
+  for (const [name, target] of Object.entries(targets)) {
+    const est = Object.fromEntries(faces.map((f) => [f.id, (200 * target) / f.ink200]));
+    for (let pass = 0; pass < 4; pass++) {
+      const measured = await measureAt(browser, faces, (f) => est[f.id]);
+      let anyOff = false;
+      for (const f of faces) {
+        const m = measured[f.id];
+        if (Math.abs(m - target) > 1) {
+          est[f.id] *= target / m;
+          anyOff = true;
+        }
+      }
+      if (!anyOff) break;
+    }
+    for (const f of faces) sizes[f.id][name] = est[f.id];
+  }
+  return sizes;
 }
 
 async function main() {
@@ -192,15 +227,28 @@ async function main() {
 
   mkdirSync(OUT, { recursive: true });
   const browser = await chromium.launch();
-  const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2 });
 
-  const ink = await measureInk(page, FACES);
-  for (const f of FACES) f.size = (h) => (200 * h) / ink[f.id]; // font-size for ink height h
+  const ink = await measureInk(browser, FACES);
+  for (const f of FACES) f.ink200 = ink[f.id];
   console.log('  ink@200: ' + FACES.map((f) => `${f.id}=${ink[f.id]}`).join(' '));
 
+  const sizes = await calibrateSizes(browser, FACES, TARGETS);
+  for (const f of FACES) f.sizes = sizes[f.id];
+
+  // Verify each target on the calibrated sizes the sheet actually uses.
+  for (const [name, target] of Object.entries(TARGETS)) {
+    const got = await measureAt(browser, FACES, (f) => f.sizes[name]);
+    const off = Object.entries(got).filter(([, v]) => Math.abs(v - target) > 1);
+    if (off.length) {
+      throw new Error(`${name} not normalised to ${target}px: ${off.map(([k, v]) => `${k}=${v}`).join(', ')}`);
+    }
+    console.log(`  verified ${name}@${target}px: ${Object.entries(got).map(([k, v]) => `${k}=${v}`).join(' ')}`);
+  }
+
   const fontFaces = FACES.map((f) => f.css ?? '').join('\n');
-  writeFileSync(join(OUT, '_finish.html'), sheet(fontFaces));
-  await page.goto(pathToFileURL(join(OUT, '_finish.html')).href, { waitUntil: 'networkidle' });
+  const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2 });
+  writeFileSync(join(OUT, '_survivors.html'), sheet(fontFaces));
+  await page.goto(pathToFileURL(join(OUT, '_survivors.html')).href, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
 
   const h = await page.evaluate(() => document.body.scrollHeight);
@@ -210,46 +258,50 @@ async function main() {
   console.log(`✓ survivors.png  1600x${h}`);
 }
 
+// The intended-use sizes, from the live site. Used for both the sheet and the
+// post-render verification.
+const TARGETS = { header: 40, mob: 30, wm: 15, app: 32 };
+
 function sheet(fontFaces) {
-  // Large comparison (native vs hand) so the kd move is visible, then the two
-  // sizes where it actually has to hold: 40px header and 15px watermark.
-  const card = (f) => {
-    const big = (hand) =>
-      `<div class="big">${spans(f.cssFamily, f.weight, f.variation, hand)}</div>`;
-    const at = (px, hand, cls = '', track = 0) =>
-      `<div class="${cls}" style="font-size:${f.size(px).toFixed(3)}px${
-        track ? `;letter-spacing:${track}em` : ''
-      }">${spans(f.cssFamily, f.weight, f.variation, hand)}</div>`;
-    const zero = [0, 0, 0, 0, 0, 0, 0];
-    return `
-    <section class="card">
-      <h2>${f.label}<span class="hand">hand: ck ${f.hand[3] >= 0 ? '+' : ''}${f.hand[3]}em · kd ${f.hand[4]}em${
-        f.hand[0] ? ` · fl +${f.hand[0]}em` : ''
-      }${f.hand[6] ? ` · ay ${f.hand[6]}em` : ''}</span></h2>
-      <div class="cmp">
-        <div class="col"><div class="tag">native</div>${big(zero)}</div>
-        <div class="col"><div class="tag">hand-corrected</div>${big(f.hand)}</div>
-      </div>
-      <div class="uses">
-        <div class="u"><div class="tag">header 40px · native</div>${at(40, zero, 'hd')}</div>
-        <div class="u"><div class="tag">header 40px · corrected</div>${at(40, f.hand, 'hd')}</div>
-        <div class="u wm"><div class="tag">watermark 15px · native</div><div class="frame">${at(
-          15,
-          zero,
-          'w',
-        )}</div></div>
-        <div class="u wm"><div class="tag">watermark 15px · tracked +${f.wmTrack}em</div><div class="frame">${at(
-          15,
-          f.hand,
-          'w',
-          f.wmTrack,
-        )}</div></div>
-      </div>
-      <div class="app"><div class="tag dark">apparel 32px · corrected</div><div class="chip" style="font-size:${f
-        .size(32)
-        .toFixed(3)}px">${spans(f.cssFamily, f.weight, f.variation, f.hand)}</div></div>
-    </section>`;
-  };
+  // Grouped by intended use, not by font. Each use is a section listing all
+  // eight faces, so they compare side by side in that context — header against
+  // header, watermark against watermark. Production spacing throughout: kd
+  // closed, and the watermark additionally tracked. No native column here;
+  // that was for judging the fix, this is for comparing the faces in use.
+  const word = (f, target, track = 0) =>
+    `<div class="w" style="font-size:${f.sizes[target].toFixed(3)}px${
+      track ? `;letter-spacing:${track}em` : ''
+    }">${spans(f.cssFamily, f.weight, f.variation, f.hand)}</div>`;
+
+  const label = (f) => `<div class="lbl">${f.label}</div>`;
+
+  // Header (desktop + mobile) side by side per face.
+  const headerRows = FACES.map(
+    (f) => `
+    <div class="row hdr">
+      ${label(f)}
+      <div class="cell">${word(f, 'header')}</div>
+      <div class="cell">${word(f, 'mob')}</div>
+    </div>`,
+  ).join('');
+
+  // Watermark over a footage frame.
+  const wmRows = FACES.map(
+    (f) => `
+    <div class="row">
+      ${label(f)}
+      <div class="frame">${word(f, 'wm', f.wmTrack)}</div>
+    </div>`,
+  ).join('');
+
+  // One-colour apparel chip.
+  const appRows = FACES.map(
+    (f) => `
+    <div class="row">
+      ${label(f)}
+      <div class="chip">${word(f, 'app')}</div>
+    </div>`,
+  ).join('');
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8">
 ${KIT_LINKS}<style>
@@ -257,34 +309,43 @@ ${KIT_LINKS}<style>
 ${fontFaces}
 body{background:#0f0f12;color:#fff;font-family:ui-monospace,monospace;width:1600px;padding:44px 52px}
 h1{color:${YELLOW};font-size:22px;margin-bottom:6px}
-.sub{font-size:13px;opacity:.62;margin-bottom:26px;line-height:1.55;max-width:1000px}
-.card{border:1px solid #23232a;border-radius:11px;padding:24px 26px;margin-bottom:20px}
-h2{font-size:15px;color:${YELLOW};font-weight:400;margin-bottom:18px;display:flex;align-items:baseline;gap:14px}
-.hand{font-size:11px;opacity:.5;color:#fff}
-.tag{font-size:10px;opacity:.45;text-transform:uppercase;letter-spacing:.09em;margin-bottom:10px}
-.tag.dark{opacity:.55}
-.cmp{display:flex;gap:44px;padding-bottom:20px;border-bottom:1px solid #1e1e24;margin-bottom:20px}
-.col{flex:1}
-.big{font-size:92px;color:${YELLOW};line-height:1.15;white-space:nowrap}
-.uses{display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap}
-.u{flex:none}
-.hd{color:${YELLOW};line-height:1;white-space:nowrap}
-.frame{width:300px;height:169px;border-radius:6px;overflow:hidden;position:relative;
+.sub{font-size:13px;opacity:.62;margin-bottom:26px;line-height:1.55;max-width:1040px}
+h2{font-size:14px;color:${YELLOW};font-weight:400;margin:30px 0 4px}
+.shead{display:flex;gap:24px;padding:0 0 8px 260px;font-size:10px;opacity:.45;text-transform:uppercase;letter-spacing:.09em}
+.shead div{flex:none}
+.section{border-top:1px solid #2a2a31;padding-top:6px}
+.row{display:flex;align-items:center;gap:24px;border-bottom:1px solid #1d1d23;padding:14px 0}
+.row.hdr{align-items:center}
+.lbl{width:236px;flex:none;font-size:12px;opacity:.72;line-height:1.35}
+.cell{flex:none;display:flex;align-items:center}
+.w{color:${YELLOW};line-height:1;white-space:nowrap}
+.frame{width:300px;height:169px;flex:none;border-radius:6px;overflow:hidden;position:relative;
   background:linear-gradient(115deg,#3d4a58,#6b7a63 40%,#242a31 75%,#4a4038);
   display:flex;align-items:flex-end;justify-content:flex-end;padding:9px 11px}
-.w{color:#fff;opacity:.78;line-height:1;white-space:nowrap}
-.app{margin-top:20px}
-.chip{display:inline-flex;align-items:center;justify-content:center;background:${GARMENT_LIGHT};
-  color:${INK};border-radius:7px;padding:16px 26px;line-height:1;white-space:nowrap}
+.frame .w{color:#fff;opacity:.78}
+.chip{flex:none;display:inline-flex;align-items:center;justify-content:center;background:${GARMENT_LIGHT};
+  border-radius:7px;padding:16px 26px;min-width:300px}
+.chip .w{color:${INK}}
 </style></head><body>
-<h1>flickday — all ten survivors in the card treatment</h1>
+<h1>flickday — survivors, grouped by use</h1>
 <div class="sub">
-  Every face still standing: the three finalists (Roc, Schibsted, Bebas) and the seven new-kit faces that outlived
-  Varietta &mdash; including the three I read as weaker (Bananas, IvyEpic, Next Exit), kept here at your call. Each in
-  the full treatment: 92px native vs by-hand kd, then 40px header, 15px watermark (native vs tracked), 32px apparel.
-  For the new-kit faces the kd/track values are provisional starting points &mdash; tuned per face on whichever wins.
+  Eight faces, grouped by intended use so they sit side by side in each context — headers together, watermarks
+  together, apparel together. Order follows the current design read, strongest first; it is not a verdict.
+  Production spacing throughout: kd closed by hand, watermark additionally tracked. Sizes are the live site's own
+  (40/30px header, 15px watermark, 32px apparel), ink-normalised on a DPR-1 measure pass and verified after render,
+  so every specimen is its true CSS size. kd/track values are provisional; the real tuning is a per-face matrix once
+  the field narrows.
 </div>
-${FACES.map(card).join('')}
+
+<h2>Header — desktop 40px · mobile 30px</h2>
+<div class="shead"><div style="width:236px">desktop 40px</div><div>mobile 30px</div></div>
+<div class="section">${headerRows}</div>
+
+<h2>Watermark — 15px over footage</h2>
+<div class="section">${wmRows}</div>
+
+<h2>One-colour apparel — 32px</h2>
+<div class="section">${appRows}</div>
 </body></html>`;
 }
 
