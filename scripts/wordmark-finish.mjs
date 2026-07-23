@@ -36,6 +36,11 @@ const GARMENT_LIGHT = '#e8e4dc';
 const TYPEKIT = 'https://use.typekit.net/tgm3xnd.css';
 
 // Gap labels, for reference: [f|l, l|i, i|c, c|k, k|d, d|a, a|y]
+// The three that survived the finish round: Schibsted and Roc kept, Sora and
+// Apotek cut, Bebas Neue Pro pulled in. `wmTrack` is watermark-only tracking
+// in em — small text needs opening up, and Nino called out Roc's watermark as
+// reading too tight. `hand` (kd/ck) is a large-size fix; `wmTrack` is the
+// small-size one, applied only at 15px.
 const FACES = [
   {
     id: 'roc',
@@ -45,6 +50,7 @@ const FACES = [
     kit: true,
     variation: "'wdth' 104",
     hand: [0, 0, 0, 0.012, -0.045, 0, -0.01],
+    wmTrack: 0.035,
   },
   {
     id: 'schibsted',
@@ -53,14 +59,16 @@ const FACES = [
     cssFamily: null, // filled after fetch
     weight: 900,
     hand: [0.01, 0, 0, 0.012, -0.05, 0, 0],
+    wmTrack: 0.02,
   },
   {
-    id: 'sora',
-    label: 'Sora 800',
-    google: 'Sora:wght@800',
-    cssFamily: null,
-    weight: 800,
-    hand: [0, 0, 0, 0.015, -0.05, -0.01, 0],
+    id: 'bebas',
+    label: 'Bebas Neue Pro condensed 600  (kit max — pending Bold/ExtraBold)',
+    cssFamily: 'bebas-neue-pro',
+    weight: 600,
+    kit: true,
+    hand: [0, 0, 0, 0.006, -0.028, 0, 0],
+    wmTrack: 0.03,
   },
 ];
 
@@ -205,13 +213,10 @@ function sheet(fontFaces) {
   const card = (f) => {
     const big = (hand) =>
       `<div class="big">${spans(f.cssFamily, f.weight, f.variation, hand)}</div>`;
-    const at = (px, hand, cls = '') =>
-      `<div class="${cls}" style="font-size:${f.size(px).toFixed(3)}px">${spans(
-        f.cssFamily,
-        f.weight,
-        f.variation,
-        hand,
-      )}</div>`;
+    const at = (px, hand, cls = '', track = 0) =>
+      `<div class="${cls}" style="font-size:${f.size(px).toFixed(3)}px${
+        track ? `;letter-spacing:${track}em` : ''
+      }">${spans(f.cssFamily, f.weight, f.variation, hand)}</div>`;
     const zero = [0, 0, 0, 0, 0, 0, 0];
     return `
     <section class="card">
@@ -230,10 +235,11 @@ function sheet(fontFaces) {
           zero,
           'w',
         )}</div></div>
-        <div class="u wm"><div class="tag">watermark 15px · corrected</div><div class="frame">${at(
+        <div class="u wm"><div class="tag">watermark 15px · tracked +${f.wmTrack}em</div><div class="frame">${at(
           15,
           f.hand,
           'w',
+          f.wmTrack,
         )}</div></div>
       </div>
       <div class="app"><div class="tag dark">apparel 32px · corrected</div><div class="chip" style="font-size:${f
@@ -268,12 +274,12 @@ h2{font-size:15px;color:${YELLOW};font-weight:400;margin-bottom:18px;display:fle
 .chip{display:inline-flex;align-items:center;justify-content:center;background:${GARMENT_LIGHT};
   color:${INK};border-radius:7px;padding:16px 26px;line-height:1;white-space:nowrap}
 </style></head><body>
-<h1>flickday — wordmark finish: three finalists, native vs by-hand kerning</h1>
+<h1>flickday — wordmark finish: the three survivors</h1>
 <div class="sub">
-  Roc Grotesk (normal), Schibsted 900, Sora 800 — Nino's three. The only change is closing kd by hand,
-  with ck loosened a touch where it read tight. Modest, by eye, per face — far less than round 1's -0.11em.
-  Sizes are real: 92px comparison to see the move, then the 40px header and 15px watermark where it has to hold,
-  and one-colour apparel at 32px.
+  Roc Grotesk (normal), Schibsted 900, and Bebas Neue Pro condensed — Sora and Apotek cut. Two corrections:
+  kd closed by hand at large size (modest, by eye, far less than round 1's -0.11em), and watermark tracking
+  opened up at 15px where the letters were clogging — Nino flagged Roc's specifically. The Bebas row is at the
+  kit's current ceiling of 600; it re-renders heavier once Bebas Bold or ExtraBold is added to the kit.
 </div>
 ${FACES.map(card).join('')}
 </body></html>`;
