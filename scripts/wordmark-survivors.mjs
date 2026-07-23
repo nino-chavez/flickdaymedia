@@ -246,16 +246,22 @@ async function main() {
   }
 
   const fontFaces = FACES.map((f) => f.css ?? '').join('\n');
-  const page = await browser.newPage({ viewport: { width: 1600, height: 900 }, deviceScaleFactor: 2 });
+  const page = await browser.newPage({ viewport: { width: 3200, height: 900 }, deviceScaleFactor: 2 });
   writeFileSync(join(OUT, '_survivors.html'), sheet(fontFaces));
   await page.goto(pathToFileURL(join(OUT, '_survivors.html')).href, { waitUntil: 'networkidle' });
   await page.evaluate(() => document.fonts.ready);
 
-  const h = await page.evaluate(() => document.body.scrollHeight);
-  await page.setViewportSize({ width: 1600, height: h });
+  // Landscape sheet: size the viewport to the full content so the screenshot
+  // captures the whole left-to-right strip, and the height stays a MacBook
+  // viewport's worth so it fills the screen and scrolls sideways.
+  const { w, h } = await page.evaluate(() => ({
+    w: document.body.scrollWidth,
+    h: document.body.scrollHeight,
+  }));
+  await page.setViewportSize({ width: w, height: h });
   await page.screenshot({ path: join(OUT, 'survivors.png') });
   await browser.close();
-  console.log(`✓ survivors.png  1600x${h}`);
+  console.log(`✓ survivors.png  ${w}x${h}`);
 }
 
 // The intended-use sizes, from the live site. Used for both the sheet and the
@@ -263,89 +269,65 @@ async function main() {
 const TARGETS = { header: 40, mob: 30, wm: 15, app: 32 };
 
 function sheet(fontFaces) {
-  // Grouped by intended use, not by font. Each use is a section listing all
-  // eight faces, so they compare side by side in that context — header against
-  // header, watermark against watermark. Production spacing throughout: kd
-  // closed, and the watermark additionally tracked. No native column here;
-  // that was for judging the fix, this is for comparing the faces in use.
+  // Landscape: fonts are columns, intended uses are rows, sized to fill a
+  // MacBook viewport height and scroll left-to-right. Reading across any use
+  // row compares all eight faces in that context; the whole set of uses for
+  // one face is a single column. Production spacing throughout.
   const word = (f, target, track = 0) =>
     `<div class="w" style="font-size:${f.sizes[target].toFixed(3)}px${
       track ? `;letter-spacing:${track}em` : ''
     }">${spans(f.cssFamily, f.weight, f.variation, f.hand)}</div>`;
 
-  const label = (f) => `<div class="lbl">${f.label}</div>`;
+  const cols = (cellFor) => FACES.map((f) => `<div class="fc">${cellFor(f)}</div>`).join('');
 
-  // Header (desktop + mobile) side by side per face.
-  const headerRows = FACES.map(
-    (f) => `
-    <div class="row hdr">
-      ${label(f)}
-      <div class="cell">${word(f, 'header')}</div>
-      <div class="cell">${word(f, 'mob')}</div>
-    </div>`,
-  ).join('');
-
-  // Watermark over a footage frame.
-  const wmRows = FACES.map(
-    (f) => `
-    <div class="row">
-      ${label(f)}
-      <div class="frame">${word(f, 'wm', f.wmTrack)}</div>
-    </div>`,
-  ).join('');
-
-  // One-colour apparel chip.
-  const appRows = FACES.map(
-    (f) => `
-    <div class="row">
-      ${label(f)}
-      <div class="chip">${word(f, 'app')}</div>
-    </div>`,
-  ).join('');
+  const colHead = FACES.map((f) => `<div class="fc head">${f.label}</div>`).join('');
+  const headerRow = cols((f) => `<div class="dark">${word(f, 'header')}</div>`);
+  const mobRow = cols((f) => `<div class="dark">${word(f, 'mob')}</div>`);
+  const wmRow = cols((f) => `<div class="frame">${word(f, 'wm', f.wmTrack)}</div>`);
+  const appRow = cols((f) => `<div class="chip">${word(f, 'app')}</div>`);
 
   return `<!DOCTYPE html><html><head><meta charset="utf-8">
 ${KIT_LINKS}<style>
 *{margin:0;padding:0;box-sizing:border-box}
 ${fontFaces}
-body{background:#0f0f12;color:#fff;font-family:ui-monospace,monospace;width:1600px;padding:44px 52px}
-h1{color:${YELLOW};font-size:22px;margin-bottom:6px}
-.sub{font-size:13px;opacity:.62;margin-bottom:26px;line-height:1.55;max-width:1040px}
-h2{font-size:14px;color:${YELLOW};font-weight:400;margin:30px 0 4px}
-.shead{display:flex;gap:24px;padding:0 0 8px 260px;font-size:10px;opacity:.45;text-transform:uppercase;letter-spacing:.09em}
-.shead div{flex:none}
-.section{border-top:1px solid #2a2a31;padding-top:6px}
-.row{display:flex;align-items:center;gap:24px;border-bottom:1px solid #1d1d23;padding:14px 0}
-.row.hdr{align-items:center}
-.lbl{width:236px;flex:none;font-size:12px;opacity:.72;line-height:1.35}
-.cell{flex:none;display:flex;align-items:center}
-.w{color:${YELLOW};line-height:1;white-space:nowrap}
-.frame{width:300px;height:169px;flex:none;border-radius:6px;overflow:hidden;position:relative;
+body{background:#0f0f12;color:#fff;font-family:ui-monospace,monospace;width:max-content;padding:30px 34px}
+h1{color:${YELLOW};font-size:19px;margin-bottom:3px}
+.sub{font-size:12px;opacity:.6;margin-bottom:16px;line-height:1.5}
+.grid{display:flex;flex-direction:column}
+.hrow{display:flex;align-items:stretch;border-bottom:1px solid #1c1c22}
+.hrow.chead{border-bottom:1px solid #34343d}
+.rl{width:132px;flex:none;display:flex;flex-direction:column;justify-content:center;
+  font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.5;line-height:1.5;
+  border-right:1px solid #26262e;padding-right:14px}
+.fc{width:340px;flex:none;display:flex;align-items:center;padding:0 20px;border-left:1px solid #1c1c22}
+.fc.head{font-size:12px;color:${YELLOW};opacity:.85;line-height:1.3;padding-top:12px;padding-bottom:12px}
+.chead{height:54px}
+.r-header{height:150px}
+.r-mob{height:104px}
+.r-wm{height:242px}
+.r-app{height:150px}
+.dark .w,.w{color:${YELLOW};line-height:1;white-space:nowrap}
+.frame{width:300px;height:186px;border-radius:6px;overflow:hidden;position:relative;
   background:linear-gradient(115deg,#3d4a58,#6b7a63 40%,#242a31 75%,#4a4038);
   display:flex;align-items:flex-end;justify-content:flex-end;padding:9px 11px}
 .frame .w{color:#fff;opacity:.78}
-.chip{flex:none;display:inline-flex;align-items:center;justify-content:center;background:${GARMENT_LIGHT};
-  border-radius:7px;padding:16px 26px;min-width:300px}
+.chip{display:inline-flex;align-items:center;justify-content:center;background:${GARMENT_LIGHT};
+  border-radius:7px;padding:14px 22px;min-width:296px;height:104px}
 .chip .w{color:${INK}}
 </style></head><body>
-<h1>flickday — survivors, grouped by use</h1>
+<h1>flickday — survivors, by use (scroll →)</h1>
 <div class="sub">
-  Eight faces, grouped by intended use so they sit side by side in each context — headers together, watermarks
-  together, apparel together. Order follows the current design read, strongest first; it is not a verdict.
-  Production spacing throughout: kd closed by hand, watermark additionally tracked. Sizes are the live site's own
-  (40/30px header, 15px watermark, 32px apparel), ink-normalised on a DPR-1 measure pass and verified after render,
-  so every specimen is its true CSS size. kd/track values are provisional; the real tuning is a per-face matrix once
-  the field narrows.
+  Fonts across, intended uses down — read a row to compare all eight faces in one context. Order is the current
+  design read, strongest first, not a verdict. Production spacing (kd by hand, watermark tracked); every specimen
+  its true CSS size, DPR-1 measured and verified after render.
 </div>
-
-<h2>Header — desktop 40px · mobile 30px</h2>
-<div class="shead"><div style="width:236px">desktop 40px</div><div>mobile 30px</div></div>
-<div class="section">${headerRows}</div>
-
-<h2>Watermark — 15px over footage</h2>
-<div class="section">${wmRows}</div>
-
-<h2>One-colour apparel — 32px</h2>
-<div class="section">${appRows}</div>
+<div class="grid">
+  <div class="hrow chead"><div class="rl"></div>${colHead}</div>
+  <div class="hrow r-header"><div class="rl">Header<br>40px</div>${headerRow}</div>
+  <div class="hrow r-mob"><div class="rl">Mobile<br>30px</div>${mobRow}</div>
+  <div class="hrow r-wm"><div class="rl">Watermark<br>15px</div>${wmRow}</div>
+  <div class="hrow r-app"><div class="rl">Apparel<br>32px</div>${appRow}</div>
+</div>
 </body></html>`;
 }
 
