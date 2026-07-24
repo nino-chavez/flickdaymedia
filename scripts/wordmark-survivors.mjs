@@ -278,9 +278,21 @@ function sheet(fontFaces) {
       track ? `;letter-spacing:${track}em` : ''
     }">${spans(f.cssFamily, f.weight, f.variation, f.hand)}</div>`;
 
-  const cols = (cellFor) => FACES.map((f) => `<div class="fc">${cellFor(f)}</div>`).join('');
+  // One master wordmark, not a font per use. Role, not a row-winner ranking:
+  // the lower tiers are dimmed so the eye prioritises the master candidates,
+  // but nothing is cut — all eight stay on the sheet.
+  const TIER = { config: 'master', schibsted: 'challenger', peridot: 'alternative', roc: 'reserve' };
+  const tierOf = (f) => TIER[f.id] ?? 'contrast';
 
-  const colHead = FACES.map((f) => `<div class="fc head">${f.label}</div>`).join('');
+  const cols = (cellFor) =>
+    FACES.map((f) => `<div class="fc t-${tierOf(f)}">${cellFor(f)}</div>`).join('');
+
+  const colHead = FACES.map(
+    (f, i) => `<div class="fc head t-${tierOf(f)}">
+      <div class="rank">${i + 1} · ${tierOf(f).toUpperCase()}</div>
+      <div class="fname">${f.label}</div>
+    </div>`,
+  ).join('');
   const headerRow = cols((f) => `<div class="dark">${word(f, 'header')}</div>`);
   const mobRow = cols((f) => `<div class="dark">${word(f, 'mob')}</div>`);
   const wmRow = cols((f) => `<div class="frame">${word(f, 'wm', f.wmTrack)}</div>`);
@@ -292,7 +304,7 @@ ${KIT_LINKS}<style>
 ${fontFaces}
 body{background:#0f0f12;color:#fff;font-family:ui-monospace,monospace;width:max-content;padding:30px 34px}
 h1{color:${YELLOW};font-size:19px;margin-bottom:3px}
-.sub{font-size:12px;opacity:.6;margin-bottom:16px;line-height:1.5}
+.sub{font-size:12px;opacity:.6;margin-bottom:16px;line-height:1.5;max-width:1180px}
 .grid{display:flex;flex-direction:column}
 .hrow{display:flex;align-items:stretch;border-bottom:1px solid #1c1c22}
 .hrow.chead{border-bottom:1px solid #34343d}
@@ -300,8 +312,14 @@ h1{color:${YELLOW};font-size:19px;margin-bottom:3px}
   font-size:10px;text-transform:uppercase;letter-spacing:.08em;opacity:.5;line-height:1.5;
   border-right:1px solid #26262e;padding-right:14px}
 .fc{width:340px;flex:none;display:flex;align-items:center;padding:0 20px;border-left:1px solid #1c1c22}
-.fc.head{font-size:12px;color:${YELLOW};opacity:.85;line-height:1.3;padding-top:12px;padding-bottom:12px}
-.chead{height:54px}
+.fc.head{flex-direction:column;align-items:flex-start;justify-content:center;line-height:1.3;padding:10px 20px;gap:3px}
+.fc.head .rank{font-size:9px;text-transform:uppercase;letter-spacing:.1em;opacity:.6}
+.fc.head .fname{font-size:12px;color:${YELLOW}}
+/* Role tiers: master candidates full strength, the rest progressively dimmed. */
+.fc.t-reserve{opacity:.72}
+.fc.t-contrast{opacity:.46}
+.fc.head.t-master .rank{color:${YELLOW};opacity:.95}
+.chead{height:58px}
 .r-header{height:150px}
 .r-mob{height:104px}
 .r-wm{height:242px}
@@ -315,11 +333,13 @@ h1{color:${YELLOW};font-size:19px;margin-bottom:3px}
   border-radius:7px;padding:14px 22px;min-width:296px;height:104px}
 .chip .w{color:${INK}}
 </style></head><body>
-<h1>flickday — survivors, by use (scroll →)</h1>
+<h1>flickday — one master wordmark, eight candidates (scroll →)</h1>
 <div class="sub">
-  Fonts across, intended uses down — read a row to compare all eight faces in one context. Order is the current
-  design read, strongest first, not a verdict. Production spacing (kd by hand, watermark tracked); every specimen
-  its true CSS size, DPR-1 measured and verified after render.
+  Choosing ONE wordmark used across every application — standard and micro optical cuts of a single face, not a
+  different font per use. Read <b>down</b> a column: it is one face at every size, so the real test is whether its
+  <b>weakest</b> row still holds, not whoever wins a single row. Master candidates are full strength; reserve and
+  contrast faces are dimmed but kept. Production spacing (kd by hand, watermark tracked); every specimen its true
+  CSS size, DPR-1 measured and verified after render.
 </div>
 <div class="grid">
   <div class="hrow chead"><div class="rl"></div>${colHead}</div>
