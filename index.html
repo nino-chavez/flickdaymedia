@@ -30,6 +30,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Wordmark face: Peridot PE (Adobe Fonts kit) — used only for the flickday logotype -->
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/fju5pyz.css">
 
   <style>
     /* ============================================
@@ -56,6 +59,7 @@
       --font-body: 'Inter', system-ui, -apple-system, sans-serif;
       --font-label: 'JetBrains Mono', ui-monospace, monospace;
       --font-tag: 'Barlow Condensed', 'Oswald', sans-serif;
+      --font-wordmark: 'peridot-pe-variable', 'Anton', sans-serif;
 
       --transition-fast: 0.2s ease;
       --transition-medium: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -116,15 +120,26 @@
       justify-content: space-between;
     }
 
+    /* Wordmark: live Peridot text (see --font-wordmark). font-size ≈ mark height;
+       font-optical-sizing:none pins the axis exactly as the master spec renders it. */
     .site-header__logo {
-      height: 34px;
-      width: auto;
-      display: block;
+      display: inline-flex;
+      align-items: baseline;
+      font-family: var(--font-wordmark);
+      font-weight: 950;
+      font-optical-sizing: none;
+      font-size: 34px;
+      line-height: 1;
+      color: var(--yellow);
+      white-space: nowrap;
+    }
+    .site-header__logo > span {
+      display: inline-block;
     }
 
     @media (min-width: 768px) {
       .site-header__logo {
-        height: 40px;
+        font-size: 40px;
       }
     }
 
@@ -151,7 +166,7 @@
         padding: 0.75rem 1rem;
       }
       .site-header__logo {
-        height: 30px;
+        font-size: 30px;
       }
       .site-header__cta {
         padding: 0.5rem 1rem;
@@ -1427,7 +1442,8 @@
   <header class="site-header" id="site-header">
     <div class="site-header__inner">
       <a href="#hero" aria-label="Flickday Media - Back to top">
-        <img src="./flickday-assets/site/header-logo.svg?v=2" alt="Flickday Media" class="site-header__logo">
+        <!-- Live Peridot wordmark, standard optical cut (kd -0.03 / ck +0.01). Master: flickday-assets/wordmarks/WORDMARK.md -->
+        <span class="site-header__logo" role="img" aria-label="flickday"><span>f</span><span>l</span><span>i</span><span>c</span><span style="margin-left:0.01em">k</span><span style="margin-left:-0.03em">d</span><span>a</span><span>y</span></span>
       </a>
       <a href="#contact" class="site-header__cta">BOOK US</a>
     </div>
