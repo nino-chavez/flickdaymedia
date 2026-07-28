@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Flickday play mark — the standalone symbol, for use APART from the wordmark
+  (app icon, avatar, watermark bug). A rounded-square chip with the play triangle
+  knocked out (true transparent hole, so it drops onto any ground). The triangle
+  is squat/wide and nudged right so it reads optically centred.
+
+  This is not a replacement for the play-in-the-d lockup. An earlier note here
+  claimed that embed had been rejected because Peridot 950's counter was too
+  small to hold it — that was wrong, and wrong about the technique: the counter
+  is not the icon's budget, it is the thing being replaced. See
+  scripts/wordmark-symbol-study.mjs.
+
+  Colour is set by the container: fill on the path.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120"
+     role="img" aria-label="Flickday play">
+  <title>Flickday play</title>
+  <path fill="#facc15" fill-rule="evenodd" d="
+    M 26 8 H 94 A 18 18 0 0 1 112 26 V 94 A 18 18 0 0 1 94 112 H 26
+    A 18 18 0 0 1 8 94 V 26 A 18 18 0 0 1 26 8 Z
+    M 50 38 V 82 L 84 60 Z" />
+</svg>

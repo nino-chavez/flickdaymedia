@@ -43,16 +43,19 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
 
 ## Type
 
-- **Site display face:** Bebas Neue (tall, condensed, ALL-CAPS) — used for the hero and
-  headlines. `letter-spacing: ~0.02em`, `text-transform: uppercase`.
-- **Site body:** `system-ui` (the old kit claimed Inter; the site does not load it).
+- **Site display face:** Anton (`--font-display`) — used for the hero and headlines,
+  uppercase. (This line previously said Bebas Neue; `index.html` loads Anton and has
+  no Bebas. Verified 2026-07-27.)
+- **Site body:** Inter (`--font-body`, falling back to `system-ui`). The site does load
+  it — the old correction over-corrected.
+- **Site tag face:** Barlow Condensed 700 (`--font-tag`), for tags and utility labels.
 - **Overline / label / mono:** JetBrains Mono was used across prior assets for handles,
   MEDIA lockups, CTAs — a reasonable convention, not mandatory.
-- **Wordmark type is OPEN and being redesigned.** Owner preference (2026-07-05): the
-  **lowercase** logotype design works better than the Bebas all-caps wordmark — a Bebas-caps
-  wordmark swap was tried and rejected. The lowercase mark's specific typeface is unidentified
-  (a heavy rounded geometric sans, play/reel nested in the `d`); identify or choose one
-  deliberately if rebuilding it. The logo is allowed to differ from the site's headline face.
+- **Wordmark type is LOCKED: Peridot PE 950, lowercase** (2026-07-27). This prior is
+  closed — the spec, kerning, cuts and colorways live in
+  `flickday-assets/wordmarks/WORDMARK.md`, spacing in `scripts/wordmark-lib.mjs →
+  PERIDOT_CUTS`. The all-caps Bebas wordmark was tried and rejected. The logo
+  deliberately differs from the site's headline face.
 
 ## Signature ideas (motifs to draw from — not required in every asset)
 
@@ -70,11 +73,20 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
   — they print as muddy underbase), garment-aware pairs (`-dark` for dark garments = yellow/white
   ink; `-light` for light garments = dark ink), sized for ~300 DPI chest/back prints.
 - **Reels / Stories overlays:** 1080×1920, transparent where they composite over video.
+  Safe areas are harvested from `motion/flickday-overlay-kit/compositions/*.html`, the
+  only numbers in this repo validated against real posts.
 - **Social handle bug:** small pill/badge with the play mark + `@flickday.media`.
-- **OG / share card:** 1200×675.
+- **OG / share card:** **1200×630** — the size `index.html` declares. (This line said
+  1200×675; nothing shipped at that size. Verified 2026-07-27.)
 - **Favicon set:** 16/32, apple-touch 180, android 192/512, `.ico`, `site.webmanifest`.
-- **Offline rendering:** the render environment has no network — fonts must be embedded
-  (base64 woff2), never `@import`ed from Google Fonts (it hangs the load).
+- **Font loading:** the wordmark is Peridot PE, served live from the Adobe Fonts kit, so
+  the render environment **does** need network. Base64-embedding is still right for
+  Google-hosted faces that a script can fetch once (`wordmark-lib.mjs → prepareFaces`),
+  but the blanket "embed everything, never load remotely" rule predates the Peridot lock
+  and no longer holds. Never `@import` inside CSS — it hangs the load; use `<link>`.
+- **Wordmark assets ship as PNG, not SVG.** Peridot is licensed for live text; an SVG
+  would have to embed its outlines. Rasters sidestep that entirely. The SVGs in
+  `flickday-assets/brand/` are pre-Peridot and are not the locked mark.
 
 ## Working principles (lessons from the old system)
 
