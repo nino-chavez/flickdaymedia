@@ -1,0 +1,9 @@
+{
+  "duration": 4.5,
+  "maxStaticSec": 2.2,
+  "assertions": [
+    { "kind": "appearsBy", "selector": "#player-name", "bySec": 0.56 },
+    { "kind": "before", "a": "#player-name", "b": "#player-detail" },
+    { "kind": "staysInFrame", "selector": "#player-lower-third" }
+  ]
+}

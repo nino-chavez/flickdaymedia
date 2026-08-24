@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  {"id":"wordmarkSrc","type":"string","label":"Wordmark asset","default":"assets/brand/flickday-core-color.svg"},
+  {"id":"accent","type":"color","label":"Accent","default":"#FACC15"}
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Flickday Overlay Kit — Wordmark Sting</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+      .clip { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .lockup { position: absolute; left: 122px; top: 812px; width: 818px; height: 220px; display: flex; align-items: center; }
+      .seam { display: block; flex: 0 0 12px; width: 12px; height: 220px; background: var(--accent, #FACC15); transform-origin: 50% 50%; will-change: transform, opacity; }
+      .mark-window { display: block; width: 800px; height: 216px; overflow: hidden; --reveal: 100%; clip-path: inset(0 calc(100% - var(--reveal)) 0 0); will-change: transform, opacity, clip-path; }
+      .wordmark { display: block; width: 800px; height: 216px; object-fit: contain; object-position: left center; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="wordmark-sting" data-start="0" data-duration="3.2" data-width="1080" data-height="1920" data-fps="30">
+      <section id="wordmark-clip" class="clip" data-start="0" data-duration="3.2" data-track-index="1">
+        <div id="wordmark-lockup" class="lockup">
+          <i id="wordmark-seam" class="seam" aria-hidden="true"></i>
+          <div id="wordmark-window" class="mark-window">
+            <img id="wordmark" class="wordmark" data-var-src="wordmarkSrc" src="assets/brand/flickday-core-color.svg" alt="Flickday" />
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      tl.addLabel("arrive", 0.10);
+      tl.fromTo("#wordmark-seam", { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 1, duration: 0.20, ease: "power4.out" }, "arrive");
+      tl.fromTo("#wordmark-window", { "--reveal": "0%", x: 32, opacity: 0 }, { "--reveal": "100%", x: 0, opacity: 1, duration: 0.34, ease: "expo.out" }, 0.18);
+      tl.to("#wordmark-seam", { x: 18, duration: 0.08, ease: "power4.out" }, 2.48);
+      tl.to("#wordmark-seam", { x: 0, duration: 0.14, ease: "power2.out" }, 2.56);
+      tl.to("#wordmark-window", { "--reveal": "0%", x: -24, opacity: 0, duration: 0.34, ease: "power3.in" }, 2.72);
+      tl.to("#wordmark-seam", { scaleY: 0, opacity: 0, duration: 0.18, ease: "power3.in" }, 2.92);
+      window.__timelines["wordmark-sting"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,242 @@
+{
+  "version": "final-1",
+  "project": "flickday-hyperframes-pilot",
+  "category": "logo-reveal",
+  "duration_s": 3.2,
+  "fps": 30,
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "aspect": "9:16"
+  },
+  "style": "Flickday grassroots sports editorial: raw, fast, player-first, and courtside. Transparent overlays use sharp crop seams, decisive type, restrained yellow accents, and clean selected-moment timing. No broadcast chrome, glossy 3D, film nostalgia, icon soup, or novelty logo treatment.",
+  "palette": [
+    "#000000",
+    "#FACC15",
+    "#FFFFFF",
+    "#111111"
+  ],
+  "font": "Arial",
+  "beats": [
+    5,
+    14,
+    76,
+    90
+  ],
+  "export": "alpha-overlay",
+  "asset_needs": [],
+  "shot_brief": "A narrow Flickday-yellow seam cuts decisively into the transparent frame, briefly defining a selected moment before the unchanged lowercase wordmark resolves with editorial precision. The mark holds long enough to read, then the seam and wordmark clear cleanly without bloom, bounce, or a new symbol. The single dominant motion idea is the yellow seam acting as a crop edge and timing cue.",
+  "content": {
+    "logo": "assets/brand/flickday-core-color.svg",
+    "tagline": "",
+    "url": ""
+  },
+  "outputs": [
+    {
+      "id": "wordmark-sting",
+      "file": "compositions/wordmark-sting.html",
+      "category": "logo-reveal",
+      "duration_s": 3.2,
+      "fps": 30,
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "aspect": "9:16"
+      },
+      "style": "Minimal Flickday editorial lockup on transparency. The clean core wordmark is the hero; a narrow yellow seam is the only supporting graphic.",
+      "palette": [
+        "#000000",
+        "#FACC15",
+        "#FFFFFF",
+        "#111111"
+      ],
+      "font": "Arial",
+      "beats": [
+        5,
+        14,
+        76,
+        90
+      ],
+      "export": "alpha-overlay",
+      "asset_needs": [],
+      "shot_brief": "From an empty transparent frame, a narrow yellow seam snaps into place and travels just far enough to reveal the unchanged Flickday wordmark. The wordmark resolves by frame 14, holds centered with ample transparent space around it, and then exits in the seam's direction. The center remains visually light so the asset can function as an intro, outro, or momentary watermark over live action.",
+      "block": "logo-outro",
+      "customize": {
+        "reuse": "Borrow only the assembly/hold cadence; remove glow, tagline, URL pill, background field, and decorative logo pieces.",
+        "signature": "A 12px yellow editorial seam reveals the unchanged wordmark and retracts with it."
+      },
+      "layout": {
+        "wordmark_box": { "x": 140, "y": 814, "w": 800, "h": 216 },
+        "seam_box": { "x": 122, "y": 812, "w": 12, "h": 220 },
+        "safe_margin": 84
+      },
+      "variables": [
+        { "id": "wordmark", "type": "enum", "label": "Wordmark color", "default": "color", "options": [
+          { "value": "color", "label": "Warm white" },
+          { "value": "white", "label": "White" },
+          { "value": "black", "label": "Near black" }
+        ] },
+        { "id": "accent", "type": "color", "label": "Accent", "default": "#FACC15" }
+      ],
+      "motion": {
+        "0.00": "transparent empty frame",
+        "0.10": "yellow seam snaps up from scaleY 0",
+        "0.18": "wordmark begins a masked x reveal from behind the seam",
+        "0.52": "wordmark is fully resolved and sharp",
+        "2.48": "seam makes a restrained 18px selection tick",
+        "2.72": "wordmark and seam retract left",
+        "3.10": "transparent empty frame restored"
+      },
+      "proof_times": [0.0, 0.24, 0.56, 2.5, 2.96],
+      "content": {
+        "logo": "assets/brand/flickday-core-color.svg",
+        "tagline": "",
+        "url": ""
+      }
+    },
+    {
+      "id": "player-lower-third",
+      "file": "compositions/player-lower-third.html",
+      "category": "lower-thirds",
+      "duration_s": 4.5,
+      "fps": 30,
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "aspect": "9:16"
+      },
+      "style": "Compact player-first lower third with strong editorial hierarchy, sharp edges, and a restrained yellow locator seam. No panel chrome or broadcast-news framing.",
+      "palette": [
+        "#000000",
+        "#FACC15",
+        "#FFFFFF",
+        "#111111"
+      ],
+      "font": "Arial",
+      "beats": [
+        5,
+        12,
+        19,
+        82,
+        116
+      ],
+      "export": "alpha-overlay",
+      "asset_needs": [],
+      "shot_brief": "A thin yellow seam lands in the lower-left title-safe area, then exposes the player's name in assertive white type with the compact role line tucked beneath. The layout stays low and narrow to protect the point of play, pauses for clear reading, then makes one subtle selected-moment tick before wiping out along the same seam. The dominant motion is a precise horizontal crop reveal, not a sliding card.",
+      "block": null,
+      "customize": {
+        "reuse": "Hand-author the lower-thirds gap; do not borrow social-card or broadcast-panel chrome.",
+        "signature": "A narrow vertical yellow locator seam owns the reveal and exit."
+      },
+      "layout": {
+        "group_box": { "x": 84, "y": 1400, "w": 716, "h": 250 },
+        "seam_box": { "x": 84, "y": 1400, "w": 12, "h": 196 },
+        "text_box": { "x": 124, "y": 1408, "w": 650, "h": 170 },
+        "safe_margin": 84
+      },
+      "variables": [
+        { "id": "playerName", "type": "string", "label": "Player name", "default": "MAYA SANTOS", "maxLength": 24 },
+        { "id": "playerDetail", "type": "string", "label": "Player detail", "default": "12 · OUTSIDE", "maxLength": 28 },
+        { "id": "accent", "type": "color", "label": "Accent", "default": "#FACC15" },
+        { "id": "textColor", "type": "color", "label": "Text color", "default": "#FFFFFF" }
+      ],
+      "motion": {
+        "0.00": "transparent empty frame",
+        "0.12": "locator seam snaps to full height",
+        "0.22": "player name wipes in from the seam",
+        "0.42": "player detail follows on the same crop axis",
+        "0.70": "full lower third holds",
+        "2.74": "short seam tick punctuates the selected moment",
+        "3.86": "text retracts into the seam",
+        "4.36": "transparent empty frame restored"
+      },
+      "proof_times": [0.0, 0.22, 0.7, 2.76, 4.08],
+      "content": {
+        "name": "MAYA SANTOS",
+        "role": "12 · OUTSIDE",
+        "position": "lower-left",
+        "brand_colors": [
+          "#FACC15",
+          "#FFFFFF",
+          "#111111"
+        ]
+      }
+    },
+    {
+      "id": "highlight-reaction-stamp",
+      "file": "compositions/highlight-reaction-stamp.html",
+      "category": "kinetic-type",
+      "duration_s": 2.2,
+      "fps": 30,
+      "canvas": {
+        "w": 1080,
+        "h": 1920,
+        "aspect": "9:16"
+      },
+      "style": "A compact editorial hit: blunt uppercase type, a single yellow seam, fast arrival, readable hold, and crisp disappearance. Energetic without meme effects or sports-cliche decoration.",
+      "palette": [
+        "#000000",
+        "#FACC15",
+        "#FFFFFF",
+        "#111111"
+      ],
+      "font": "Arial",
+      "beats": [
+        2,
+        6,
+        14,
+        49,
+        60
+      ],
+      "export": "alpha-overlay",
+      "asset_needs": [],
+      "shot_brief": "The word ACE arrives as a tight, selected-moment stamp near the upper side of the action-safe center: a yellow seam makes first contact, the word locks into place with one decisive scale-and-crop hit, and the graphic holds cleanly before retracting. No exclamation mark, shake loop, flame, emoji, or slang; the timing itself supplies the reaction.",
+      "block": "caption-kinetic-slam",
+      "customize": {
+        "reuse": "Borrow the decisive single-beat scale/crop landing only; remove metronome chrome, multiple phrases, blur, glow, and bounce.",
+        "signature": "A compact uppercase word intersects one short yellow seam like a selected frame marker."
+      },
+      "layout": {
+        "stamp_box": { "x": 650, "y": 300, "w": 330, "h": 186 },
+        "seam_box": { "x": 650, "y": 300, "w": 12, "h": 186 },
+        "safe_margin": 84
+      },
+      "variables": [
+        { "id": "stampText", "type": "string", "label": "Stamp text", "default": "ACE", "maxLength": 12 },
+        { "id": "accent", "type": "color", "label": "Accent", "default": "#FACC15" },
+        { "id": "textColor", "type": "color", "label": "Text color", "default": "#FFFFFF" }
+      ],
+      "motion": {
+        "0.00": "transparent empty frame",
+        "0.07": "yellow seam makes first contact",
+        "0.16": "ACE lands from scale 1.16 and x 34 with an expo settle",
+        "0.46": "stamp is locked and readable",
+        "1.62": "stamp retracts cleanly along the crop axis",
+        "2.06": "transparent empty frame restored"
+      },
+      "proof_times": [0.0, 0.12, 0.48, 1.4, 1.86],
+      "content": {
+        "scenes": [
+          {
+            "id": "ace-hit",
+            "start": 0,
+            "end": 2.2,
+            "text": "ACE",
+            "emphasis_words": [
+              "ACE"
+            ],
+            "emotion": "decisive, immediate, controlled",
+            "motion": "A narrow yellow seam hits first; ACE resolves through a compact scale-and-crop lockup, holds without motion noise, then retracts cleanly.",
+            "beats": [
+              2,
+              6,
+              14,
+              49,
+              60
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

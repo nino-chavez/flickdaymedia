@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Flickday wordmark sting</title>
+    <!-- Vendored locally: the render environment has no network, and a CDN fetch would
+         make the render non-deterministic (BRAND-PRIORS.md, "Offline rendering"). -->
+    <script src="./assets/vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      /* Alpha overlay: transparent everywhere — the compositor owns placement over footage. */
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+
+      :root {
+        /* Flickday courtside palette. v1 uses --ink only (flat, no gradients, no glow). */
+        --ink: #facc15;      /* primary mark yellow */
+        --ink-hi: #fde047;   /* reserved highlight — unused in v1 */
+        --paper: #ffffff;    /* reserved — unused in v1 */
+      }
+
+      #stage { position: relative; width: 1080px; height: 1920px; background: transparent; }
+
+      /* Wordmark band: ~72% frame width (≈780px), horizontally centered, optical center at
+         46% of canvas height (slightly above center for 9:16 platform-safe framing). The
+         vertical negative space is intentional — it is a transparent overlay; the compositor
+         owns placement over footage. overflow:visible lets the ignition / settle overshoot
+         paint past the tight viewBox without clipping (it stays well inside the 1080 stage). */
+      #mark { position: absolute; left: 50%; top: 46%; transform: translate(-50%, -50%);
+              width: 780px; height: auto; overflow: visible; }
+      .mark-fill { fill: var(--ink); }
+    </style>
+  </head>
+  <body>
+    <div
+      id="stage"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="5"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <svg id="mark" viewBox="370.2 221.7 3168.2 1169.8" xmlns="http://www.w3.org/2000/svg" aria-label="flickday">
+        <defs>
+          <!-- Play-mark cutout: white shows the d, the black triangle punches the negative
+               play button. Black here is a mask channel, never paint — the triangle it
+               carves is transparent, so footage shows through it. #play-tri is animated
+               independently for the mid-hold pulse; it carries an explicit identity
+               transform so the pulse tween always has a baseline to rewind onto (without
+               it, scrubbing back past the pulse left a zero matrix and closed the hole). -->
+          <mask id="play-cutout">
+            <rect x="19000" y="3000" width="8000" height="11000" fill="#ffffff" />
+            <path id="play-tri" transform="matrix(1,0,0,1,0,0)" d="M21950 8127 c53 -28 145 -82 180 -107 14 -10 42 -27 63 -39 20 -11 54 -31 75 -42 20 -12 49 -30 64 -40 14 -11 29 -19 33 -19 3 0 33 -18 65 -40 32 -22 61 -40 63 -40 3 0 65 -37 138 -81 177 -107 327 -198 364 -219 17 -10 68 -41 115 -70 47 -29 99 -61 116 -70 17 -10 62 -37 100 -60 38 -24 83 -50 99 -60 17 -9 67 -40 113 -69 46 -28 86 -51 88 -51 18 0 127 -86 139 -110 27 -52 6 -111 -51 -140 -16 -8 -110 -64 -209 -124 -99 -60 -194 -117 -211 -126 -17 -10 -62 -37 -100 -60 -38 -24 -83 -51 -100 -60 -17 -10 -62 -37 -99 -59 -37 -23 -68 -41 -70 -41 -1 0 -62 -36 -135 -80 -73 -44 -134 -80 -137 -80 -2 0 -25 -14 -50 -31 -37 -26 -213 -129 -393 -231 -19 -11 -39 -24 -45 -28 -43 -35 -262 -150 -285 -150 -17 0 -40 11 -59 29 l-31 29 0 1109 c0 1186 -1 1144 50 1170 36 18 59 16 110 -10z" fill="#000000" />
+          </mask>
+        </defs>
+
+        <g class="mark-fill" transform="translate(0.000000,1636.000000) scale(0.100000,-0.100000)" stroke="none">
+          <g id="g-f"><path d="M6945 10489 c-181 -13 -257 -25 -440 -70 -93 -23 -246 -83 -325 -128 -25 -15 -56 -32 -70 -39 -164 -84 -388 -327 -489 -530 -106 -213 -169 -533 -160 -822 0 -25 0 -51 0 -57 -1 -10 -70 -13 -293 -15 l-293 -3 0 -515 0 -515 205 0 c113 -1 244 -2 293 -3 l87 -2 0 -1394 c0 -1164 2 -1395 14 -1405 9 -8 170 -10 582 -9 l569 3 3 1395 c1 767 6 1398 10 1402 5 5 214 9 464 8 359 0 457 2 466 12 13 16 17 996 4 1015 -6 10 -116 13 -473 15 l-464 3 1 120 c3 333 138 500 444 551 108 18 172 17 344 -1 77 -8 142 -12 145 -9 3 3 6 220 6 482 l0 476 -75 12 c-41 7 -142 15 -225 18 -82 4 -166 8 -185 10 -19 1 -84 -1 -145 -5z" /></g>
+          <g id="g-l"><path d="M8251 10437 c-15 -19 -16 -5424 0 -5444 9 -11 121 -13 605 -13 l594 0 0 2735 0 2735 -594 0 c-483 0 -596 -2 -605 -13z" /></g>
+          <g id="g-i"><path d="M10350 8823 c-6 -188 1 -3828 7 -3834 5 -5 256 -8 594 -7 l584 3 3 1923 2 1922 -595 0 c-327 0 -595 -3 -595 -7z" /><path d="M10785 10504 c-208 -56 -384 -216 -461 -419 -42 -111 -40 -308 4 -420 105 -266 337 -425 620 -425 299 0 535 175 631 469 26 79 29 258 6 334 -71 236 -242 402 -475 462 -72 19 -255 18 -325 -1z" /></g>
+          <g id="g-c"><path d="M14100 8909 c-36 -5 -101 -14 -145 -19 -440 -57 -850 -253 -1163 -555 -257 -248 -424 -511 -528 -834 -78 -243 -89 -324 -89 -631 1 -233 4 -280 37 -435 76 -367 282 -731 566 -1000 609 -576 1622 -722 2421 -349 241 113 536 343 672 524 18 25 36 47 40 50 3 3 22 29 42 59 44 67 49 59 -105 162 -65 44 -152 105 -195 137 -43 32 -114 83 -158 112 -83 55 -214 148 -300 212 -62 47 -63 47 -100 -3 -38 -52 -158 -167 -217 -207 -377 -259 -925 -223 -1246 82 -262 248 -347 657 -210 1006 97 247 316 449 580 534 136 44 375 63 477 37 20 -5 61 -14 91 -21 60 -13 148 -44 195 -70 17 -10 48 -27 70 -40 69 -39 145 -101 218 -182 39 -43 75 -78 80 -78 14 0 539 365 637 443 8 7 47 34 85 60 130 89 132 91 113 129 -8 18 -37 62 -64 98 -314 418 -777 694 -1274 759 -47 6 -120 15 -163 21 -91 12 -274 11 -367 -1z" /></g>
+          <g id="g-k"><path d="M16482 7718 l3 -2733 594 -3 c469 -2 596 0 603 10 4 7 8 227 8 488 l1 475 92 98 c51 54 144 154 207 222 63 68 121 123 128 122 8 -1 93 -121 190 -265 98 -145 311 -464 476 -708 l298 -444 679 0 c578 0 679 2 679 14 0 13 -90 147 -189 279 -23 32 -73 102 -110 155 -36 54 -82 119 -101 146 -19 27 -91 128 -159 225 -305 431 -370 523 -451 636 -47 66 -118 165 -157 220 -38 55 -138 196 -222 313 -84 117 -155 220 -158 228 -5 15 48 85 136 179 25 28 109 122 186 209 258 293 397 451 429 486 17 19 90 102 161 184 160 185 348 400 423 485 32 35 58 70 60 78 5 21 -1380 19 -1402 -2 -8 -9 -32 -37 -53 -63 -21 -26 -40 -49 -43 -52 -43 -43 -156 -181 -528 -646 -123 -154 -249 -310 -281 -349 -31 -38 -72 -90 -91 -115 -19 -25 -37 -47 -40 -50 -3 -3 -37 -43 -74 -90 -37 -47 -72 -86 -77 -88 -5 -2 -10 640 -11 1540 l-3 1543 -603 3 -602 2 2 -2732z" /></g>
+
+          <!-- d + play mark: the ignition seed (first in) and punch-out element (last out).
+               #g-d wraps the masked d so ignition/exit scale carries the play-mark hole. -->
+          <g id="g-d"><path id="d-solid" d="M23547 12963 c-4 -3 -7 -981 -7 -2171 0 -1191 -2 -2167 -5 -2170 -3 -3 -15 4 -28 15 -108 99 -404 233 -622 281 -183 41 -236 46 -465 46 -265 -1 -379 -17 -625 -83 -16 -5 -50 -16 -75 -26 -218 -83 -203 -77 -330 -148 -452 -253 -769 -705 -888 -1267 -64 -302 -65 -735 -3 -1025 5 -22 14 -65 20 -94 18 -86 96 -308 140 -399 23 -45 41 -85 41 -87 0 -12 113 -187 169 -262 236 -317 620 -556 1026 -638 181 -36 226 -40 455 -40 541 1 935 142 1254 450 42 41 81 75 86 75 6 0 10 -86 10 -220 l0 -220 603 2 602 3 3 3993 2 3992 -678 0 c-373 0 -682 -3 -685 -7z" mask="url(#play-cutout)" /></g>
+
+          <g id="g-a"><path d="M27180 8909 c-134 -17 -217 -31 -290 -50 -407 -107 -742 -325 -1003 -651 -127 -158 -204 -292 -297 -513 -16 -37 -69 -199 -85 -260 -108 -405 -75 -979 76 -1312 10 -24 19 -47 19 -53 0 -6 4 -18 10 -28 5 -9 25 -51 45 -92 380 -806 1300 -1224 2155 -978 205 59 393 171 560 335 58 57 106 103 108 103 1 0 2 -92 2 -204 0 -160 3 -206 14 -215 9 -8 168 -10 572 -9 l559 3 0 1920 0 1920 -570 0 -570 0 -3 -202 c-1 -112 -5 -203 -8 -203 -2 0 -35 31 -72 68 -186 189 -340 284 -587 363 -180 58 -445 82 -635 58z m506 -1099 c416 -72 674 -306 785 -715 18 -66 18 -340 0 -415 -121 -496 -567 -787 -1086 -706 -354 56 -641 298 -740 626 -117 388 0 767 315 1021 182 147 494 229 726 189z" /></g>
+          <g id="g-y"><path d="M29955 8821 c-3 -5 1 -25 9 -43 29 -70 79 -195 216 -543 78 -198 161 -407 185 -465 24 -58 126 -314 228 -570 148 -371 460 -1155 732 -1835 107 -267 175 -445 175 -456 0 -12 -367 -940 -465 -1176 -30 -72 -39 -105 -31 -110 6 -4 276 -6 600 -3 l588 5 23 60 c13 33 51 132 85 220 34 88 98 252 142 365 44 113 92 239 108 280 16 41 61 158 100 260 69 178 95 245 300 770 51 129 118 303 150 385 155 399 346 889 469 1203 50 127 132 337 182 465 50 127 122 311 159 407 38 96 110 281 160 410 50 129 95 244 100 255 22 47 40 98 40 111 0 15 -1144 21 -1165 6 -6 -4 -25 -45 -42 -92 -17 -47 -103 -276 -191 -510 -235 -628 -385 -1033 -527 -1425 -69 -192 -135 -372 -145 -400 -21 -59 -38 -63 -56 -15 -7 19 -39 107 -72 195 -33 88 -77 205 -97 260 -52 141 -160 432 -256 690 -45 121 -105 285 -134 365 -29 80 -74 201 -100 270 -26 69 -72 190 -102 270 -30 80 -73 197 -95 260 -23 63 -45 121 -51 128 -12 15 -1212 18 -1222 3z" /></g>
+
+          <!-- POSITIVE play triangle. Same geometry as the mask hole (#play-tri) and drawn
+               last so it sits exactly on top of the d's knockout. It is the visible
+               protagonist of the ignition (a lone hole reads as nothing over footage, a
+               solid yellow triangle reads as a play button), then fades out to hand the
+               play mark over to the d's true negative space for the hold. On exit it
+               reforms and punches out last. Flat --ink fill, inherited from the parent g. -->
+          <path id="play-pos" d="M21950 8127  c53 -28 145 -82 180 -107 14 -10 42 -27 63 -39 20 -11 54 -31 75 -42 20 -12 49 -30 64 -40 14 -11 29 -19 33 -19 3 0 33 -18 65 -40 32 -22 61 -40 63 -40 3 0 65 -37 138 -81 177 -107 327 -198 364 -219 17 -10 68 -41 115 -70 47 -29 99 -61 116 -70 17 -10 62 -37 100 -60 38 -24 83 -50 99 -60 17 -9 67 -40 113 -69 46 -28 86 -51 88 -51 18 0 127 -86 139 -110 27 -52 6 -111 -51 -140 -16 -8 -110 -64 -209 -124 -99 -60 -194 -117 -211 -126 -17 -10 -62 -37 -100 -60 -38 -24 -83 -51 -100 -60 -17 -10 -62 -37 -99 -59 -37 -23 -68 -41 -70 -41 -1 0 -62 -36 -135 -80 -73 -44 -134 -80 -137 -80 -2 0 -25 -14 -50 -31 -37 -26 -213 -129 -393 -231 -19 -11 -39 -24 -45 -28 -43 -35 -262 -150 -285 -150 -17 0 -40 11 -59 29 l-31 29 0 1109 c0 1186 -1 1144 50 1170 36 18 59 16 110 -10z" />
+        </g>
+      </svg>
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+
+      // Scale is animated as a raw matrix on the transform ATTRIBUTE rather than through
+      // GSAP's scale/svgOrigin. Every animated group sits inside
+      // <g transform="translate(0,1636) scale(0.1,-0.1)">, and that negative y-scale mirrors
+      // the coordinate system. GSAP's svgOrigin compensation miscomputes under a mirror: it
+      // left a residual translation on the element even at scale 1 (g-k measured as
+      // matrix(1,0,0,1,-1980,-2735) at the settled hold), and the residual differed per
+      // letter, so it distorted the kerning and mis-aimed the exit collapse.
+      //
+      // Writing the matrix is exact — at s=1 it is literally the identity, so the hold IS
+      // the untouched SVG lockup. Interpolating the matrix STRING is equally exact: every
+      // component of matrix(s,0,0,s,Px(1-s),Py(1-s)) is linear in s, so easing the
+      // components componentwise is identical to easing s, overshoot included. Keeping this
+      // on the attribute (not an onUpdate callback) is what makes it seek-safe — seek()
+      // suppresses callbacks by default, but it always renders animated properties.
+
+      const el = (id) => document.getElementById(id);
+      const LETTERS = ["g-f", "g-l", "g-i", "g-c", "g-k", "g-d", "g-a", "g-y"];
+      const NODE = {};
+      LETTERS.forEach((id) => { NODE[id] = el(id); });
+
+      const playPos = el("play-pos");   // positive yellow triangle (ignition + punch-out)
+      const playTri = el("play-tri");   // the mask hole — true negative space during the hold
+
+      // Pivots measured from the geometry itself, so kerning and the emanation point come
+      // from the SVG rather than invented offsets. Read before anything is hidden.
+      const centerOf = (node) => { const b = node.getBBox(); return [b.x + b.width / 2, b.y + b.height / 2]; };
+      const PLAY = centerOf(playPos);   // the one fixed emanation point, for build and retract
+      const OWN = {};
+      LETTERS.forEach((id) => { OWN[id] = centerOf(NODE[id]); });
+
+      // Scale by s about pivot p, leaving p fixed. m(1, anything) is the identity.
+      const m = (s, p) => ({ attr: { transform: `matrix(${s},0,0,${s},${p[0] * (1 - s)},${p[1] * (1 - s)})` } });
+
+      // Everything starts clear — f0-3 must render fully empty for the overlay.
+      gsap.set(LETTERS.map((id) => "#" + id).concat("#play-pos"), { autoAlpha: 0 });
+
+      const tl = gsap.timeline({ paused: true });
+
+      // --- Ignition (0.10-0.50s | f3-15) ------------------------------------------------
+      // The yellow play triangle, alone. A bare hole would read as nothing over footage, so
+      // the protagonist here is positive. Impact comes from scale overshoot, never glow.
+      tl.fromTo(playPos, m(0.6, PLAY), { ...m(1, PLAY), duration: 0.4, ease: "back.out(2.2)" }, 0.1)
+        .fromTo(playPos, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.28, ease: "power2.out" }, 0.1);
+
+      // --- Letter build (0.40-1.19s | f12-36) -------------------------------------------
+      // Ripples outward from the play mark, nearest group first. Each group grows about its
+      // own final position, so the lockup assembles in place instead of drifting into frame.
+      // The d takes power2.out (the shot-plan's build ease) rather than the overshoot the
+      // other groups use to sell the snap. Its knockout is background-coloured, so any frame
+      // where the d scales past 1 pushes the hole out beyond the triangle covering it and
+      // opens a bright sliver. Staying at or below 1 keeps the hole covered for every frame
+      // of the build, and both are at exactly 1 when the handoff starts.
+      const buildOrder = ["g-d", "g-k", "g-a", "g-c", "g-y", "g-i", "g-l", "g-f"];
+      buildOrder.forEach((id, i) => {
+        const at = 0.4 + i * 0.05;
+        const ease = id === "g-d" ? "power2.out" : "back.out(1.7)";
+        tl.fromTo(NODE[id], m(0, OWN[id]), { ...m(1, OWN[id]), duration: 0.44, ease }, at)
+          .fromTo(NODE[id], { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power2.out" }, at);
+      });
+
+      // --- Handoff, positive triangle -> knockout (0.85-1.05s | f25-31) -----------------
+      // The d is fully settled by 0.84s with the triangle still covering its bowl, so fading
+      // the triangle out reveals the hole at the same size in the same place: no double
+      // image, and no frame where the play mark is absent.
+      tl.to(playPos, { autoAlpha: 0, duration: 0.2, ease: "power2.in" }, 0.85);
+
+      // --- Hold (1.20-3.50s | f36-105) --------------------------------------------------
+      // Every transform resolves to identity — the exact natural lockup. The pulse below is
+      // the only motion in the whole hold.
+
+      // --- Signature pulse (2.40-2.60s | f72-78) ----------------------------------------
+      // The one pattern-interrupt: the negative play triangle breathes, the d stays put. The
+      // mask resolves in the d's user space, so this scales the hole alone. No glow.
+      tl.fromTo(playTri, m(1, PLAY),
+        { ...m(1.1, PLAY), duration: 0.1, yoyo: true, repeat: 1, ease: "sine.inOut", immediateRender: false },
+        2.4);
+
+      // --- Letter retract (3.50-4.29s | f105-129) ---------------------------------------
+      // Reverse stagger; each group collapses into the play mark it grew out of. The from
+      // state is the identity, so this picks up exactly where the hold left off.
+      const retractOrder = ["g-f", "g-l", "g-i", "g-y", "g-c", "g-a", "g-k", "g-d"];
+      retractOrder.forEach((id, i) => {
+        const at = 3.5 + i * 0.05;
+        tl.fromTo(NODE[id], m(1, PLAY),
+          { ...m(0, PLAY), duration: 0.44, ease: "power2.in", immediateRender: false }, at)
+          .to(NODE[id], { autoAlpha: 0, duration: 0.44, ease: "power2.in" }, at);
+      });
+
+      // --- Handoff, knockout -> positive triangle (3.60-3.90s | f108-117) ---------------
+      // The play button solidifies from negative back to positive as the letters fall into
+      // it, so the mark is never missing from the frame.
+      tl.fromTo(playPos, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3, ease: "power2.out" }, 3.6);
+
+      // --- Play-mark punch-out (4.40-4.80s | f132-144): the seed exits last. ------------
+      tl.fromTo(playPos, m(1, PLAY),
+        { ...m(1.06, PLAY), duration: 0.4, ease: "power2.in", immediateRender: false }, 4.4)
+        .to(playPos, { autoAlpha: 0, duration: 0.4, ease: "power2.in" }, 4.4);
+
+      // Pin the timeline to the full 5.00s so f144-150 render clear (empty final frame).
+      tl.to({}, { duration: 0.2 }, 4.8);
+
+      tl.seek(0);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

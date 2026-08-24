@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Film-room pick to branded 9:16 (jpo C2355)</title>
+    <!-- Vendored: the render environment has no network (BRAND-PRIORS.md, "Offline rendering"). -->
+    <script src="./assets/vendor/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+
+      :root {
+        --ink: #facc15;   /* Flickday yellow */
+        --paper: #ffffff;
+        --bar: #000000;
+      }
+
+      #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; }
+
+      /* Footage fills the frame. The proxy is already reframed to 9:16 by ingest, so cover
+         only absorbs the 720x1280 -> 1080x1920 scale, it does not re-crop the action. */
+      #footage { position: absolute; inset: 0; width: 1080px; height: 1920px; object-fit: cover; }
+
+      /* Lower third sits above the platform-UI safe zone (the bottom ~13% is caption and CTA
+         chrome on IG/TikTok). Editorial: solid bar, flat type, one yellow seam rule — matches
+         the overlay-kit language rather than inventing a second dialect. */
+      /* Hidden state authored in CSS, not via a zero-duration tl.set at position 0 — a set at 0
+         inside a paused timeline does not render while the playhead sits exactly on frame 0. */
+      #lower-third { position: absolute; left: 96px; bottom: 360px; display: flex; align-items: stretch;
+                     visibility: hidden; opacity: 0; transform-origin: left center; }
+      #lt-seam { width: 12px; background: var(--ink); }
+      #lt-body { background: var(--bar); padding: 28px 44px 30px 36px; }
+      #lt-line1 { font: 700 68px/1.0 system-ui, sans-serif; color: var(--paper);
+                  letter-spacing: 0.01em; text-transform: uppercase; white-space: nowrap; }
+      #lt-line2 { margin-top: 16px; font: 600 30px/1.0 ui-monospace, SFMono-Regular, Menlo, monospace;
+                  color: var(--ink); letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap; }
+
+      /* Persistent ownership bug. */
+      #bug { position: absolute; right: 72px; top: 108px; width: 300px; height: auto; opacity: 0.92; }
+    </style>
+  </head>
+  <body>
+    <div
+      id="stage"
+      data-composition-id="main"
+      data-start="0"
+      data-duration="5.9"
+      data-fps="30"
+      data-width="1080"
+      data-height="1920"
+    >
+      <!--
+        THE POINT OF THIS PROOF: the timings below come from film-room's substrate, not from
+        an editor's taste — with ONE hand-choice, called out because it turned out to matter.
+
+          data-media-start="6.6"  = R4 highlight window start (apex 8.6s minus 2.0s)
+          data-duration="5.9"     = window end (play_end 10.0s plus 2.5s) minus window start
+          apex lands 2.0s into this composition, which is when the lower third fires.
+
+        Source: F10 edit-plan export for event `jpo`, clip C2355 (decision=pick, tag=rally),
+        with apex and play_end read from the `events` moment table.
+
+        THE HAND-CHOICE, AND ITS RESOLUTION (2026-07-21, closed 2026-07-22): C2355 carries 11
+        apex candidates spanning 4.3s..8.6s and the detector ranks none of them. 6.6 above came
+        from picking 8.6 — the last one — by eye. The export at the time published the FIRST
+        candidate, 4.3, which would have made this a 10.2s clip opening at 2.3s: same clip,
+        same contract, a materially different edit.
+
+        That turned out to be a defect in the export, not a judgement call. film-room's own
+        renderer (render_reel) had always anchored on the last candidate at or before play_end
+        and clamped both ends to the clip; only the export disagreed, and taken literally it
+        put the window start before the clip began on 72 of 138 jpo clips and produced 8 rows
+        the letspepper clip-mapper rejects outright (it validates clip_in < moment_time <
+        clip_out). Contract v1.2 moves both onto one shared window function, and it resolves
+        C2355 to anchor 8.6, window 6.6-12.5 — the numbers hand-typed here.
+
+        So the header claim above now holds where it did not before: these timings are derived,
+        and `window_start_s` / `window_end_s` in the v1.2 edit plan carry them directly. What
+        the substrate still does not do is RANK the eleven candidates — the anchor rule is a
+        principled convention, not a verdict. That remains exp2's work.
+      -->
+      <!--
+        muted: film-room's ingest proxies are video-only (no audio stream). A deliverable that
+        needs match audio has to compile against the original source file, not the proxy.
+      -->
+      <video
+        id="footage"
+        class="clip"
+        src="./assets/C2355-proxy.mp4"
+        muted
+        data-start="0"
+        data-media-start="6.6"
+        data-duration="5.9"
+        data-track-index="0"
+      ></video>
+
+      <!--
+        Identity discipline (ADR-0002, ADR-0009 section 4): the substrate holds no
+        operator-typed player or team for this clip (teams: []), so no name is rendered.
+        Inventing one here is exactly the failure those ADRs exist to prevent. The lower
+        third therefore carries only operator-backed facts: the event and the confirmed tag.
+      -->
+      <div id="lower-third" class="clip" data-start="0" data-duration="5.9" data-track-index="1">
+        <div id="lt-seam"></div>
+        <div id="lt-body">
+          <div id="lt-line1">Rally</div>
+          <div id="lt-line2">JPO &middot; Selected Moment</div>
+        </div>
+      </div>
+
+      <img
+        id="bug"
+        class="clip"
+        src="./assets/flickday-bug.png"
+        data-start="0"
+        data-duration="5.9"
+        data-track-index="2"
+      />
+    </div>
+
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+
+      // Apex is 2.0s into the window (absolute 8.6s minus the 6.6s window start). The graphic
+      // hit is driven by the substrate's measured moment, not by taste.
+      const APEX = 2.0;
+
+      // Lower third wipes out from its yellow seam at the apex, holds, then retracts before
+      // the tail so the final beat is pure footage. Its hidden start state lives in CSS.
+      tl.fromTo("#lower-third",
+        { autoAlpha: 0, scaleX: 0.04, x: -8 },
+        { autoAlpha: 1, scaleX: 1, x: 0, duration: 0.42, ease: "power3.out", transformOrigin: "left center" },
+        APEX);
+      tl.to("#lower-third",
+        { autoAlpha: 0, x: -24, duration: 0.34, ease: "power2.in" },
+        5.2);
+
+      tl.seek(0);
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

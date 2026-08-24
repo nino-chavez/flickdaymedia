@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  {"id":"stampText","type":"string","label":"Stamp text","default":"ACE","maxLength":12},
+  {"id":"accent","type":"color","label":"Accent","default":"#FACC15"},
+  {"id":"textColor","type":"color","label":"Text color","default":"#FFFFFF"}
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Flickday Highlight Reaction Stamp</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Flickday Montserrat"; src: url("assets/fonts/montserrat-900.woff2") format("woff2"); font-style: normal; font-weight: 900; font-display: block; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+      .clip { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .stamp { position: absolute; left: 650px; top: 300px; width: 330px; height: 186px; display: flex; align-items: stretch; transform-origin: 50% 50%; will-change: transform, opacity; }
+      .seam { display: block; flex: 0 0 12px; width: 12px; height: 186px; background: var(--accent, #FACC15); transform-origin: 50% 50%; will-change: transform, opacity; }
+      .stamp-window { display: block; width: 318px; height: 186px; overflow: hidden; --reveal: 100%; clip-path: inset(0 calc(100% - var(--reveal)) 0 0); will-change: transform, opacity, clip-path; }
+      .stamp-body { display: grid; width: 318px; height: 186px; place-items: center; background: rgba(0, 0, 0, 0.90); color: var(--textColor, #FFFFFF); font-family: "Flickday Montserrat", sans-serif; font-size: 120px; font-weight: 900; line-height: 0.82; letter-spacing: -0.035em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="highlight-reaction-stamp" data-start="0" data-duration="2.2" data-width="1080" data-height="1920" data-fps="30">
+      <section id="stamp-clip" class="clip" data-start="0" data-duration="2.2" data-track-index="1">
+        <div id="highlight-stamp" class="stamp">
+          <i id="stamp-seam" class="seam" aria-hidden="true"></i>
+          <div id="stamp-window" class="stamp-window"><div id="stamp-text" class="stamp-body" data-var-text="stampText">ACE</div></div>
+        </div>
+      </section>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      tl.fromTo("#stamp-seam", { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 1, duration: 0.12, ease: "power4.out" }, 0.05);
+      tl.fromTo("#highlight-stamp", { scale: 1.16, x: 34 }, { scale: 1, x: 0, duration: 0.30, ease: "expo.out" }, 0.22);
+      tl.fromTo("#stamp-window", { "--reveal": "0%", opacity: 0 }, { "--reveal": "100%", opacity: 1, duration: 0.22, ease: "power4.out" }, 0.22);
+      tl.to("#stamp-window", { "--reveal": "0%", x: -24, opacity: 0, duration: 0.28, ease: "power3.in" }, 1.62);
+      tl.to("#stamp-seam", { scaleY: 0, opacity: 0, duration: 0.16, ease: "power3.in" }, 1.82);
+      tl.to("#highlight-stamp", { scale: 0.98, opacity: 0, duration: 0.18, ease: "power2.in" }, 1.84);
+      window.__timelines["highlight-reaction-stamp"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
