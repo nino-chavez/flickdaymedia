@@ -1,0 +1,18 @@
+{
+  "name": "flickday-hyperframes-pilot",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "npx --yes hyperframes@0.7.64 preview",
+    "lint": "npx --yes hyperframes@0.7.64 lint . --verbose",
+    "check": "npx --yes hyperframes@0.7.64 check",
+    "render": "npx --yes hyperframes@0.7.64 render",
+    "render:wordmark": "npx --yes hyperframes@0.7.64 render . --composition compositions/wordmark-sting.html --format mov --quality high --output renders/flickday-wordmark-sting.mov",
+    "render:lower-third": "npx --yes hyperframes@0.7.64 render . --composition compositions/player-lower-third.html --format mov --quality high --output renders/flickday-player-lower-third.mov",
+    "render:stamp": "npx --yes hyperframes@0.7.64 render . --composition compositions/highlight-reaction-stamp.html --format mov --quality high --output renders/flickday-highlight-reaction-stamp.mov",
+    "publish": "npx --yes hyperframes@0.7.64 publish"
+  },
+  "dependencies": {
+    "gsap": "^3.14.2"
+  }
+}

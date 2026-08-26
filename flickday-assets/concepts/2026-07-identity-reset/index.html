@@ -1,0 +1,459 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Flickday Identity Reset — Round 1</title>
+  <style>
+    :root {
+      --ink: #050505;
+      --panel: #101010;
+      --panel-2: #171717;
+      --yellow: #facc15;
+      --yellow-bright: #fde047;
+      --white: #fff;
+      --muted: #909090;
+      --line: #303030;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; background: #2a2a2a; color: var(--white); }
+    body { font-family: "Helvetica Neue", Arial, sans-serif; }
+
+    .page {
+      width: 1600px;
+      height: 1000px;
+      position: relative;
+      overflow: hidden;
+      background: var(--ink);
+      page-break-after: always;
+    }
+
+    .grain::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .055;
+      mix-blend-mode: screen;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180' viewBox='0 0 180 180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    }
+
+    .board-header {
+      height: 118px;
+      padding: 35px 48px 24px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+
+    .eyebrow, .meta, .label, .verdict, .micro, .media-label {
+      font-family: Menlo, Monaco, monospace;
+      text-transform: uppercase;
+      letter-spacing: .13em;
+    }
+
+    .eyebrow { color: var(--yellow); font-weight: 700; font-size: 15px; }
+    h1 { font: 700 37px/1.05 "Avenir Next Condensed", "Arial Narrow", sans-serif; margin: 5px 0 0; letter-spacing: -.015em; }
+    .meta { color: var(--muted); font-size: 12px; text-align: right; line-height: 1.65; }
+
+    .word-grid {
+      height: 882px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1fr;
+    }
+
+    .word-card {
+      position: relative;
+      padding: 38px 48px 30px;
+      border-right: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .word-card:nth-child(even) { border-right: 0; }
+    .word-card:nth-child(n+3) { border-bottom: 0; }
+    .word-card.light { background: #f1f0eb; color: #050505; }
+    .word-card.yellow { background: var(--yellow); color: #050505; }
+
+    .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+    .label { color: var(--muted); font-size: 12px; }
+    .light .label, .yellow .label { color: #565656; }
+    .verdict { font-size: 11px; color: var(--yellow); border: 1px solid currentColor; padding: 6px 9px; }
+    .yellow .verdict { color: #050505; }
+
+    .wm { white-space: nowrap; line-height: .86; transform-origin: left center; }
+    .wm-a {
+      font-family: "Avenir Next Condensed", "Arial Narrow", sans-serif;
+      font-size: 154px;
+      font-weight: 900;
+      font-style: italic;
+      letter-spacing: -.07em;
+      transform: skewX(-3deg) scaleX(.94);
+    }
+    .wm-a .day { color: var(--yellow); }
+
+    .wm-b {
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      font-size: 129px;
+      font-weight: 900;
+      letter-spacing: -.075em;
+      transform: scaleX(.92);
+    }
+    .wm-b .day { color: var(--yellow); }
+
+    .wm-c {
+      font-family: Futura, "Avenir Next", sans-serif;
+      font-size: 127px;
+      font-weight: 700;
+      letter-spacing: -.075em;
+      transform: scaleX(.90);
+    }
+    .wm-c .day {
+      display: inline-block;
+      background: #050505;
+      color: var(--yellow);
+      padding: .04em .13em .10em .07em;
+      margin-left: .045em;
+    }
+
+    .wm-d {
+      display: inline-flex;
+      align-items: baseline;
+      font-family: "DIN Alternate", "Avenir Next Condensed", sans-serif;
+      font-size: 142px;
+      font-weight: 700;
+      letter-spacing: -.052em;
+      transform: scaleX(.95);
+    }
+    .wm-d .day { font-weight: 400; }
+    .wm-d::after {
+      content: "24/7";
+      font: 700 13px/1 Menlo, monospace;
+      letter-spacing: .08em;
+      margin-left: 20px;
+      padding: 7px 8px 6px;
+      background: var(--yellow);
+      color: #050505;
+      transform: translateY(-6px);
+    }
+
+    .sublock { display: flex; align-items: center; gap: 18px; margin-top: 19px; }
+    .media-label { font-size: 13px; color: var(--muted); }
+    .light .media-label, .yellow .media-label { color: #494949; }
+    .rule { width: 56px; height: 4px; background: var(--yellow); }
+    .light .rule, .yellow .rule { background: #050505; }
+    .why { max-width: 610px; color: #a4a4a4; font-size: 15px; line-height: 1.45; }
+    .light .why, .yellow .why { color: #4c4c4c; }
+    .why b { color: currentColor; }
+
+    .symbol-grid {
+      height: 882px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .symbol-card {
+      border-right: 1px solid var(--line);
+      padding: 42px 34px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      position: relative;
+    }
+    .symbol-card:last-child { border-right: 0; }
+    .symbol-stage {
+      height: 310px;
+      background: #101010;
+      border: 1px solid #242424;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+    .symbol-card:nth-child(even) .symbol-stage { background: var(--yellow); }
+    .symbol-card:nth-child(even) .symbol-stage svg { color: #050505; }
+    .symbol-stage svg { width: 190px; height: 190px; color: var(--yellow); }
+    .symbol-name { font: 800 30px/1 "Avenir Next Condensed", sans-serif; text-transform: uppercase; }
+    .symbol-copy { color: #9b9b9b; font-size: 15px; line-height: 1.5; min-height: 95px; }
+    .small-test { display: flex; align-items: center; gap: 22px; margin-top: auto; }
+    .small-test svg { color: var(--yellow); }
+    .small-test .s32 { width: 32px; height: 32px; }
+    .small-test .s20 { width: 20px; height: 20px; }
+    .small-test span { font: 700 11px/1.4 Menlo, monospace; letter-spacing: .08em; color: #777; text-transform: uppercase; }
+    .status { position: absolute; left: 34px; right: 34px; bottom: 34px; border-top: 1px solid #333; padding-top: 16px; }
+
+    .applications {
+      display: grid;
+      grid-template-columns: 960px 640px;
+      height: 1000px;
+    }
+    .site-mock { position: relative; overflow: hidden; background: #000; }
+    .site-mock img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; filter: brightness(.64) contrast(1.12) saturate(.9); }
+    .site-mock::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.75), transparent 26%, transparent 54%, #000 100%); }
+    .nav { position: absolute; z-index: 3; left: 42px; right: 42px; top: 30px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font: 900 italic 57px/.86 "Avenir Next Condensed", sans-serif; letter-spacing: -.06em; transform: skewX(-3deg); }
+    .nav-logo .day { color: var(--yellow); }
+    .nav-cta { font: 700 12px/1 Menlo, monospace; letter-spacing: .12em; background: var(--yellow); color: #000; padding: 14px 17px; }
+    .hero-copy { position: absolute; z-index: 3; left: 48px; right: 40px; bottom: 58px; }
+    .hero-copy .micro { font-size: 13px; color: var(--yellow); margin-bottom: 14px; }
+    .hero-copy h2 { font: 900 100px/.86 "Avenir Next Condensed", sans-serif; letter-spacing: -.04em; margin: 0; text-transform: uppercase; max-width: 780px; }
+    .hero-copy p { font: 600 19px/1.3 "Helvetica Neue", sans-serif; max-width: 500px; margin: 22px 0 0; }
+
+    .app-right { display: grid; grid-template-rows: 635px 365px; background: #111; }
+    .reel { position: relative; overflow: hidden; border-left: 1px solid #333; }
+    .reel img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 36%; filter: contrast(1.06) brightness(.82); }
+    .reel::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,.8), transparent 48%); }
+    .watermark { position: absolute; z-index: 2; top: 28px; right: 27px; text-align: right; }
+    .watermark .wm-mini { font: 900 italic 36px/.9 "Avenir Next Condensed", sans-serif; letter-spacing: -.055em; text-shadow: 0 2px 10px rgba(0,0,0,.5); }
+    .watermark .wm-mini .day { color: var(--yellow); }
+    .watermark .micro { font-size: 8px; color: #fff; margin-top: 6px; }
+    .lower-third { position: absolute; z-index: 2; left: 26px; bottom: 28px; }
+    .lower-third .tag { display: inline-block; background: var(--yellow); color: #000; font: 700 11px/1 Menlo, monospace; letter-spacing: .08em; padding: 9px 10px 8px; }
+    .lower-third .name { margin-top: 4px; background: #000; padding: 10px 13px 9px; font: 900 26px/.9 "Avenir Next Condensed", sans-serif; text-transform: uppercase; }
+
+    .app-bottom { display: grid; grid-template-columns: 1fr 1fr; border-left: 1px solid #333; border-top: 1px solid #333; }
+    .avatar { background: var(--yellow); display: grid; place-items: center; }
+    .avatar svg { width: 145px; height: 145px; color: #000; }
+    .shirt { background: #e9e7de; color: #000; padding: 25px 28px; position: relative; overflow: hidden; }
+    .shirt::before { content: ""; position: absolute; width: 210px; height: 310px; background: #111; border-radius: 100px 100px 32px 32px; right: 20px; top: 24px; transform: rotate(1deg); box-shadow: 0 18px 30px rgba(0,0,0,.2); }
+    .shirt-print { position: absolute; z-index: 2; right: 49px; top: 116px; width: 155px; text-align: center; color: #fff; }
+    .shirt-print .stack { font: 900 italic 41px/.78 "Avenir Next Condensed", sans-serif; letter-spacing: -.055em; }
+    .shirt-print .stack .day { color: var(--yellow); display: block; }
+    .shirt-print .media-label { color: #aaa; font-size: 8px; margin-top: 10px; }
+    .app-caption { position: absolute; left: 24px; bottom: 24px; width: 150px; font-size: 14px; line-height: 1.45; color: #555; }
+
+    .lockup-page { background: #f0efe9; color: #080808; }
+    .lockup-page .board-header { border-color: #c9c7c0; }
+    .lockup-page .meta { color: #616161; }
+    .lockups { height: 882px; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+    .lockup-card { padding: 45px 52px; border-right: 1px solid #c9c7c0; border-bottom: 1px solid #c9c7c0; position: relative; display: flex; flex-direction: column; justify-content: center; }
+    .lockup-card:nth-child(even) { border-right: 0; }
+    .lockup-card:nth-child(n+3) { border-bottom: 0; }
+    .lockup-card.dark { background: #050505; color: #fff; }
+    .lockup-card.yellow { background: var(--yellow); color: #050505; }
+    .lockup-title { position: absolute; top: 24px; left: 28px; font: 700 11px/1 Menlo, monospace; letter-spacing: .12em; text-transform: uppercase; color: #777; }
+    .lockup-card.dark .lockup-title { color: #777; }
+    .lockup-card.yellow .lockup-title { color: #554600; }
+    .final-wm { font: 900 italic 116px/.82 "Avenir Next Condensed", sans-serif; letter-spacing: -.065em; transform: skewX(-3deg); }
+    .final-wm .day { color: var(--yellow); }
+    .yellow .final-wm .day { color: #050505; }
+    .media-row { display: flex; align-items: center; gap: 12px; margin-top: 21px; }
+    .media-row .bar { width: 35px; height: 4px; background: var(--yellow); }
+    .yellow .media-row .bar { background: #050505; }
+    .media-row span { font: 700 14px/1 Menlo, monospace; letter-spacing: .28em; }
+    .tagline { font: 900 59px/.93 "Avenir Next Condensed", sans-serif; text-transform: uppercase; letter-spacing: -.025em; max-width: 550px; }
+    .tagline em { color: var(--yellow); font-style: normal; }
+    .yellow .tagline em { color: #050505; }
+    .tag-sub { margin-top: 19px; font: 700 12px/1.4 Menlo, monospace; letter-spacing: .12em; text-transform: uppercase; color: #777; }
+    .yellow .tag-sub { color: #514300; }
+    .system-note { font-size: 18px; line-height: 1.5; max-width: 580px; color: #454545; }
+    .system-note strong { color: #050505; }
+    .system-list { display: grid; grid-template-columns: auto 1fr; gap: 10px 18px; margin-top: 26px; font-size: 14px; }
+    .system-list b { font: 700 11px/1.5 Menlo, monospace; letter-spacing: .09em; text-transform: uppercase; }
+
+    .no-symbol { display: flex; align-items: center; gap: 26px; }
+    .no-symbol .slash { width: 14px; height: 125px; background: var(--yellow); transform: skewX(-13deg); }
+  </style>
+</head>
+<body>
+  <section class="page grain" id="wordmarks">
+    <header class="board-header">
+      <div><div class="eyebrow">Flickday identity reset · 01</div><h1>WORDMARK TERRITORIES</h1></div>
+      <div class="meta">NO CAMERAS · NO REELS · NO ICONS IN LETTERS<br />ROUND 1 · 2026.07.21</div>
+    </header>
+    <div class="word-grid">
+      <article class="word-card">
+        <div class="card-top"><span class="label">01 · RUSH</span><span class="verdict">ADVANCE</span></div>
+        <div>
+          <div class="wm wm-a">flick<span class="day">day</span></div>
+          <div class="sublock"><i class="rule"></i><span class="media-label">MEDIA</span></div>
+        </div>
+        <p class="why"><b>Why it works:</b> fast without becoming esports. The italic condensation feels like a sideline credential or sports masthead, while the intact letters keep it durable.</p>
+      </article>
+
+      <article class="word-card">
+        <div class="card-top"><span class="label">02 · HOUSE</span><span class="verdict">ADVANCE</span></div>
+        <div>
+          <div class="wm wm-b">flick<span class="day">day</span></div>
+          <div class="sublock"><i class="rule"></i><span class="media-label">MEDIA</span></div>
+        </div>
+        <p class="why"><b>Why it works:</b> broad, grounded, and readable on a chest print. It lets the photography carry the energy and avoids looking like a startup trying to signal “creative.”</p>
+      </article>
+
+      <article class="word-card yellow">
+        <div class="card-top"><span class="label">03 · DAY BLOCK</span><span class="verdict">HOLD</span></div>
+        <div>
+          <div class="wm wm-c">flick<span class="day">day</span></div>
+          <div class="sublock"><i class="rule"></i><span class="media-label">GRASSROOTS SPORTS MEDIA</span></div>
+        </div>
+        <p class="why"><b>Tradeoff:</b> the day block is highly usable in posts and apparel, but may be stronger as a campaign lockup than the permanent master wordmark.</p>
+      </article>
+
+      <article class="word-card light">
+        <div class="card-top"><span class="label">04 · DAILY INDEX</span><span class="verdict">HOLD</span></div>
+        <div>
+          <div class="wm wm-d">flick<span class="day">day</span></div>
+          <div class="sublock"><i class="rule"></i><span class="media-label">MEDIA</span></div>
+        </div>
+        <p class="why"><b>Tradeoff:</b> the lighter “day” supports the daily-cadence idea. The 24/7 chip is useful editorial furniture, but not part of the logo itself.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="page grain" id="symbols">
+    <header class="board-header">
+      <div><div class="eyebrow">Flickday identity reset · 02</div><h1>INDEPENDENT MARK TERRITORIES</h1></div>
+      <div class="meta">LETTERLESS · ONE COLOR · 20 PX TESTED<br />OPTIONAL BRAND DEVICE, NOT FORCED LOGO</div>
+    </header>
+    <div class="symbol-grid">
+      <article class="symbol-card">
+        <span class="label">01</span>
+        <div class="symbol-stage">
+          <svg viewBox="0 0 200 200" fill="none" aria-label="Flick trail">
+            <path d="M29 135L55 122L66 146L40 159Z" fill="currentColor" opacity=".34"/>
+            <path d="M62 111L99 93L116 130L78 148Z" fill="currentColor" opacity=".62"/>
+            <path d="M104 72L161 44L186 98L128 126Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="symbol-name">Flick Trail</div>
+        <p class="symbol-copy">Three frames accelerate into one decisive hit. It can animate naturally and avoids literal camera hardware.</p>
+        <div class="small-test">
+          <svg class="s32" viewBox="0 0 200 200"><path d="M29 135L55 122L66 146L40 159Z" fill="currentColor" opacity=".34"/><path d="M62 111L99 93L116 130L78 148Z" fill="currentColor" opacity=".62"/><path d="M104 72L161 44L186 98L128 126Z" fill="currentColor"/></svg>
+          <svg class="s20" viewBox="0 0 200 200"><path d="M29 135L55 122L66 146L40 159Z" fill="currentColor" opacity=".34"/><path d="M62 111L99 93L116 130L78 148Z" fill="currentColor" opacity=".62"/><path d="M104 72L161 44L186 98L128 126Z" fill="currentColor"/></svg>
+          <span>32 px / 20 px</span>
+        </div>
+      </article>
+
+      <article class="symbol-card">
+        <span class="label">02</span>
+        <div class="symbol-stage">
+          <svg viewBox="0 0 200 200" fill="none" aria-label="Contact mark">
+            <path d="M24 61H84L108 99L84 137H24L52 99Z" fill="currentColor"/>
+            <path d="M176 61H116L92 99L116 137H176L148 99Z" fill="currentColor"/>
+            <rect x="91" y="90" width="18" height="18" transform="rotate(45 91 90)" fill="#facc15"/>
+          </svg>
+        </div>
+        <div class="symbol-name">Contact Mark</div>
+        <p class="symbol-copy">Two sides meet at the moment that matters. Strong sports meaning, but it must avoid drifting toward a generic performance logo.</p>
+        <div class="small-test" style="color:#facc15">
+          <svg class="s32" viewBox="0 0 200 200"><path d="M24 61H84L108 99L84 137H24L52 99Z" fill="currentColor"/><path d="M176 61H116L92 99L116 137H176L148 99Z" fill="currentColor"/></svg>
+          <svg class="s20" viewBox="0 0 200 200"><path d="M24 61H84L108 99L84 137H24L52 99Z" fill="currentColor"/><path d="M176 61H116L92 99L116 137H176L148 99Z" fill="currentColor"/></svg>
+          <span>32 px / 20 px</span>
+        </div>
+      </article>
+
+      <article class="symbol-card">
+        <span class="label">03</span>
+        <div class="symbol-stage">
+          <svg viewBox="0 0 200 200" fill="none" aria-label="Seven count">
+            <path d="M31 143H55V166H31Z" fill="currentColor" opacity=".30"/>
+            <path d="M31 110H72V133H31Z" fill="currentColor" opacity=".40"/>
+            <path d="M31 77H91V100H31Z" fill="currentColor" opacity=".52"/>
+            <path d="M31 44H108V67H31Z" fill="currentColor" opacity=".64"/>
+            <path d="M118 44H170V67H118Z" fill="currentColor" opacity=".76"/>
+            <path d="M101 77H170V100H101Z" fill="currentColor" opacity=".88"/>
+            <path d="M82 110H170V133H82Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="symbol-name">Seven Count</div>
+        <p class="symbol-copy">Seven cuts encode the daily promise without drawing a calendar. Better as a pattern and motion signature than a profile icon.</p>
+        <div class="small-test">
+          <svg class="s32" viewBox="0 0 200 200"><path d="M31 143H55V166H31Z" fill="currentColor" opacity=".30"/><path d="M31 110H72V133H31Z" fill="currentColor" opacity=".40"/><path d="M31 77H91V100H31Z" fill="currentColor" opacity=".52"/><path d="M31 44H108V67H31Z" fill="currentColor" opacity=".64"/><path d="M118 44H170V67H118Z" fill="currentColor" opacity=".76"/><path d="M101 77H170V100H101Z" fill="currentColor" opacity=".88"/><path d="M82 110H170V133H82Z" fill="currentColor"/></svg>
+          <svg class="s20" viewBox="0 0 200 200"><path d="M31 143H55V166H31Z" fill="currentColor" opacity=".30"/><path d="M31 110H72V133H31Z" fill="currentColor" opacity=".40"/><path d="M31 77H91V100H31Z" fill="currentColor" opacity=".52"/><path d="M31 44H108V67H31Z" fill="currentColor" opacity=".64"/><path d="M118 44H170V67H118Z" fill="currentColor" opacity=".76"/><path d="M101 77H170V100H101Z" fill="currentColor" opacity=".88"/><path d="M82 110H170V133H82Z" fill="currentColor"/></svg>
+          <span>32 px / 20 px</span>
+        </div>
+      </article>
+
+      <article class="symbol-card">
+        <span class="label">04</span>
+        <div class="symbol-stage">
+          <svg viewBox="0 0 200 200" fill="none" aria-label="Hit frame">
+            <path d="M30 32H92V55H53V91H30V32Z" fill="currentColor"/>
+            <path d="M170 168H108V145H147V109H170V168Z" fill="currentColor"/>
+            <path d="M111 43L157 89L89 157L43 111Z" fill="currentColor" opacity=".42"/>
+            <rect x="80" y="80" width="40" height="40" transform="rotate(45 80 80)" fill="currentColor"/>
+          </svg>
+        </div>
+        <div class="symbol-name">Hit Frame</div>
+        <p class="symbol-copy">A crop frame disrupted by the action inside it. More media-specific than the others, but still avoids lens and shutter clichés.</p>
+        <div class="small-test" style="color:#facc15">
+          <svg class="s32" viewBox="0 0 200 200"><path d="M30 32H92V55H53V91H30V32Z" fill="currentColor"/><path d="M170 168H108V145H147V109H170V168Z" fill="currentColor"/><rect x="80" y="80" width="40" height="40" transform="rotate(45 80 80)" fill="currentColor"/></svg>
+          <svg class="s20" viewBox="0 0 200 200"><path d="M30 32H92V55H53V91H30V32Z" fill="currentColor"/><path d="M170 168H108V145H147V109H170V168Z" fill="currentColor"/><rect x="80" y="80" width="40" height="40" transform="rotate(45 80 80)" fill="currentColor"/></svg>
+          <span>32 px / 20 px</span>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="page grain" id="applications">
+    <div class="applications">
+      <div class="site-mock">
+        <img src="file:///Users/nino/Workspace/dev/apps/flickdaymedia/images/gallery/portfolio-06.jpg" alt="Beach volleyball action" />
+        <div class="nav">
+          <div class="nav-logo">flick<span class="day">day</span></div>
+          <div class="nav-cta">BOOK COVERAGE →</div>
+        </div>
+        <div class="hero-copy">
+          <div class="micro">CHICAGO · GRASSROOTS SPORTS MEDIA</div>
+          <h2>THE RALLY<br />LIVES HERE.</h2>
+          <p>Raw, fast, and player-first coverage for the people who show up and play.</p>
+        </div>
+      </div>
+      <div class="app-right">
+        <div class="reel">
+          <img src="file:///Users/nino/Workspace/dev/apps/flickdaymedia/images/gallery/portfolio-01.jpg" alt="Volleyball player serving" />
+          <div class="watermark"><div class="wm-mini">flick<span class="day">day</span></div><div class="micro">@FLICKDAY.MEDIA</div></div>
+          <div class="lower-third"><div class="tag">MATCH POINT · SET 03</div><div class="name">JALAPEÑO OPEN</div></div>
+        </div>
+        <div class="app-bottom">
+          <div class="avatar">
+            <svg viewBox="0 0 200 200" fill="none" aria-label="Flick trail avatar"><path d="M29 135L55 122L66 146L40 159Z" fill="currentColor" opacity=".34"/><path d="M62 111L99 93L116 130L78 148Z" fill="currentColor" opacity=".62"/><path d="M104 72L161 44L186 98L128 126Z" fill="currentColor"/></svg>
+          </div>
+          <div class="shirt">
+            <div class="shirt-print"><div class="stack">flick<span class="day">day</span></div><div class="media-label">MEDIA</div></div>
+            <div class="app-caption"><b>One-color ready.</b><br />No tiny camera details to lose in DTF or embroidery.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="page lockup-page" id="lockups">
+    <header class="board-header">
+      <div><div class="eyebrow">Flickday identity reset · 04</div><h1>LOCKUP LOGIC + COPY CHECK</h1></div>
+      <div class="meta">WORDMARK FIRST · DESCRIPTOR SECOND · TAGLINE THIRD<br />NO ICON SOUP</div>
+    </header>
+    <div class="lockups">
+      <article class="lockup-card dark">
+        <span class="lockup-title">Primary · compact</span>
+        <div class="final-wm">flick<span class="day">day</span></div>
+      </article>
+      <article class="lockup-card yellow">
+        <span class="lockup-title">Company lockup</span>
+        <div class="final-wm">flick<span class="day">day</span></div>
+        <div class="media-row"><i class="bar"></i><span>MEDIA</span></div>
+      </article>
+      <article class="lockup-card dark">
+        <span class="lockup-title">Tagline lockup</span>
+        <div class="tagline">EVERY DAY’S A <em>FLICKDAY.</em></div>
+        <div class="tag-sub">Use the curly apostrophe · “Every Day” is two words</div>
+      </article>
+      <article class="lockup-card">
+        <span class="lockup-title">System recommendation</span>
+        <div class="no-symbol">
+          <i class="slash"></i>
+          <div class="system-note"><strong>Do not make an icon decision just to fill an avatar.</strong> Advance the Rush wordmark first. Let Flick Trail compete as a motion/editorial device; promote it to logo only if it becomes recognizable through use.</div>
+        </div>
+        <div class="system-list">
+          <b>Safe copy</b><span>Every Day’s a Flickday · Raw. Fast. Player-first. · Match Point · Shot by Flickday</span>
+          <b>Avoid</b><span>“We make you go viral,” forced slang, “epic content,” “cinematic AF,” and generic hype copy.</span>
+        </div>
+      </article>
+    </div>
+  </section>
+</body>
+</html>

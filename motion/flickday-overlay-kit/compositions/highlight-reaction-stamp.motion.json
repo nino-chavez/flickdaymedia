@@ -1,0 +1,10 @@
+{
+  "duration": 2.2,
+  "maxStaticSec": 1.25,
+  "assertions": [
+    { "kind": "appearsBy", "selector": "#stamp-text", "bySec": 0.52 },
+    { "kind": "before", "a": "#stamp-seam", "b": "#stamp-text" },
+    { "kind": "staysInFrame", "selector": "#highlight-stamp" },
+    { "kind": "keepsMoving", "withinSelector": "#highlight-stamp" }
+  ]
+}

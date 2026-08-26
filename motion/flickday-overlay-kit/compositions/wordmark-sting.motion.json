@@ -1,0 +1,10 @@
+{
+  "duration": 3.2,
+  "maxStaticSec": 2.1,
+  "assertions": [
+    { "kind": "appearsBy", "selector": "#wordmark", "bySec": 0.52 },
+    { "kind": "before", "a": "#wordmark-seam", "b": "#wordmark" },
+    { "kind": "staysInFrame", "selector": "#wordmark-lockup" },
+    { "kind": "keepsMoving", "withinSelector": "#wordmark-lockup" }
+  ]
+}

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en" data-composition-variables='[
+  {"id":"playerName","type":"string","label":"Player name","default":"MAYA SANTOS","maxLength":24},
+  {"id":"playerDetail","type":"string","label":"Player detail","default":"12 · OUTSIDE","maxLength":28},
+  {"id":"accent","type":"color","label":"Accent","default":"#FACC15"},
+  {"id":"textColor","type":"color","label":"Text color","default":"#FFFFFF"}
+]'>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>Flickday Player Lower Third</title>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+      @font-face { font-family: "Flickday Montserrat"; src: url("assets/fonts/montserrat-900.woff2") format("woff2"); font-style: normal; font-weight: 900; font-display: block; }
+      @font-face { font-family: "Flickday Inter"; src: url("assets/fonts/inter-800.woff2") format("woff2"); font-style: normal; font-weight: 800; font-display: block; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+      body { font-family: "Flickday Inter", sans-serif; }
+      #root { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: transparent; }
+      .clip { position: absolute; inset: 0; width: 100%; height: 100%; }
+      .lower-third { position: absolute; left: 84px; top: 1400px; width: 716px; height: 250px; display: flex; align-items: flex-start; }
+      .seam { display: block; flex: 0 0 12px; width: 12px; height: 196px; background: var(--accent, #FACC15); transform-origin: 50% 50%; will-change: transform, opacity; }
+      .copy { margin-left: 28px; width: 650px; height: 196px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+      .wipe { display: block; max-width: 650px; overflow: hidden; --reveal: 100%; clip-path: inset(0 calc(100% - var(--reveal)) 0 0); will-change: transform, opacity, clip-path; }
+      .name { display: block; width: 650px; height: 110px; padding: 10px 22px 12px; background: rgba(0, 0, 0, 0.90); color: var(--textColor, #FFFFFF); font-family: "Flickday Montserrat", sans-serif; font-size: 78px; font-weight: 900; line-height: 1.04; letter-spacing: -0.015em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .detail { display: block; max-width: 650px; padding: 8px 14px 9px; background: var(--accent, #FACC15); color: #111318; font-family: "Flickday Inter", sans-serif; font-size: 30px; font-weight: 800; line-height: 1; letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="player-lower-third" data-start="0" data-duration="4.5" data-width="1080" data-height="1920" data-fps="30">
+      <section id="lower-third-clip" class="clip" data-start="0" data-duration="4.5" data-track-index="1">
+        <div id="player-lower-third" class="lower-third">
+          <i id="player-seam" class="seam" aria-hidden="true"></i>
+          <div class="copy">
+            <div id="name-wipe" class="wipe"><div id="player-name" class="name" data-var-text="playerName">MAYA SANTOS</div></div>
+            <div id="detail-wipe" class="wipe"><div id="player-detail" class="detail" data-var-text="playerDetail">12 · OUTSIDE</div></div>
+          </div>
+        </div>
+      </section>
+    </div>
+    <script>
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true, defaults: { ease: "power3.out" } });
+      tl.fromTo("#player-seam", { scaleY: 0, opacity: 0 }, { scaleY: 1, opacity: 1, duration: 0.18, ease: "power4.out" }, 0.12);
+      tl.fromTo("#name-wipe", { "--reveal": "0%", x: 26, opacity: 0 }, { "--reveal": "100%", x: 0, opacity: 1, duration: 0.34, ease: "expo.out" }, 0.22);
+      tl.fromTo("#detail-wipe", { "--reveal": "0%", x: 18, opacity: 0 }, { "--reveal": "100%", x: 0, opacity: 1, duration: 0.28, ease: "power4.out" }, 0.42);
+      tl.to("#player-seam", { x: 18, duration: 0.08, ease: "power4.out" }, 2.74);
+      tl.to("#player-seam", { x: 0, duration: 0.14, ease: "power2.out" }, 2.83);
+      tl.to("#detail-wipe", { "--reveal": "0%", x: -18, opacity: 0, duration: 0.24, ease: "power3.in" }, 3.86);
+      tl.to("#name-wipe", { "--reveal": "0%", x: -26, opacity: 0, duration: 0.30, ease: "power3.in" }, 3.94);
+      tl.to("#player-seam", { scaleY: 0, opacity: 0, duration: 0.18, ease: "power3.in" }, 4.18);
+      window.__timelines["player-lower-third"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
