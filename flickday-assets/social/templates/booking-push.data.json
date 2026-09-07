@@ -1,0 +1,17 @@
+{
+  "facts_confirmed": true,
+  "unconfirmed_label": "SAMPLE DATA — NOT FOR PUBLICATION",
+  "format": "feed",
+  "eyebrow": "NOW BOOKING 2026",
+  "word": "BOOKING",
+  "stack_rows": 4,
+  "accent_row": 2,
+  "rows": [
+    { "label": "WHAT",    "value": "On-site photography, real-time reels, same-day photo drops" },
+    { "label": "WHERE",   "value": "Chicago-based, travel available" },
+    { "label": "WHEN",    "value": "Available for 2026 events" },
+    { "label": "CONTACT", "value": "flickday@ninochavez.co", "mono": true }
+  ],
+  "cta": "BOOK US",
+  "url": "flickdaymedia.com"
+}

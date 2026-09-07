@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Flickday Media — booking push</title>
+    <!--
+      Booking / coverage drive. One word stacked and staggered from flush-left to flush-right,
+      one row solid in Flickday Yellow. The stagger exists because a short word set to the
+      column width leaves the canvas half empty; a long word has no slack left and the stack
+      straightens itself, which is the classic form. Nothing here is a fact — every string
+      comes from the payload. Edit <name>.data.json, never this file.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+      /* Palette and faces harvested from the live site's :root (index.html lines 50-62).
+         --alert is not a site token: BRAND-PRIORS lists Event Orange as an intentional
+         non-site accent, and a not-for-publication bar is exactly that intent. Yellow is
+         already the CTA colour, so the alarm cannot also be yellow. */
+      :root{
+        --black:#000000; --white:#ffffff; --yellow:#facc15; --yellow-bright:#fde047;
+        --gray-dark:#111; --gray-mid:#333; --gray-light:#888; --alert:#f97316;
+        --font-display:'Anton',Impact,sans-serif;
+        --font-body:'Inter',system-ui,-apple-system,sans-serif;
+        --font-label:'JetBrains Mono',ui-monospace,monospace;
+        --font-tag:'Barlow Condensed','Oswald',sans-serif;
+      }
+      *{box-sizing:border-box;}
+      html,body{margin:0;overflow:hidden;}
+      body{background:var(--black);color:var(--white);font-family:var(--font-body);
+           -webkit-font-smoothing:antialiased;}
+      /* Story insets are the repo's own validated numbers, read off
+         motion/flickday-overlay-kit/compositions/*.html: stamp top 300, lower third ends
+         270 off the bottom, left 84; right 180 clears the reel action rail. Feed uses 64. */
+      body.feed{--ml:64px;--mr:64px;--mt:64px;--mb:64px;}
+      body.story{--ml:84px;--mr:180px;--mt:300px;--mb:270px;}
+      .card{position:relative;width:1080px;overflow:hidden;background:var(--black);
+            display:flex;flex-direction:column;padding-top:var(--mt);padding-bottom:var(--mb);}
+      body.feed .card{height:1350px;}
+      body.story .card{height:1920px;}
+      .pad{padding-left:var(--ml);padding-right:var(--mr);}
+
+      .alert{flex:0 0 auto;background:var(--alert);color:var(--black);
+             font-family:var(--font-tag);font-weight:700;text-transform:uppercase;
+             font-size:32px;line-height:1;letter-spacing:4px;padding:18px var(--mr) 16px var(--ml);
+             margin-bottom:28px;}
+      .rail{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+      .rail img.mark{height:auto;display:block;}
+      /* SOCIAL.md: the shipped bugs are rendered at 3x their intended display size, so a
+         714px lockup is built to sit near 238px on a 1080 canvas. Do not shrink for story. */
+      .lockup{width:238px;}
+      .handle{width:340px;}
+      .tagline{font-family:var(--font-label);font-weight:500;font-size:19px;letter-spacing:3px;
+               color:var(--gray-light);text-transform:uppercase;white-space:nowrap;}
+      .eyebrow{font-family:var(--font-tag);font-weight:700;font-size:32px;line-height:1;
+               letter-spacing:6px;color:var(--yellow);text-transform:uppercase;white-space:nowrap;}
+
+      .stack{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;
+             overflow:hidden;margin:24px 0 0;}
+      .row{font-family:var(--font-display);font-weight:400;text-transform:uppercase;
+           white-space:nowrap;line-height:.82;color:transparent;-webkit-text-stroke:4px #616161;}
+      .row.on{position:relative;z-index:2;color:var(--yellow);-webkit-text-stroke:0;}
+
+      .facts{flex:0 0 auto;margin:26px 0 0;}
+      .fact{display:flex;align-items:baseline;gap:22px;padding:11px 0;border-top:2px solid var(--gray-mid);}
+      .fact:last-child{border-bottom:2px solid var(--gray-mid);}
+      .fact b{flex:0 0 190px;font-family:var(--font-tag);font-weight:700;font-size:25px;line-height:1.15;
+              letter-spacing:3.6px;color:var(--yellow);text-transform:uppercase;}
+      .fact span{flex:1 1 auto;font-family:var(--font-body);font-weight:500;font-size:25px;line-height:1.25;
+                 color:var(--white);}
+      .fact.mono span{font-family:var(--font-label);font-weight:500;font-size:24px;letter-spacing:.4px;}
+
+      .cta{flex:0 0 auto;margin:26px 0 0;background:var(--yellow);color:var(--black);
+           display:flex;align-items:center;justify-content:space-between;gap:20px;
+           padding:20px var(--mr) 18px var(--ml);}
+      .cta b{font-family:var(--font-display);font-weight:400;font-size:54px;line-height:1;
+             letter-spacing:1px;text-transform:uppercase;}
+      .cta span{font-family:var(--font-label);font-weight:700;font-size:25px;letter-spacing:1px;}
+      .foot{margin-top:22px;}
+    </style>
+  </head>
+  <body>
+    <main class="card" id="card"></main>
+    <script>
+      var D = window.RENDER_DATA;
+      var LH = 0.82;
+      document.body.className = D.format;
+
+      var html = '';
+      if (!D.facts_confirmed) html += '<p class="alert">' + D.unconfirmed_label + '</p>';
+      html += '<div class="rail pad"><img class="mark lockup" src="../bug-lockup-white.png" alt="Flickday">' +
+              '<span class="eyebrow">' + D.eyebrow + '</span></div>';
+      html += '<div class="stack pad" id="stack"></div>';
+      html += '<div class="facts pad">' + D.rows.map(function (r) {
+        return '<div class="fact' + (r.mono ? ' mono' : '') + '"><b>' + r.label + '</b><span>' + r.value + '</span></div>';
+      }).join('') + '</div>';
+      html += '<div class="cta"><b>' + D.cta + '</b><span>' + D.url + '</span></div>';
+      html += '<div class="rail foot pad"><img class="mark handle" src="../handle-flat-white.png" alt="@flickday.media">' +
+              '<span class="tagline">Every Day\'s a Flickday</span></div>';
+      document.getElementById('card').innerHTML = html;
+
+      // Size the word to the content column, then indent each row so the stack runs
+      // flush-left to flush-right. A word with no slack stacks straight.
+      var stack = document.getElementById('stack');
+      var probe = document.createElement('div');
+      probe.className = 'row';
+      probe.style.cssText = 'position:absolute;visibility:hidden;font-size:200px;';
+      probe.textContent = D.word;
+      document.body.appendChild(probe);
+
+      document.fonts.ready.then(function () {
+        var cs = getComputedStyle(stack);
+        var colW = stack.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        var fitW = 200 * colW / probe.getBoundingClientRect().width;
+        probe.remove();
+
+        var n = D.stack_rows || 4;
+        var size = Math.floor(Math.min(fitW, stack.clientHeight / (n * LH)));
+        var wordW = size / fitW * colW;
+        var accent = Math.min(D.accent_row === undefined ? n - 2 : D.accent_row, n - 1);
+
+        var out = '';
+        for (var i = 0; i < n; i++) {
+          var indent = n > 1 ? Math.round(i * (colW - wordW) / (n - 1)) : 0;
+          out += '<div class="row' + (i === accent ? ' on' : '') +
+                 '" style="font-size:' + size + 'px;margin-left:' + indent + 'px">' + D.word + '</div>';
+        }
+        stack.innerHTML = out;
+      });
+    </script>
+  </body>
+</html>

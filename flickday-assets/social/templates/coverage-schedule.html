@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Flickday Media — coverage schedule</title>
+    <!--
+      Where Flickday is shooting next. A dated list on raised panels: yellow date tile left,
+      event and city right, optional CONFIRMED / TENTATIVE chip. The chip is the point of the
+      card — a tentative date that looks confirmed is the failure this template exists to
+      avoid. Edit <name>.data.json, never this file.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+      /* Palette and faces harvested from the live site's :root (index.html lines 50-62).
+         --alert is BRAND-PRIORS' Event Orange, used only for the not-for-publication bar. */
+      :root{
+        --black:#000000; --white:#ffffff; --yellow:#facc15; --yellow-bright:#fde047;
+        --gray-dark:#111; --gray-mid:#333; --gray-light:#888; --alert:#f97316;
+        --font-display:'Anton',Impact,sans-serif;
+        --font-body:'Inter',system-ui,-apple-system,sans-serif;
+        --font-label:'JetBrains Mono',ui-monospace,monospace;
+        --font-tag:'Barlow Condensed','Oswald',sans-serif;
+      }
+      *{box-sizing:border-box;}
+      html,body{margin:0;overflow:hidden;}
+      body{background:var(--black);color:var(--white);font-family:var(--font-body);
+           -webkit-font-smoothing:antialiased;}
+      /* Story insets read off motion/flickday-overlay-kit/compositions/*.html. */
+      body.feed{--ml:64px;--mr:64px;--mt:64px;--mb:64px;}
+      body.story{--ml:84px;--mr:180px;--mt:300px;--mb:270px;}
+      .card{position:relative;width:1080px;overflow:hidden;background:var(--black);
+            display:flex;flex-direction:column;padding-top:var(--mt);padding-bottom:var(--mb);}
+      body.feed .card{height:1350px;}
+      body.story .card{height:1920px;}
+      .pad{padding-left:var(--ml);padding-right:var(--mr);}
+
+      .alert{flex:0 0 auto;background:var(--alert);color:var(--black);
+             font-family:var(--font-tag);font-weight:700;text-transform:uppercase;
+             font-size:32px;line-height:1;letter-spacing:4px;padding:18px var(--mr) 16px var(--ml);
+             margin-bottom:28px;}
+      .rail{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+      .rail img.mark{height:auto;display:block;}
+      .lockup{width:238px;}
+      .handle{width:340px;}
+      .tagline{font-family:var(--font-label);font-weight:500;font-size:19px;letter-spacing:3px;
+               color:var(--gray-light);text-transform:uppercase;white-space:nowrap;}
+      .eyebrow{font-family:var(--font-tag);font-weight:700;font-size:32px;line-height:1;
+               letter-spacing:6px;color:var(--yellow);text-transform:uppercase;white-space:nowrap;}
+
+      /* The title is capped so the dated rows always keep their share of the card. */
+      .head{flex:0 0 auto;margin:24px 0 0;overflow:hidden;}
+      body.feed .head{max-height:270px;}
+      body.story .head{max-height:360px;}
+      .line{font-family:var(--font-display);font-weight:400;text-transform:uppercase;
+            white-space:nowrap;line-height:.92;color:var(--white);}
+      .sub{flex:0 0 auto;margin:16px 0 0;font-family:var(--font-body);font-weight:500;font-size:28px;
+           line-height:1.3;color:var(--gray-light);}
+
+      .rows{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:14px;
+            margin:28px 0 0;overflow:hidden;}
+      .r{flex:1 1 0;min-height:0;display:flex;align-items:stretch;background:var(--gray-dark);
+         border:2px solid var(--gray-mid);overflow:hidden;}
+      .date{flex:0 0 128px;background:var(--yellow);color:var(--black);display:flex;
+            flex-direction:column;align-items:center;justify-content:center;padding:10px 0;}
+      .date i{font-style:normal;font-family:var(--font-tag);font-weight:700;font-size:25px;
+              line-height:1;letter-spacing:3.4px;text-transform:uppercase;}
+      .date b{font-family:var(--font-display);font-weight:400;font-size:56px;line-height:.9;margin-top:4px;}
+      .meta{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:center;
+            padding:0 24px;}
+      .meta strong{display:block;font-family:var(--font-tag);font-weight:700;font-size:40px;
+                   line-height:1.02;letter-spacing:1.4px;text-transform:uppercase;color:var(--white);
+                   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+      .meta em{display:block;font-style:normal;margin-top:6px;font-family:var(--font-body);
+               font-weight:500;font-size:23px;line-height:1.2;color:var(--gray-light);
+               overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+      .chip{flex:0 0 auto;align-self:center;margin-right:22px;font-family:var(--font-tag);
+            font-weight:700;font-size:20px;line-height:1;letter-spacing:2.6px;text-transform:uppercase;
+            padding:10px 14px 8px;border:2px solid var(--gray-light);color:var(--gray-light);white-space:nowrap;}
+      .chip.on{border-color:var(--yellow);background:var(--yellow);color:var(--black);}
+
+      .cta{flex:0 0 auto;margin:26px 0 0;background:var(--yellow);color:var(--black);
+           display:flex;align-items:center;justify-content:space-between;gap:20px;
+           padding:20px var(--mr) 18px var(--ml);}
+      .cta b{font-family:var(--font-display);font-weight:400;font-size:50px;line-height:1;
+             letter-spacing:1px;text-transform:uppercase;}
+      .cta span{font-family:var(--font-label);font-weight:700;font-size:24px;letter-spacing:1px;}
+      .foot{margin-top:22px;}
+      .day{font-family:var(--font-label);font-weight:700;font-size:19px;letter-spacing:3px;
+           color:var(--yellow);text-transform:uppercase;white-space:nowrap;text-align:right;}
+      .day em{display:block;margin-top:7px;font-style:normal;font-weight:500;color:var(--gray-light);}
+      .footline{flex:0 0 auto;margin:24px 0 0;display:flex;align-items:center;
+                justify-content:space-between;gap:24px;}
+    </style>
+  </head>
+  <body>
+    <main class="card" id="card"></main>
+    <script>
+      var D = window.RENDER_DATA;
+      document.body.className = D.format;
+
+      var LH = 0.92;
+      var html = '';
+      if (!D.facts_confirmed) html += '<p class="alert">' + D.unconfirmed_label + '</p>';
+      html += '<div class="rail pad"><img class="mark lockup" src="../bug-lockup-white.png" alt="Flickday">' +
+              '<span class="eyebrow">' + D.eyebrow + '</span></div>';
+      html += '<div class="head pad" id="head"></div><p class="sub pad">' + D.subtitle + '</p>';
+      html += '<div class="rows pad">' + D.rows.map(function (r) {
+        var chip = r.chip
+          ? '<span class="chip' + (/^confirmed$/i.test(r.chip) ? ' on' : '') + '">' + r.chip + '</span>'
+          : '';
+        return '<div class="r"><div class="date"><i>' + r.m + '</i><b>' + r.d + '</b></div>' +
+               '<div class="meta"><strong>' + r.name + '</strong><em>' + r.where + '</em></div>' +
+               chip + '</div>';
+      }).join('') + '</div>';
+      html += '<div class="cta"><b>' + D.cta + '</b><span>' + D.url + '</span></div>';
+      html += '<div class="footline pad"><img class="mark handle" src="../handle-flat-white.png" alt="@flickday.media">' +
+              '<span class="day">' + D.footer + '<em class="tagline">Every Day\'s a Flickday</em></span></div>';
+      document.getElementById('card').innerHTML = html;
+
+      // Break a short display string into the arrangement that actually fills the column.
+      // Every break mask is measured; an arrangement covering at least 82% of the column
+      // qualifies, and the biggest type among those wins. Without this, a two-word headline
+      // always sets one long line over one short one, and the short line leaves a hole the
+      // size of a quarter of the card. `accentLast` colours the final word.
+      function layoutDisplay(host, text, capH, LH, accentLast) {
+        var words = text.split(/\s+/).filter(Boolean);
+        var probe = document.createElement('div');
+        probe.className = 'line';
+        probe.style.cssText = 'position:absolute;visibility:hidden;font-size:200px;';
+        host.appendChild(probe);
+        var w = words.map(function (x) { probe.textContent = x; return probe.getBoundingClientRect().width; });
+        probe.textContent = ' ';
+        var sp = probe.getBoundingClientRect().width;
+        probe.remove();
+
+        var cs = getComputedStyle(host);
+        var colW = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        var n = words.length;
+        var best = null;
+
+        for (var mask = 0; mask < (1 << (n - 1)); mask++) {
+          var groups = [[0]];
+          for (var i = 1; i < n; i++) {
+            if (mask & (1 << (i - 1))) groups.push([i]);
+            else groups[groups.length - 1].push(i);
+          }
+          var widest = 0;
+          groups.forEach(function (g) {
+            var gw = sp * (g.length - 1);
+            g.forEach(function (i) { gw += w[i]; });
+            widest = Math.max(widest, gw);
+          });
+          var size = Math.min(200 * colW / widest, capH / (groups.length * LH));
+          var fill = size * widest / 200 / colW;
+          var cand = { groups: groups, size: Math.floor(size), fill: fill };
+          if (!best) { best = cand; continue; }
+          var ok = cand.fill >= 0.82, bok = best.fill >= 0.82;
+          if (ok && bok) { if (cand.size > best.size) best = cand; }
+          else if (ok && !bok) best = cand;
+          else if (!ok && !bok && cand.fill > best.fill) best = cand;
+        }
+
+        host.innerHTML = best.groups.map(function (g) {
+          return '<div class="line" style="font-size:' + best.size + 'px">' + g.map(function (i) {
+            return (accentLast && i === n - 1) ? '<span class="hi">' + words[i] + '</span>' : words[i];
+          }).join(' ') + '</div>';
+        }).join('');
+      }
+
+      document.fonts.ready.then(function () {
+        var head = document.getElementById('head');
+        layoutDisplay(head, D.title, parseFloat(getComputedStyle(head).maxHeight), LH, false);
+      });
+    </script>
+  </body>
+</html>
