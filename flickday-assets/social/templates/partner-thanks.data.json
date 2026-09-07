@@ -1,0 +1,16 @@
+{
+  "facts_confirmed": false,
+  "unconfirmed_label": "SAMPLE DATA — NOT FOR PUBLICATION",
+  "format": "feed",
+  "eyebrow": "2026 SEASON",
+  "headline": "THANK YOU",
+  "tiles": [
+    { "name": "Tournament partner" },
+    { "name": "Host club" },
+    { "name": "Series organizer" },
+    { "name": "Venue partner" },
+    { "name": "Gear partner" },
+    { "name": "Media partner" }
+  ],
+  "closing": "Couldn't have shot the season without you."
+}

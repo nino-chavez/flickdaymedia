@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Flickday Media — drop notice</title>
+    <!--
+      Gallery status notice. Typographic, no icon: the status word is the whole graphic.
+      `kind` drives the colour logic, not a separate template — `live` inverts the card to
+      a yellow field with black type so a release does not read as an apology; `delayed`
+      and `update` stay on black. Edit <name>.data.json, never this file.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+      /* Palette and faces harvested from the live site's :root (index.html lines 50-62).
+         --alert is BRAND-PRIORS' Event Orange, used only for the not-for-publication bar. */
+      :root{
+        --black:#000000; --white:#ffffff; --yellow:#facc15; --yellow-bright:#fde047;
+        --gray-dark:#111; --gray-mid:#333; --gray-light:#888; --alert:#f97316;
+        --font-display:'Anton',Impact,sans-serif;
+        --font-body:'Inter',system-ui,-apple-system,sans-serif;
+        --font-label:'JetBrains Mono',ui-monospace,monospace;
+        --font-tag:'Barlow Condensed','Oswald',sans-serif;
+      }
+      *{box-sizing:border-box;}
+      html,body{margin:0;overflow:hidden;}
+      body{background:var(--black);color:var(--white);font-family:var(--font-body);
+           -webkit-font-smoothing:antialiased;}
+      /* Story insets read off motion/flickday-overlay-kit/compositions/*.html. */
+      body.feed{--ml:64px;--mr:64px;--mt:64px;--mb:64px;}
+      body.story{--ml:84px;--mr:180px;--mt:300px;--mb:270px;}
+      .card{position:relative;width:1080px;overflow:hidden;background:var(--black);
+            display:flex;flex-direction:column;padding-top:var(--mt);padding-bottom:var(--mb);}
+      body.feed .card{height:1350px;}
+      body.story .card{height:1920px;}
+      .pad{padding-left:var(--ml);padding-right:var(--mr);}
+
+      .alert{flex:0 0 auto;background:var(--alert);color:var(--black);
+             font-family:var(--font-tag);font-weight:700;text-transform:uppercase;
+             font-size:32px;line-height:1;letter-spacing:4px;padding:18px var(--mr) 16px var(--ml);
+             margin-bottom:28px;}
+      .rail{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+      .rail img.mark{height:auto;display:block;}
+      .lockup{width:238px;}
+      .handle{width:340px;}
+      .tagline{font-family:var(--font-label);font-weight:500;font-size:19px;letter-spacing:3px;
+               color:var(--gray-light);text-transform:uppercase;white-space:nowrap;}
+
+      .chip{font-family:var(--font-tag);font-weight:700;font-size:27px;line-height:1;
+            letter-spacing:5px;text-transform:uppercase;padding:12px 20px 10px;white-space:nowrap;}
+
+      /* The status word sits on its own field so `live` can invert the whole block. */
+      .hero{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;justify-content:center;
+            overflow:hidden;margin:26px 0 0;padding:34px var(--mr) 34px var(--ml);}
+      .line{font-family:var(--font-display);font-weight:400;text-transform:uppercase;
+            white-space:nowrap;line-height:.92;}
+      .reason{flex:0 0 auto;margin:30px 0 0;font-family:var(--font-body);font-weight:400;
+              font-size:34px;line-height:1.35;color:var(--white);}
+      body.story .reason{font-size:36px;}
+
+      .detail{flex:0 0 auto;margin:30px 0 0;}
+      .drow{display:flex;align-items:baseline;gap:22px;padding:14px 0;border-top:2px solid var(--gray-mid);}
+      .drow:last-child{border-bottom:2px solid var(--gray-mid);}
+      .drow b{flex:0 0 230px;font-family:var(--font-tag);font-weight:700;font-size:25px;line-height:1.15;
+              letter-spacing:3.6px;color:var(--yellow);text-transform:uppercase;}
+      .drow span{flex:1 1 auto;font-family:var(--font-body);font-weight:500;font-size:26px;line-height:1.3;}
+      .drow.mono span{font-family:var(--font-label);font-weight:500;font-size:25px;letter-spacing:.4px;}
+      .foot{margin-top:32px;}
+
+      /* --- kind: live — a release, so the field inverts --- */
+      body.live .hero{background:var(--yellow);}
+      body.live .line{color:var(--black);}
+      body.live .chip{background:var(--yellow);color:var(--black);}
+      /* --- kind: update --- */
+      body.update .line{color:var(--yellow);}
+      body.update .chip{background:transparent;color:var(--yellow);box-shadow:inset 0 0 0 3px var(--yellow);}
+      body.update .hero{border-top:8px solid var(--yellow);border-bottom:8px solid var(--yellow);}
+      /* --- kind: delayed — muted, never alarmed --- */
+      body.delayed .line{color:var(--white);}
+      body.delayed .chip{background:transparent;color:var(--gray-light);box-shadow:inset 0 0 0 3px var(--gray-mid);}
+      body.delayed .hero{border-top:8px solid var(--gray-mid);border-bottom:8px solid var(--gray-mid);}
+    </style>
+  </head>
+  <body>
+    <main class="card" id="card"></main>
+    <script>
+      var D = window.RENDER_DATA;
+      var LH = 0.92;
+      document.body.className = D.format + ' ' + D.kind;
+
+      var html = '';
+      if (!D.facts_confirmed) html += '<p class="alert">' + D.unconfirmed_label + '</p>';
+      html += '<div class="rail pad"><img class="mark lockup" src="../bug-lockup-white.png" alt="Flickday">' +
+              '<span class="chip">' + D.chip + '</span></div>';
+      html += '<div class="hero" id="hero"></div>';
+      html += '<p class="reason pad">' + D.reason + '</p>';
+      html += '<div class="detail pad">' +
+              '<div class="drow"><b>What to do</b><span>' + D.next + '</span></div>' +
+              '<div class="drow mono"><b>Updates at</b><span>' + D.updates_at + '</span></div>' +
+              '</div>';
+      html += '<div class="rail foot pad"><img class="mark handle" src="../handle-flat-white.png" alt="@flickday.media">' +
+              '<span class="tagline">Every Day\'s a Flickday</span></div>';
+      document.getElementById('card').innerHTML = html;
+
+      // Break a short display string into the arrangement that actually fills the column.
+      // Every break mask is measured; an arrangement covering at least 82% of the column
+      // qualifies, and the biggest type among those wins. Without this, a two-word headline
+      // always sets one long line over one short one, and the short line leaves a hole the
+      // size of a quarter of the card. `accentLast` colours the final word.
+      function layoutDisplay(host, text, capH, LH, accentLast) {
+        var words = text.split(/\s+/).filter(Boolean);
+        var probe = document.createElement('div');
+        probe.className = 'line';
+        probe.style.cssText = 'position:absolute;visibility:hidden;font-size:200px;';
+        host.appendChild(probe);
+        var w = words.map(function (x) { probe.textContent = x; return probe.getBoundingClientRect().width; });
+        probe.textContent = ' ';
+        var sp = probe.getBoundingClientRect().width;
+        probe.remove();
+
+        var cs = getComputedStyle(host);
+        var colW = host.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+        var n = words.length;
+        var best = null;
+
+        for (var mask = 0; mask < (1 << (n - 1)); mask++) {
+          var groups = [[0]];
+          for (var i = 1; i < n; i++) {
+            if (mask & (1 << (i - 1))) groups.push([i]);
+            else groups[groups.length - 1].push(i);
+          }
+          var widest = 0;
+          groups.forEach(function (g) {
+            var gw = sp * (g.length - 1);
+            g.forEach(function (i) { gw += w[i]; });
+            widest = Math.max(widest, gw);
+          });
+          var size = Math.min(200 * colW / widest, capH / (groups.length * LH));
+          var fill = size * widest / 200 / colW;
+          var cand = { groups: groups, size: Math.floor(size), fill: fill };
+          if (!best) { best = cand; continue; }
+          var ok = cand.fill >= 0.82, bok = best.fill >= 0.82;
+          if (ok && bok) { if (cand.size > best.size) best = cand; }
+          else if (ok && !bok) best = cand;
+          else if (!ok && !bok && cand.fill > best.fill) best = cand;
+        }
+
+        host.innerHTML = best.groups.map(function (g) {
+          return '<div class="line" style="font-size:' + best.size + 'px">' + g.map(function (i) {
+            return (accentLast && i === n - 1) ? '<span class="hi">' + words[i] + '</span>' : words[i];
+          }).join(' ') + '</div>';
+        }).join('');
+      }
+
+      document.fonts.ready.then(function () {
+        var hero = document.getElementById('hero');
+        var cs = getComputedStyle(hero);
+        var capH = hero.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+        layoutDisplay(hero, D.headline, capH, LH, false);
+      });
+    </script>
+  </body>
+</html>

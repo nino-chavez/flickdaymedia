@@ -1,0 +1,17 @@
+{
+  "facts_confirmed": false,
+  "unconfirmed_label": "SAMPLE DATA — NOT FOR PUBLICATION",
+  "format": "feed",
+  "eyebrow": "COVERAGE CALENDAR",
+  "title": "SHOOTING NEXT",
+  "subtitle": "Where Flickday is on the sideline this month.",
+  "rows": [
+    { "m": "Sep", "d": "20", "name": "Grass doubles open",    "where": "Chicago, IL",    "chip": "Confirmed" },
+    { "m": "Sep", "d": "27", "name": "Juniors triples series","where": "Naperville, IL", "chip": "Confirmed" },
+    { "m": "Oct", "d": "11", "name": "Indoor season opener",  "where": "Aurora, IL",     "chip": "Tentative" },
+    { "m": "Oct", "d": "25", "name": "Regional qualifier",    "where": "Rosemont, IL",   "chip": "Tentative" }
+  ],
+  "cta": "BOOK US",
+  "url": "flickdaymedia.com",
+  "footer": "DAY 250 / 365"
+}
