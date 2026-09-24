@@ -306,6 +306,10 @@
     .hero__title {
       position: relative;
       color: var(--white);
+      /* .display-massive sizes off 20vw alone, which overflows the fold on wide-but-short
+         desktop viewports (e.g. 1280x800) and crops the payoff word "FLICKDAY" below the
+         visible area. Cap by viewport height too so the full hero title always fits. */
+      font-size: clamp(4rem, min(20vw, 15vh), 18rem);
     }
 
     .hero__title-line {
