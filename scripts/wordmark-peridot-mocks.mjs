@@ -23,8 +23,8 @@ import { chromium, KIT_LINKS, peridotMark as mark } from './wordmark-lib.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'flickday-assets', 'wordmarks');
-const INDEX = join(ROOT, 'index.html');
-const PHOTO = join(ROOT, 'images', 'gallery', 'portfolio-06.jpg');
+const INDEX = join(ROOT, 'site', 'index.html');
+const PHOTO = join(ROOT, 'site', 'images', 'gallery', 'portfolio-06.jpg');
 const PLAY = join(ROOT, 'flickday-assets', 'brand', 'icon-play.svg');
 
 const YELLOW = '#facc15';
