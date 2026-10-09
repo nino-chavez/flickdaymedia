@@ -29,10 +29,13 @@ const file = (p) => readFileSync(join(ROOT, p))
 const enc = (p) => p.split('/').map(encodeURIComponent).join('/')
 
 // The zone rewrites HTML per response: email obfuscation with a fresh key, a bot-detection
-// script with a per-request token, and sometimes the Web Analytics beacon. Strip those,
-// then all whitespace, so two fetches of one page hash alike.
+// script with a per-request token, and sometimes the Web Analytics beacon. Netlify adds a
+// "hosted on Netlify" comment in production and a review-drawer snippet in deploy
+// previews. Strip those, then all whitespace, so two fetches of one page hash alike.
 function norm(buf) {
   const s = buf.toString('utf8')
+    .replace(/<!-- This site is hosted on Netlify\.[\s\S]*?-->/g, '')
+    .replace(/<div data-netlify-deploy-id="[^"]*"[\s\S]*?<\/div>/g, '')
     .replace(/<script data-cfasync="false" src="\/cdn-cgi\/[^"]*email-decode\.min\.js"><\/script>/g, '')
     .replace(/<script>\(function\(\)\{function c\(\)[\s\S]*?<\/script>/g, '')
     .replace(/<script[^<]*cloudflareinsights[^<]*<\/script>/g, '')
