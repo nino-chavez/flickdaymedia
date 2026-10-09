@@ -1,14 +1,17 @@
-<!DOCTYPE html>
+<!doctype html>
+<!-- Flickday home, Showreel direction: ADR 0001 in nino-chavez/public-site-rethink
+     (sites/flickday/decisions/0001-home-direction-showreel.md). Ported from the approved
+     prototype (concepts/b-showreel at f67eb40); structure and copy unchanged. -->
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Flickday Media | Grassroots Sports Media</title>
-  <meta name="description" content="Grassroots sports media — raw, fast, and player-first. We shoot for the ones who live in the rally.">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Flickday Media: volleyball tournament coverage, Chicago</title>
+  <meta name="description" content="Volleyball tournament photos and reels in Chicago. Galleries within 24–48 hours. Booking indoor tournaments now.">
 
-  <!-- Open Graph -->
-  <meta property="og:title" content="Flickday Media | Every Day's a Flickday">
-  <meta property="og:description" content="Raw, fast, and player-first sports media. Tournament coverage for volleyball and action sports.">
+  <!-- Open Graph / social -->
+  <meta property="og:title" content="Flickday Media | Volleyball tournament coverage, Chicago">
+  <meta property="og:description" content="Photos and reels from your volleyball tournament, within 24–48 hours. Chicago-based, travel available.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://flickdaymedia.com">
   <meta property="og:image" content="./flickday-assets/site/og-share-card.png?v=2">
@@ -16,2427 +19,895 @@
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
 
-  <!-- Favicon / app icons -->
+  <!-- Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="./flickday-assets/site/favicon/favicon-32x32.png?v=2">
   <link rel="icon" type="image/png" sizes="16x16" href="./flickday-assets/site/favicon/favicon-16x16.png?v=2">
   <link rel="apple-touch-icon" sizes="180x180" href="./flickday-assets/site/favicon/apple-touch-icon.png?v=2">
   <link rel="manifest" href="./flickday-assets/site/favicon/site.webmanifest?v=2">
   <meta name="theme-color" content="#0a0a0a">
 
-  <!-- Hero LCP preload: fetch the hero before the inline CSS is parsed. Type-gated so AVIF-capable browsers (the majority) preload only the AVIF the <picture> will select. -->
-  <link rel="preload" as="image" href="./images/gallery/portfolio-06.avif" type="image/avif" fetchpriority="high">
+  <!-- The hero photo is the first-screen image; let the browser start it with the HTML. -->
+  <link rel="preload" as="image" href="images/hero/hero-1600.webp" imagesrcset="images/hero/hero-800.webp 800w, images/hero/hero-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
 
-  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:ital,wght@0,700;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <!-- Wordmark face: Peridot PE (Adobe Fonts kit) — used only for the flickday logotype -->
-  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
-  <link rel="stylesheet" href="https://use.typekit.net/fju5pyz.css">
+  <link rel="preconnect" href="https://imagedelivery.net" crossorigin>
 
   <style>
-    /* ============================================
-       FLICKDAY MEDIA - EDITORIAL SPORTS DESIGN
-       "Like a sports magazine that came to life"
-       ============================================ */
+/* Brand tokens (BRAND-PRIORS.md; values from the previous live :root) */
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --yellow: #facc15;
+  --yellow-bright: #fde047;
+  --gray-dark: #111111;
+  --gray-mid: #333333;
+  --gray-light: #888888; /* 5.9:1 on --black, 5.3:1 on --gray-dark: body-size muted text is fine */
 
-    *, *::before, *::after {
+  --font-display: 'Anton', Impact, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-label: 'JetBrains Mono', ui-monospace, monospace;
+  --font-tag: 'Barlow Condensed', 'Oswald', sans-serif;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --t-feedback: 160ms;
+
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { background: var(--black); color: var(--white); }
+body { margin: 0; font-family: var(--font-body); line-height: 1.5; -webkit-font-smoothing: antialiased; }
+img { display: block; max-width: 100%; }
+a { color: inherit; }
+:focus-visible { outline: 3px solid var(--yellow); outline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .btn, button, [role="button"] { border: 2px solid ButtonText; }
+}
+
+/* Showreel layout and motion (approved prototype style.css) */
+/* Concept B, Showreel. Mobile first. Colors and fonts come from the brand tokens above. */
+
+:root {
+  --pad: 20px;
+  --tile: 150px;
+}
+
+@media (min-width: 900px) {
+  :root {
+    --pad: 48px;
+    --tile: 232px;
+  }
+}
+
+/* Skip link and screen-reader helper */
+.skip-link {
+  position: absolute;
+  left: var(--pad);
+  top: -100px;
+  z-index: 20;
+  padding: 12px 16px;
+  background: var(--yellow);
+  color: var(--black);
+  font-weight: 700;
+  text-decoration: none;
+}
+.skip-link:focus { top: 12px; }
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Base type */
+body { min-width: 320px; }
+p { margin: 0; }
+ul, ol { margin: 0; padding: 0; }
+h1, h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.96;
+  letter-spacing: 0.01em;
+}
+
+/* 200% text on a narrow phone: a one-column grid sizes itself to its widest unbreakable
+   word, so "TOURNAMENT" at double size widened the hero and the page scrolled sideways
+   (measured 433 px at 390 px, 2026-10-09). Let these columns shrink and long words wrap.
+   At normal text sizes every word already fits, so nothing changes. */
+.hero-copy, .find, .find-row, .ask-main { grid-template-columns: minmax(0, 1fr); }
+h1, h2, .btn, .find-label, .contact a, .footer-links a, .footer-text { overflow-wrap: anywhere; }
+/* Keep a range ("24–48") and a separator with its link on one line (cold review of the port). */
+.nowrap { white-space: nowrap; }
+.label {
+  font-family: var(--font-label);
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Buttons: the only boxes in this concept, in two styles */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 12px 24px;
+  border: 2px solid transparent;
+  font: 700 1rem/1.2 var(--font-body);
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background-color var(--t-feedback) var(--ease-out),
+    color var(--t-feedback) var(--ease-out),
+    border-color var(--t-feedback) var(--ease-out);
+}
+.btn-primary { background: var(--yellow); color: var(--black); }
+.btn-primary:hover { background: var(--yellow-bright); }
+.btn-outline { background: transparent; color: var(--white); border-color: var(--white); }
+.btn-outline:hover { background: var(--white); color: var(--black); }
+
+.actions { display: grid; gap: 12px; }
+
+.status {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--white);
+}
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-top: 0.4em;
+  border-radius: 50%;
+  background: var(--yellow);
+}
+
+/* Hero: the still first screen, painted at once */
+.hero {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: var(--black);
+}
+.hero-photo {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 58% 28%;
+}
+/* Phone: a near-opaque scrim behind the text block, since the lower photo is bright sand. */
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 20%),
+    linear-gradient(to top, rgba(0, 0, 0, 0.96) 0%, rgba(0, 0, 0, 0.92) 52%, rgba(0, 0, 0, 0.25) 86%);
+}
+
+@media (min-width: 900px) {
+  .hero-photo { object-position: 50% 26%; }
+  .hero-scrim {
+    background:
+      linear-gradient(to bottom, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 18%),
+      linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 35%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.92) 0%, rgba(0, 0, 0, 0.86) 36%, rgba(0, 0, 0, 0.3) 68%, rgba(0, 0, 0, 0.05) 100%);
+  }
+  .hero .actions {
+    grid-auto-flow: column;
+    justify-content: start;
+  }
+}
+
+.hero-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px var(--pad);
+}
+.hero-header img { width: 112px; height: auto; }
+/* The logo link is a touch target too: 44 px tall like .header-link (conformance review of the port). */
+.brand-link { display: inline-flex; align-items: center; min-height: 44px; }
+.header-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--white);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+.hero-copy {
+  display: grid;
+  gap: 18px;
+  padding: 0 var(--pad) 28px;
+  max-width: 46rem;
+}
+.eyebrow { color: var(--yellow); }
+.hero h1 {
+  font-size: clamp(2.6rem, 11vw, 5.25rem);
+  color: var(--white);
+}
+.subline {
+  max-width: 28ch;
+  font-size: 1.1875rem;
+  line-height: 1.4;
+  color: var(--white);
+}
+
+.hero-latest {
+  display: grid;
+  gap: 10px;
+  padding: 16px var(--pad) 20px;
+  border-top: 1px solid var(--gray-mid);
+  background: rgba(0, 0, 0, 0.82);
+}
+.hero-latest ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+}
+.hero-latest a {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0 8px;
+  min-height: 44px;
+  color: var(--white);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+.hero-latest a span {
+  color: var(--gray-light);
+  font-weight: 500;
+}
+
+/* Sequence: static stack by default (phone, reduced motion, no support) */
+.seq-grid {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+.seq-stage { display: none; }
+.beats {
+  display: grid;
+  gap: 56px;
+  padding-block: 72px;
+}
+.beats-head {
+  display: grid;
+  gap: 12px;
+}
+.beats h2 { font-size: clamp(2.25rem, 9vw, 3.5rem); }
+.beat {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.beat-fig {
+  position: relative;
+  margin: 0;
+  aspect-ratio: 3 / 2;
+  background: var(--gray-dark);
+}
+.beat-fig img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.beat-num { color: var(--yellow); }
+.beat-text {
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 7vw, 2.6rem);
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+@media (min-width: 900px) {
+  .beats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    column-gap: 32px;
+    row-gap: 24px;
+    padding-block: 64px;
+    align-items: start;
+  }
+  .beats-head { grid-column: 1 / -1; }
+}
+
+/* Pinned sequence: desktop, scroll-driven support, motion allowed */
+@supports (animation-timeline: view()) {
+  @media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+    /* height 200vh: the 33.33% and 66.67% range values below assume this exact height and no
+       block padding on .seq-grid. The pin window is then [top aligned, top aligned + 100vh].
+       Change the height and both percentages together. */
+    .seq-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+      column-gap: 48px;
+      height: 200vh;
+      view-timeline: --seq block;
+    }
+    .seq-stage {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: sticky;
+      top: 0;
+      align-self: start;
+      height: 100vh;
+      height: 100svh;
+    }
+    .frame-box {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 4 / 3;
+      background: var(--gray-dark);
+    }
+    .frame {
+      position: absolute;
+      inset: 0;
       margin: 0;
-      padding: 0;
-      box-sizing: border-box;
     }
-
-    :root {
-      --black: #000000;
-      --white: #ffffff;
-      --yellow: #facc15;
-      --yellow-bright: #fde047;
-      --gray-dark: #111;
-      --gray-mid: #333;
-      --gray-light: #888;
-
-      --font-display: 'Anton', Impact, sans-serif;
-      --font-body: 'Inter', system-ui, -apple-system, sans-serif;
-      --font-label: 'JetBrains Mono', ui-monospace, monospace;
-      --font-tag: 'Barlow Condensed', 'Oswald', sans-serif;
-      --font-wordmark: 'peridot-pe-variable', 'Anton', sans-serif;
-
-      --transition-fast: 0.2s ease;
-      --transition-medium: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      --transition-slow: 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      font-family: var(--font-body);
-      background: var(--black);
-      color: var(--white);
-      overflow-x: hidden;
-      line-height: 1.5;
-    }
-
-    /* Reduce motion for accessibility */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-      }
-      .parallax {
-        transform: none !important;
-      }
-    }
-
-    /* ============================================
-       FIXED HEADER - REVEALS ON SCROLL
-       ============================================ */
-
-    .site-header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1000;
-      padding: 1rem 2rem;
-      background: rgba(0, 0, 0, 0.95);
-      backdrop-filter: blur(10px);
-      transform: translateY(-100%);
-      transition: transform 0.3s ease;
-      border-bottom: 1px solid rgba(250, 204, 21, 0.2);
-    }
-
-    .site-header.visible {
-      transform: translateY(0);
-    }
-
-    .site-header__inner {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    /* Wordmark: live Peridot text (see --font-wordmark). font-size ≈ mark height;
-       font-optical-sizing:none pins the axis exactly as the master spec renders it. */
-    .site-header__logo {
-      display: inline-flex;
-      align-items: baseline;
-      font-family: var(--font-wordmark);
-      font-weight: 950;
-      font-optical-sizing: none;
-      font-size: 34px;
-      line-height: 1;
-      color: var(--yellow);
-      white-space: nowrap;
-    }
-    .site-header__logo > span {
-      display: inline-block;
-    }
-
-    @media (min-width: 768px) {
-      .site-header__logo {
-        font-size: 40px;
-      }
-    }
-
-    .site-header__cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.6rem 1.2rem;
-      background: var(--yellow);
-      color: var(--black);
-      font-family: var(--font-display);
-      font-size: 1rem;
-      letter-spacing: 0.05em;
-      text-decoration: none;
-      transition: background var(--transition-fast);
-    }
-
-    .site-header__cta:hover {
-      background: var(--white);
-    }
-
-    @media (max-width: 640px) {
-      .site-header {
-        padding: 0.75rem 1rem;
-      }
-      .site-header__logo {
-        font-size: 30px;
-      }
-      .site-header__cta {
-        padding: 0.5rem 1rem;
-        font-size: 0.875rem;
-      }
-    }
-
-    /* ============================================
-       TYPOGRAPHY - MASSIVE & UNAPOLOGETIC
-       ============================================ */
-
-    .display-massive {
-      font-family: var(--font-display);
-      font-size: clamp(4rem, 20vw, 18rem);
-      line-height: 0.94;
-      letter-spacing: 0.005em;
-      text-transform: uppercase;
-    }
-
-    .display-large {
-      font-family: var(--font-display);
-      font-size: clamp(3rem, 12vw, 10rem);
-      line-height: 0.9;
-      letter-spacing: -0.01em;
-      text-transform: uppercase;
-    }
-
-    .display-medium {
-      font-family: var(--font-display);
-      font-size: clamp(2rem, 8vw, 6rem);
-      line-height: 0.95;
-      text-transform: uppercase;
-    }
-
-    /* Text that punches through images */
-    .text-knockout {
-      mix-blend-mode: difference;
-    }
-
-    .text-outline {
-      -webkit-text-stroke: 2px var(--white);
-      color: transparent;
-    }
-
-    /* ============================================
-       HERO - FULL BLEED EDITORIAL
-       ============================================ */
-
-    .hero {
-      position: relative;
-      min-height: 100vh;
-      min-height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      overflow: hidden;
-    }
-
-    .hero__media {
+    .frame img {
       position: absolute;
       inset: 0;
-      z-index: 1;
-    }
-
-    /* picture is a format-selection wrapper only; dissolve its box so .hero__image sizes against .hero__media */
-    .hero__media picture {
-      display: contents;
-    }
-
-    .hero__image {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 30%;
-      filter: contrast(1.1) brightness(0.9);
     }
+    /* Frames 1 to 5 fade in over frame 0 as the section scrolls. The shorthand comes first,
+       so the timeline and range longhands below are not reset. */
+    .frame.f1 { animation: seq-1 linear both; animation-timeline: --seq; animation-range: cover 33.33% cover 66.67%; }
+    .frame.f2 { animation: seq-2 linear both; animation-timeline: --seq; animation-range: cover 33.33% cover 66.67%; }
+    .frame.f3 { animation: seq-3 linear both; animation-timeline: --seq; animation-range: cover 33.33% cover 66.67%; }
+    .frame.f4 { animation: seq-4 linear both; animation-timeline: --seq; animation-range: cover 33.33% cover 66.67%; }
+    .frame.f5 { animation: seq-5 linear both; animation-timeline: --seq; animation-range: cover 33.33% cover 66.67%; }
 
-    .hero__overlay {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(to top, var(--black) 0%, transparent 40%),
-        linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 30%);
+    .beats {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: auto repeat(3, minmax(0, 1fr));
+      gap: 0;
+      padding-block: 0;
+      height: 100%;
     }
-
-    /* Grain texture for gritty feel */
-    .hero__grain {
-      position: absolute;
-      inset: 0;
-      opacity: 0.15;
-      mix-blend-mode: overlay;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    .beats-head {
+      grid-column: auto;
+      align-self: start;
+      padding-top: 72px;
     }
-
-    .hero__content {
-      position: relative;
-      z-index: 10;
-      padding: 2rem;
-      padding-bottom: 4rem;
+    .beat {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
     }
+    .beat-fig { display: none; }
+    .beat-text { font-size: clamp(2rem, 3.6vw, 3.25rem); }
+  }
+}
 
-    @media (min-width: 768px) {
-      .hero__content {
-        padding: 4rem;
-        padding-bottom: 6rem;
-      }
+@keyframes seq-1 { 0%, 13% { opacity: 0; } 20%, 100% { opacity: 1; } }
+@keyframes seq-2 { 0%, 30% { opacity: 0; } 36%, 100% { opacity: 1; } }
+@keyframes seq-3 { 0%, 47% { opacity: 0; } 53%, 100% { opacity: 1; } }
+@keyframes seq-4 { 0%, 63% { opacity: 0; } 70%, 100% { opacity: 1; } }
+@keyframes seq-5 { 0%, 80% { opacity: 0; } 86%, 100% { opacity: 1; } }
+
+.stage-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  color: var(--gray-light);
+}
+.stage-label a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--white);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+/* Proof: travel rows (motion) or a static grid (no motion, no support) */
+.proof,
+.archive,
+.ask,
+.site-footer {
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: var(--pad);
+}
+.proof {
+  padding-block: 72px;
+}
+.proof h2 { font-size: clamp(2.25rem, 9vw, 3.5rem); }
+.proof-note {
+  margin-top: 12px;
+  max-width: 56ch;
+  color: var(--gray-light);
+}
+
+.travel {
+  margin-top: 28px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.row-wrap { display: contents; }
+.row { display: contents; list-style: none; }
+.tile-li { min-width: 0; }
+.tile {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 3;
+  background: var(--gray-dark);
+  color: var(--white);
+  text-decoration: none;
+}
+.tile-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: filter var(--t-feedback) var(--ease-out);
+}
+.tile:hover .tile-img { filter: brightness(1.12); }
+.tile-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.84);
+}
+.tile-title {
+  font-family: var(--font-tag);
+  font-weight: 700;
+  font-size: 1.05rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.tile-when {
+  font-family: var(--font-label);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--gray-light);
+}
+
+@media (min-width: 900px) {
+  .travel {
+    grid-template-columns: repeat(auto-fill, minmax(var(--tile), 1fr));
+    gap: 12px;
+  }
+}
+
+/* Travel rows: two rows that move in opposite directions, tied to scroll */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .travel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
-
-    .hero__badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: var(--yellow);
-      color: var(--black);
-      font-family: var(--font-display);
-      font-size: 0.875rem;
-      letter-spacing: 0.1em;
-      margin-bottom: 2rem;
-    }
-
-    .hero__badge::before {
-      content: '';
-      width: 8px;
-      height: 8px;
-      background: var(--black);
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    .hero__title {
-      position: relative;
-      color: var(--white);
-      /* .display-massive sizes off 20vw alone, which overflows the fold on wide-but-short
-         desktop viewports (e.g. 1280x800) and crops the payoff word "FLICKDAY" below the
-         visible area. Cap by viewport height too so the full hero title always fits. */
-      font-size: clamp(4rem, min(20vw, 15vh), 18rem);
-    }
-
-    .hero__title-line {
+    .row-wrap {
       display: block;
-      opacity: 0;
-      transform: translateY(60px);
-      animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      overflow: clip;
+      container-type: inline-size;
     }
-
-    .hero__title-line:nth-child(1) { animation-delay: 0.1s; }
-    .hero__title-line:nth-child(2) { animation-delay: 0.2s; }
-
-    .hero__title-accent {
-      color: var(--yellow);
-    }
-
-    @keyframes slideUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .hero__tagline {
-      font-size: clamp(1rem, 2vw, 1.25rem);
-      color: rgba(255,255,255,0.8);
-      max-width: 500px;
-      margin: 2rem 0;
-      opacity: 0;
-      animation: fadeIn 1s ease 0.5s forwards;
-    }
-
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-
-    .hero__cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 1rem;
-      padding: 1rem 2rem;
-      background: transparent;
-      border: 2px solid var(--white);
-      color: var(--white);
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      letter-spacing: 0.05em;
-      text-decoration: none;
-      transition: var(--transition-fast);
-      min-height: 56px;
-    }
-
-    .hero__cta:hover,
-    .hero__cta:focus {
-      background: var(--yellow);
-      border-color: var(--yellow);
-      color: var(--black);
-      outline: none;
-    }
-
-    .hero__cta:focus-visible {
-      outline: 3px solid var(--yellow);
-      outline-offset: 3px;
-    }
-
-    .hero__scroll {
-      position: absolute;
-      bottom: 2rem;
-      right: 2rem;
-      z-index: 10;
+    .row {
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--white);
-      font-size: 0.625rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      opacity: 0.6;
-    }
-
-    .hero__scroll-line {
-      width: 1px;
-      height: 60px;
-      background: linear-gradient(to bottom, var(--yellow), transparent);
-      animation: scrollPulse 2s ease-in-out infinite;
-    }
-
-    @keyframes scrollPulse {
-      0%, 100% { transform: scaleY(1); opacity: 1; }
-      50% { transform: scaleY(0.5); opacity: 0.5; }
-    }
-
-    /* ============================================
-       MARQUEE - BROADCAST ENERGY
-       ============================================ */
-
-    .marquee {
-      background: var(--yellow);
-      color: var(--black);
-      padding: 1rem 0;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .marquee__track {
-      display: flex;
+      gap: 14px;
       width: max-content;
-      animation: marquee 20s linear infinite;
     }
-
-    .marquee:hover .marquee__track {
-      animation-play-state: paused;
-    }
-
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
-    }
-
-    .marquee__content {
-      display: flex;
-      align-items: center;
-      gap: 4rem;
-      padding: 0 2rem;
-      font-family: var(--font-display);
-      font-size: clamp(1rem, 3vw, 1.5rem);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .marquee__separator {
-      width: 12px;
-      height: 12px;
-      background: var(--black);
-      transform: rotate(45deg);
-    }
-
-    /* ============================================
-       SPLIT SECTION - EDITORIAL LAYOUT
-       ============================================ */
-
-    .split {
-      display: grid;
-      grid-template-columns: 1fr;
-      min-height: 80vh;
-    }
-
-    @media (min-width: 768px) {
-      .split {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .split--reverse .split__media {
-        order: 2;
-      }
-    }
-
-    .split__media {
-      position: relative;
-      min-height: 50vh;
-      overflow: hidden;
-    }
-
-    .split__image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .split:hover .split__image {
-      transform: scale(1.05);
-    }
-
-    .split__content {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 3rem 2rem;
-      background: var(--gray-dark);
-    }
-
-    @media (min-width: 768px) {
-      .split__content {
-        padding: 4rem;
-      }
-    }
-
-    .split__label {
-      font-family: var(--font-display);
-      font-size: 0.875rem;
-      letter-spacing: 0.2em;
-      color: var(--yellow);
-      margin-bottom: 1rem;
-    }
-
-    .split__title {
-      font-family: var(--font-display);
-      font-size: clamp(2.5rem, 8vw, 5rem);
-      line-height: 0.95;
-      margin-bottom: 1.5rem;
-    }
-
-    .split__text {
-      font-size: 1rem;
-      color: rgba(255,255,255,0.7);
-      max-width: 400px;
-      margin-bottom: 2rem;
-    }
-
-    .split__link {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      color: var(--yellow);
-      font-family: var(--font-display);
-      font-size: 1.125rem;
-      letter-spacing: 0.05em;
-      text-decoration: none;
-      transition: gap var(--transition-fast);
-    }
-
-    .split__link:hover {
-      gap: 1.25rem;
-    }
-
-    .split__link-arrow {
-      transition: transform var(--transition-fast);
-    }
-
-    .split__link:hover .split__link-arrow {
-      transform: translateX(4px);
-    }
-
-    /* ============================================
-       GALLERY - PARALLAX HORIZONTAL SCROLL
-       ============================================ */
-
-    .gallery {
-      padding: 6rem 0;
-      background: var(--black);
-      overflow: hidden;
-    }
-
-    .gallery__header {
-      padding: 0 2rem;
-      margin-bottom: 3rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-
-    @media (min-width: 768px) {
-      .gallery__header {
-        padding: 0 4rem;
-      }
-    }
-
-    .gallery__title {
-      font-family: var(--font-display);
-      font-size: clamp(3rem, 10vw, 8rem);
-      line-height: 0.9;
-    }
-
-    .gallery__title-outline {
-      -webkit-text-stroke: 1px var(--white);
-      color: transparent;
-    }
-
-    .gallery__counter {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      color: var(--gray-light);
-      letter-spacing: 0.1em;
-    }
-
-    .gallery__counter-current {
-      color: var(--yellow);
-      font-size: 2rem;
-    }
-
-    .gallery__scroll {
-      display: flex;
-      gap: 2vw;
-      padding: 2rem 8vw;
-      overflow-x: auto;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      cursor: grab;
-      height: 60vh;
-      min-height: 450px;
-      max-height: 700px;
-      align-items: center;
-    }
-
-    .gallery__scroll::-webkit-scrollbar {
-      display: none;
-    }
-
-    .gallery__scroll.is-dragging {
-      cursor: grabbing;
-    }
-
-    .gallery__item {
+    .tile-li {
       flex: 0 0 auto;
-      width: auto;
-      height: 85%;
-      aspect-ratio: 2/3;
-      position: relative;
-      overflow: hidden;
-      background: var(--gray-dark);
-      cursor: pointer;
-      transform-origin: center center;
-      transition: box-shadow 0.3s ease;
+      width: var(--tile);
     }
+    /* Each row sweeps its whole overflow, so every tile passes through the window.
+       Row A runs from right-aligned to start; row B runs the reverse. 100cqw is the wrapper width. */
+    .row-a { animation: travel-right linear both; animation-timeline: view(); }
+    .row-b { animation: travel-left linear both; animation-timeline: view(); }
 
-    .gallery__item:hover {
-      box-shadow: 0 20px 60px rgba(250, 204, 21, 0.15);
-    }
-
-    .gallery__item-inner {
-      width: 100%;
-      height: 100%;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .gallery__item-image {
-      width: 115%;
-      height: 115%;
-      object-fit: cover;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      transition: transform 0.4s ease;
-      will-change: transform;
-    }
-
-    .gallery__item:hover .gallery__item-image {
-      transform: translate(-50%, -50%) scale(1.02);
-    }
-
-    .gallery__controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 2rem;
-      padding: 2rem;
-    }
-
-    .gallery__progress {
-      width: 200px;
-      height: 2px;
-      background: var(--gray-mid);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .gallery__progress-bar {
-      position: absolute;
-      left: 0;
-      top: 0;
-      height: 100%;
-      background: var(--yellow);
-      width: 0%;
-      transition: width 0.1s ease;
-    }
-
-    .gallery__hint {
-      font-size: 0.625rem;
-      color: var(--gray-light);
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
-
-    /* ============================================
-       LIGHTBOX
-       ============================================ */
-
-    .lightbox {
-      position: fixed;
-      inset: 0;
-      z-index: 2000;
-      background: rgba(0, 0, 0, 0.98);
-      display: flex;
-      flex-direction: column;
-      opacity: 0;
-      visibility: hidden;
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .lightbox.is-open {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    .lightbox__header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1.5rem 2rem;
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 10;
-    }
-
-    .lightbox__counter {
-      font-family: var(--font-display);
-      font-size: 1rem;
-      letter-spacing: 0.1em;
-      color: var(--white);
-    }
-
-    .lightbox__counter-current {
-      color: var(--yellow);
-      font-size: 1.5rem;
-    }
-
-    .lightbox__close {
-      width: 48px;
-      height: 48px;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: var(--white);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-
-    .lightbox__close:hover {
-      background: var(--yellow);
-      border-color: var(--yellow);
-      color: var(--black);
-    }
-
-    .lightbox__main {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 5rem 4rem;
-      position: relative;
-    }
-
-    .lightbox__image-container {
-      max-width: 90vw;
-      max-height: 80vh;
-      position: relative;
-    }
-
-    .lightbox__image {
-      max-width: 100%;
-      max-height: 80vh;
-      object-fit: contain;
-      opacity: 0;
-      transform: scale(0.95);
-      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .lightbox.is-open .lightbox__image {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-    .lightbox__nav {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 56px;
-      height: 56px;
-      background: transparent;
-      border: 1px solid rgba(255,255,255,0.2);
-      color: var(--white);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s ease;
-    }
-
-    .lightbox__nav:hover {
-      background: var(--yellow);
-      border-color: var(--yellow);
-      color: var(--black);
-    }
-
-    .lightbox__nav--prev {
-      left: 2rem;
-    }
-
-    .lightbox__nav--next {
-      right: 2rem;
-    }
-
-    .lightbox__thumbnails {
-      display: flex;
-      gap: 0.5rem;
-      padding: 1rem 2rem;
-      justify-content: center;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .lightbox__thumbnails::-webkit-scrollbar {
-      display: none;
-    }
-
-    .lightbox__thumb {
-      width: 60px;
-      height: 80px;
-      flex-shrink: 0;
-      opacity: 0.4;
-      cursor: pointer;
-      transition: opacity 0.2s ease;
-      border: 2px solid transparent;
-    }
-
-    .lightbox__thumb.is-active {
-      opacity: 1;
-      border-color: var(--yellow);
-    }
-
-    .lightbox__thumb:hover {
-      opacity: 0.8;
-    }
-
-    .lightbox__thumb img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    @media (max-width: 768px) {
-      .lightbox__nav {
-        width: 44px;
-        height: 44px;
-      }
-      .lightbox__nav--prev {
-        left: 1rem;
-      }
-      .lightbox__nav--next {
-        right: 1rem;
-      }
-      .lightbox__thumbnails {
-        padding: 1rem;
-      }
-      .lightbox__thumb {
-        width: 50px;
-        height: 66px;
-      }
-    }
-
-    /* ============================================
-       COVERAGE - RECENT WORK / EVENT ARCHIVE
-       ============================================ */
-
-    .coverage {
-      position: relative;
-      padding: 8rem 0;
-      background: var(--gray-dark);
-    }
-
-    .coverage::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 100px;
-      background: var(--black);
-      clip-path: polygon(0 0, 100% 0, 100% 0%, 0 100%);
-    }
-
-    .coverage__inner {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 0 2rem;
-    }
-
-    @media (min-width: 768px) {
-      .coverage__inner {
-        padding: 0 4rem;
-      }
-    }
-
-    .coverage__header {
-      margin-bottom: 4rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-
-    @media (min-width: 768px) {
-      .coverage__header {
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-end;
-      }
-    }
-
-    .coverage__label {
-      font-family: var(--font-display);
-      font-size: 0.875rem;
-      letter-spacing: 0.2em;
-      color: var(--yellow);
-      margin-bottom: 1rem;
-    }
-
-    .coverage__title {
-      font-family: var(--font-display);
-      font-size: clamp(3rem, 10vw, 7rem);
-      line-height: 0.9;
-    }
-
-    .coverage__stats {
-      font-family: var(--font-display);
-      font-size: 1rem;
-      color: var(--gray-light);
-      letter-spacing: 0.1em;
-    }
-
-    .coverage__stats-number {
-      color: var(--yellow);
-      font-size: 1.5rem;
-    }
-
-    .coverage__grid {
+    /* Keyboard focus inside a row switches to the static grid, so the focused tile is on screen. */
+    .travel:has(:focus-visible) {
       display: grid;
-      gap: 1rem;
-      grid-template-columns: 1fr;
-    }
-
-    @media (min-width: 640px) {
-      .coverage__grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (min-width: 1024px) {
-      .coverage__grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
-
-    .coverage-card {
-      position: relative;
-      background: var(--black);
-      border: 1px solid var(--gray-mid);
-      transition: all var(--transition-fast);
-      text-decoration: none;
-      color: inherit;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .coverage-card:hover,
-    .coverage-card:focus {
-      border-color: var(--yellow);
-      outline: none;
-      transform: translateY(-4px);
-    }
-
-    .coverage-card:focus-visible {
-      outline: 3px solid var(--yellow);
-      outline-offset: 3px;
-    }
-
-    .coverage-card__badge {
-      position: absolute;
-      top: 1rem;
-      left: 1rem;
-      z-index: 5;
-      padding: 0.25rem 0.75rem;
-      font-family: var(--font-display);
-      font-size: 0.625rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-
-    .coverage-card__badge--photos {
-      background: var(--yellow);
-      color: var(--black);
-    }
-
-    .coverage-card__badge--video {
-      background: #f97316;
-      color: var(--white);
-    }
-
-    .coverage-card__badge--reels {
-      background: #ec4899;
-      color: var(--white);
-    }
-
-    .coverage-card__image {
-      aspect-ratio: 16/10;
-      overflow: hidden;
-      background: var(--gray-mid);
-    }
-
-    .coverage-card__image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      transition: transform var(--transition-medium);
-    }
-
-    .coverage-card:hover .coverage-card__image img {
-      transform: scale(1.08);
-    }
-
-    .coverage-card__content {
-      padding: 1.25rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      flex: 1;
-    }
-
-    .coverage-card__event {
-      font-size: 0.625rem;
-      color: var(--gray-light);
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-    }
-
-    .coverage-card__title {
-      font-family: var(--font-display);
-      font-size: 1.25rem;
-      line-height: 1.1;
-      flex: 1;
-    }
-
-    .coverage-card__cta {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--yellow);
-      font-family: var(--font-display);
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      margin-top: 0.5rem;
-    }
-
-    .coverage-card__cta-arrow {
-      transition: transform var(--transition-fast);
-    }
-
-    .coverage-card:hover .coverage-card__cta-arrow {
-      transform: translateX(4px);
-    }
-
-    /* Featured card spans 2 columns on larger screens */
-    @media (min-width: 1024px) {
-      .coverage-card--featured {
-        grid-column: span 2;
-      }
-
-      .coverage-card--featured .coverage-card__image {
-        aspect-ratio: 21/10;
-      }
-
-      .coverage-card--featured .coverage-card__title {
-        font-size: 1.75rem;
-      }
-    }
-
-    .coverage__promo {
-      margin-top: 4rem;
-      padding: 2rem;
-      border: 2px dashed var(--gray-mid);
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      align-items: flex-start;
-    }
-
-    @media (min-width: 768px) {
-      .coverage__promo {
-        flex-direction: row;
-        align-items: center;
-        justify-content: space-between;
-      }
-    }
-
-    .coverage__promo-text h3 {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      margin-bottom: 0.25rem;
-    }
-
-    .coverage__promo-text p {
-      color: var(--gray-light);
-      font-size: 0.875rem;
-    }
-
-    .coverage__promo-cta {
-      padding: 1rem 2rem;
-      background: var(--yellow);
-      color: var(--black);
-      font-family: var(--font-display);
-      font-size: 1rem;
-      letter-spacing: 0.05em;
-      text-decoration: none;
-      transition: background var(--transition-fast);
-      min-height: 48px;
-      display: inline-flex;
-      align-items: center;
-    }
-
-    .coverage__promo-cta:hover {
-      background: var(--yellow-bright);
-    }
-
-    /* Upcoming teaser card */
-    .coverage-card--upcoming {
-      background: linear-gradient(135deg, var(--gray-mid) 0%, var(--black) 100%);
-      border-style: dashed;
-    }
-
-    .coverage-card--upcoming .coverage-card__image {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;
-    }
-
-    .coverage-card--upcoming .coverage-card__coming {
-      font-family: var(--font-display);
-      font-size: 2rem;
-      color: var(--gray-light);
-      letter-spacing: 0.1em;
-    }
-
-    /* ============================================
-       CONTACT - FULL BLEED CTA
-       ============================================ */
-
-    .contact {
-      position: relative;
-      min-height: 80vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
-
-    .contact__media {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-    }
-
-    .contact__image {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      filter: brightness(0.4) contrast(1.1);
-    }
-
-    .contact__content {
-      position: relative;
-      z-index: 10;
-      text-align: center;
-      padding: 4rem 2rem;
-    }
-
-    .contact__status {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 0.75rem;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.7);
-      margin-bottom: 2rem;
-    }
-
-    .contact__status-dot {
-      width: 8px;
-      height: 8px;
-      background: #22c55e;
-      border-radius: 50%;
-      animation: pulse 2s infinite;
-    }
-
-    .contact__title {
-      font-family: var(--font-display);
-      font-size: clamp(4rem, 18vw, 14rem);
-      line-height: 0.94;
-      letter-spacing: 0.005em;
-      margin-bottom: 2rem;
-    }
-
-    .contact__subtitle {
-      font-size: 1.125rem;
-      color: rgba(255,255,255,0.7);
-      max-width: 400px;
-      margin: 0 auto 3rem;
-    }
-
-    .contact__links {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    @media (min-width: 480px) {
-      .contact__links {
-        flex-direction: row;
-        justify-content: center;
-      }
-    }
-
-    .contact__link {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      padding: 1rem 2rem;
-      min-width: 200px;
-      min-height: 56px;
-      font-family: var(--font-display);
-      font-size: 1.125rem;
-      letter-spacing: 0.05em;
-      text-decoration: none;
-      transition: all var(--transition-fast);
-    }
-
-    .contact__link--primary {
-      background: var(--yellow);
-      color: var(--black);
-    }
-
-    .contact__link--primary:hover {
-      background: var(--yellow-bright);
-    }
-
-    .contact__link--secondary {
-      border: 2px solid var(--white);
-      color: var(--white);
-    }
-
-    .contact__link--secondary:hover {
-      background: var(--white);
-      color: var(--black);
-    }
-
-    .contact__link:focus-visible {
-      outline: 3px solid var(--yellow);
-      outline-offset: 3px;
-    }
-
-    /* ============================================
-       FOOTER - MINIMAL
-       ============================================ */
-
-    .footer {
-      background: var(--black);
-      border-top: 1px solid var(--gray-mid);
-      padding: 2rem;
-    }
-
-    .footer__inner {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-      align-items: center;
-    }
-
-    @media (min-width: 768px) {
-      .footer__inner {
-        flex-direction: row;
-        justify-content: space-between;
-      }
-    }
-
-    .footer__brand {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-
-    .footer__logo {
-      width: 44px;
-      height: 44px;
-    }
-
-    @media (min-width: 768px) {
-      .footer__logo {
-        width: 52px;
-        height: 52px;
-      }
-    }
-
-    .footer__copyright {
-      font-size: 0.75rem;
-      color: var(--gray-light);
-      letter-spacing: 0.05em;
-    }
-
-    .footer__links {
-      display: flex;
-      gap: 2rem;
-    }
-
-    .footer__link {
-      color: var(--gray-light);
-      font-size: 0.75rem;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      text-decoration: none;
-      transition: color var(--transition-fast);
-    }
-
-    .footer__link:hover {
-      color: var(--yellow);
-    }
-
-    .footer__social {
-      display: flex;
-      gap: 1rem;
-    }
-
-    .footer__social-link {
-      color: var(--gray-light);
-      transition: color var(--transition-fast);
-      padding: 0.5rem;
-    }
+      grid-template-columns: repeat(auto-fill, minmax(var(--tile), 1fr));
+      gap: 12px;
+    }
+    .travel:has(:focus-visible) .row-wrap,
+    .travel:has(:focus-visible) .row { display: contents; }
+    .travel:has(:focus-visible) .tile-li { width: auto; }
+  }
+}
+
+@keyframes travel-right {
+  from { transform: translateX(calc(100cqw - 100%)); }
+  to { transform: translateX(0); }
+}
+@keyframes travel-left {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(100cqw - 100%)); }
+}
+
+/* Archive: all 13 events, with the gallery search */
+.archive {
+  padding-block: 72px;
+  border-top: 1px solid var(--gray-mid);
+}
+.archive h2 { font-size: clamp(2.25rem, 9vw, 3.5rem); }
+.archive-intro {
+  margin-top: 12px;
+  max-width: 60ch;
+  color: var(--white);
+}
+.find {
+  display: grid;
+  gap: 10px;
+  margin-top: 28px;
+}
+.find-label { font-weight: 600; }
+.find-row { display: grid; gap: 10px; }
+.find input {
+  min-height: 52px;
+  padding: 12px 14px;
+  border: 2px solid var(--gray-mid);
+  background: var(--black);
+  color: var(--white);
+  font: 500 1rem/1.2 var(--font-body);
+}
+.find input::placeholder {
+  color: var(--gray-light);
+  opacity: 1;
+}
+
+.events {
+  list-style: none;
+  margin-top: 28px;
+  border-top: 1px solid var(--gray-mid);
+}
+.ev {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "when count"
+    "title title"
+    "series link";
+  gap: 4px 12px;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-mid);
+}
+.ev-when { grid-area: when; color: var(--yellow); }
+.ev-title { grid-area: title; }
+.ev-series { grid-area: series; }
+.ev-count { grid-area: count; text-align: right; }
+.ev-link { grid-area: link; }
+.ev-title {
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.ev-series,
+.ev-count {
+  font-size: 0.9375rem;
+  color: var(--gray-light);
+}
+.ev-link {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--white);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+@media (min-width: 900px) {
+  .find-row { grid-template-columns: minmax(0, 1fr) auto; }
+  .find { max-width: 720px; }
+  .ev {
+    grid-template-columns: 9rem minmax(0, 2.2fr) minmax(0, 1.4fr) minmax(0, 1.4fr) auto;
+    grid-template-areas: none;
+    align-items: center;
+    gap: 0 24px;
+    padding: 0;
+  }
+  .ev > * { grid-area: auto; }
+  .ev-count { text-align: left; }
+  .ev-link { justify-self: start; }
+}
+
+/* Booking ask */
+.ask {
+  display: grid;
+  gap: 40px;
+  padding-block: 80px;
+  border-top: 1px solid var(--gray-mid);
+}
+.ask h2 { font-size: clamp(2.25rem, 9vw, 3.75rem); }
+.ask-main {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+.contact a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--white);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+.services {
+  list-style: none;
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.services li {
+  padding-left: 16px;
+  border-left: 2px solid var(--gray-mid);
+}
+.services strong { font-weight: 600; }
+
+@media (min-width: 900px) {
+  .ask {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 64px;
+  }
+}
+
+/* Footer */
+.site-footer {
+  display: grid;
+  gap: 20px;
+  padding-block: 40px 56px;
+  border-top: 1px solid var(--gray-mid);
+}
+.site-footer img { width: 120px; height: auto; }
+.footer-text { color: var(--gray-light); }
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 24px;
+}
+.footer-links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--white);
+  font-weight: 600;
+  text-underline-offset: 4px;
+}
+
+/* A failed photo is hidden inside its dark frame; the text beside it stays readable */
+.is-broken { visibility: hidden; }
+
+/* Forced colors: keep the actions and inputs visible */
+@media (forced-colors: active) {
+  .btn,
+  .find input { border: 2px solid ButtonText; }
+  .hero-photo,
+  .hero-scrim { display: none; }
+  .tile-label { background: Canvas; }
+  .dot { background: CanvasText; }
+}
 
-    .footer__social-link:hover {
-      color: var(--yellow);
-    }
-
-    .footer__social-link svg {
-      width: 20px;
-      height: 20px;
-    }
-
-    /* ============================================
-       PLACEHOLDER IMAGES (Replace with real photos)
-       ============================================ */
-
-    .placeholder-image {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(135deg, var(--gray-mid) 0%, var(--gray-dark) 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-display);
-      font-size: 0.875rem;
-      letter-spacing: 0.1em;
-      color: var(--gray-light);
-      text-transform: uppercase;
-    }
-
-    /* ============================================
-       SCROLL ANIMATIONS
-       ============================================ */
-
-    .reveal {
-      opacity: 0;
-      transform: translateY(40px);
-      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .reveal.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* ============================================
-       TYPE ROLES v2  —  Anton (display) · Inter (body) ·
-       JetBrains Mono (labels/counters/CTAs) · Barlow Condensed Italic (motion)
-       Headlines keep var(--font-display); this block routes the small
-       label/UI system to mono and the marquee to the italic accent.
-       ============================================ */
-    .site-header__cta,
-    .hero__badge,
-    .hero__cta,
-    .hero__scroll,
-    .split__label,
-    .split__link,
-    .gallery__counter,
-    .gallery__hint,
-    .lightbox__counter,
-    .coverage__label,
-    .coverage__stats,
-    .coverage-card__badge,
-    .coverage-card__event,
-    .coverage-card__cta,
-    .coverage__promo-cta,
-    .contact__status,
-    .contact__link,
-    .footer__copyright,
-    .footer__link,
-    .placeholder-image {
-      font-family: var(--font-label);
-    }
-
-    /* Buttons/CTAs want the heavier mono cut for punch */
-    .site-header__cta,
-    .hero__cta,
-    .coverage__promo-cta,
-    .contact__link {
-      font-weight: 700;
-    }
-
-    /* Marquee = the site's motion element → Barlow Condensed Italic (velocity) */
-    .marquee__content {
-      font-family: var(--font-tag);
-      font-style: italic;
-      font-weight: 700;
-      letter-spacing: 0.06em;
-    }
   </style>
 </head>
-
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 
-  <!-- ====== FIXED HEADER ====== -->
-  <header class="site-header" id="site-header">
-    <div class="site-header__inner">
-      <a href="#hero" aria-label="Flickday Media - Back to top">
-        <!-- Live Peridot wordmark, standard optical cut (kd -0.03 / ck +0.01). Master: flickday-assets/wordmarks/WORDMARK.md -->
-        <span class="site-header__logo" role="img" aria-label="flickday"><span>f</span><span>l</span><span>i</span><span>c</span><span style="margin-left:0.01em">k</span><span style="margin-left:-0.03em">d</span><span>a</span><span>y</span></span>
-      </a>
-      <a href="#contact" class="site-header__cta">BOOK US</a>
-    </div>
+<main id="main">
+
+<section class="hero" id="top" aria-labelledby="hero-title">
+  <header class="hero-header">
+    <a class="brand-link" href="#top"><img src="flickday-assets/site/wordmark-play-yellow.png" alt="Flickday Media" width="640" height="236"></a>
+    <a class="header-link" href="https://www.instagram.com/flickday.media">Instagram</a>
   </header>
-
-  <!-- ====== HERO ====== -->
-  <section class="hero" aria-label="Hero">
-    <div class="hero__media">
-      <picture>
-        <source srcset="./images/gallery/portfolio-06.avif" type="image/avif">
-        <source srcset="./images/gallery/portfolio-06.webp" type="image/webp">
-        <img src="./images/gallery/portfolio-06.jpg" alt="Volleyball celebration - champagne spray" class="hero__image" loading="eager" fetchpriority="high" width="1365" height="2048">
-      </picture>
-      <div class="hero__overlay"></div>
-      <div class="hero__grain"></div>
+  <img class="hero-photo" src="images/hero/hero-1600.webp" srcset="images/hero/hero-800.webp 800w, images/hero/hero-1600.webp 1600w" sizes="100vw" width="1600" height="2401" fetchpriority="high" decoding="async" alt="Photo from a beach volleyball tournament: a player sprays champagne.">
+  <div class="hero-scrim" aria-hidden="true"></div>
+  <div class="hero-copy">
+    <p class="label eyebrow">Chicago-based · Travel available</p>
+    <h1 id="hero-title">Volleyball tournament coverage in Chicago</h1>
+    <p class="subline">Photos and reels from your event, within <span class="nowrap">24–48</span> hours.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:flickday@ninochavez.co?subject=Tournament%20coverage%20inquiry">Book coverage</a>
+      <a class="btn btn-outline" href="https://ninochavez.co/photography/explore">Find your photos</a>
     </div>
+    <p class="status"><span class="dot" aria-hidden="true"></span>Booking indoor tournaments now. Outdoor 2027 dates open.</p>
+  </div>
+  <nav class="hero-latest" aria-labelledby="latest-label">
+    <p class="label" id="latest-label">Newest in the archive</p>
+    <ul><li><a href="https://ninochavez.co/photography/albums/saturday-triples-the-raiders-open-rdrsVB">The Raiders Open <span>June 2026</span></a></li><li><a href="https://ninochavez.co/photography/albums/krush-volleyball-suburban-slam-series-1-jun-14-z6uqiQ">Suburban Slam #1 <span>June 2026</span></a></li><li><a href="https://ninochavez.co/photography/albums/bell-pepper-open-june-2026-TRoiyO">Bell Pepper Open 2026 <span>June 2026</span></a></li></ul>
+  </nav>
+</section>
 
-    <div class="hero__content">
-      <div class="hero__badge">NOW BOOKING 2026</div>
-
-      <h1 class="display-massive hero__title">
-        <span class="hero__title-line">EVERY DAY'S A</span>
-        <span class="hero__title-line"><span class="hero__title-accent">FLICKDAY</span></span>
-      </h1>
-
-      <p class="hero__tagline">
-        Grassroots sports media — raw, fast, and player-first.<br>
-        We shoot for the ones who live in the rally.
-      </p>
-
-      <a href="#contact" class="hero__cta">
-        BOOK US
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M5 12h14M12 5l7 7-7 7"/>
-        </svg>
-      </a>
-    </div>
-
-    <div class="hero__scroll" aria-hidden="true">
-      <span>SCROLL</span>
-      <div class="hero__scroll-line"></div>
-    </div>
-  </section>
-
-  <!-- ====== MARQUEE ====== -->
-  <div class="marquee" role="marquee" aria-label="Tagline">
-    <div class="marquee__track">
-      <div class="marquee__content">
-        <span>RAW</span>
-        <span class="marquee__separator"></span>
-        <span>FAST</span>
-        <span class="marquee__separator"></span>
-        <span>PLAYER-FIRST</span>
-        <span class="marquee__separator"></span>
-        <span>RAW</span>
-        <span class="marquee__separator"></span>
-        <span>FAST</span>
-        <span class="marquee__separator"></span>
-        <span>PLAYER-FIRST</span>
-        <span class="marquee__separator"></span>
-      </div>
-      <div class="marquee__content" aria-hidden="true">
-        <span>RAW</span>
-        <span class="marquee__separator"></span>
-        <span>FAST</span>
-        <span class="marquee__separator"></span>
-        <span>PLAYER-FIRST</span>
-        <span class="marquee__separator"></span>
-        <span>RAW</span>
-        <span class="marquee__separator"></span>
-        <span>FAST</span>
-        <span class="marquee__separator"></span>
-        <span>PLAYER-FIRST</span>
-        <span class="marquee__separator"></span>
-      </div>
+<section class="seq-grid" aria-labelledby="seq-title">
+  <div class="seq-stage">
+    <div class="frame-box">
+      <figure class="frame f0"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05618/large" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05618/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05618/large 1600w" sizes="(min-width: 900px) 56vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
+      <figure class="frame f1"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05645/large" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05645/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05645/large 1600w" sizes="(min-width: 900px) 56vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
+      <figure class="frame f2"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05619/large" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05619/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05619/large 1600w" sizes="(min-width: 900px) 56vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
+      <figure class="frame f3"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05592/large" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05592/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05592/large 1600w" sizes="(min-width: 900px) 56vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
+      <figure class="frame f4"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05668/large" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05668/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05668/large 1600w" sizes="(min-width: 900px) 56vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
+      <figure class="frame f5"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05670/large" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05670/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05670/large 1600w" sizes="(min-width: 900px) 56vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
     </div>
   </div>
-
-  <!-- ====== SERVICES - SPLIT LAYOUTS ====== -->
-  <main>
-
-    <!-- Tournament Coverage -->
-    <section class="split reveal" aria-labelledby="service-coverage">
-      <div class="split__media">
-        <img src="./images/gallery/portfolio-01.jpg" alt="Tournament coverage - volleyball action" class="split__image" loading="lazy">
-      </div>
-      <div class="split__content">
-        <span class="split__label">01 — WHAT WE DO</span>
-        <h2 id="service-coverage" class="split__title">TOURNAMENT<br>COVERAGE</h2>
-        <p class="split__text">
-          On-site photography, real-time reels, and same-day photo drops.
-          We embed with your event to capture every spike, dig, and celebration.
-        </p>
-        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="split__link">
-          SEE OUR LET'S PEPPER COVERAGE
-          <svg class="split__link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </a>
-      </div>
-    </section>
-
-    <!-- Reels & Edits -->
-    <section class="split split--reverse reveal" aria-labelledby="service-reels">
-      <div class="split__media">
-        <img src="./images/gallery/portfolio-02.jpg" alt="Video editing - highlight reel capture" class="split__image" loading="lazy">
-      </div>
-      <div class="split__content">
-        <span class="split__label">02 — WHAT WE DO</span>
-        <h2 id="service-reels" class="split__title">REELS &<br>EDITS</h2>
-        <p class="split__text">
-          Quick-turn highlight reels and player edits optimized for Instagram
-          and TikTok. Your moments, amplified.
-        </p>
-        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="split__link">
-          WATCH ON INSTAGRAM
-          <svg class="split__link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </a>
-      </div>
-    </section>
-
-    <!-- Photo Drops -->
-    <section class="split reveal" aria-labelledby="service-photos">
-      <div class="split__media">
-        <img src="./images/gallery/portfolio-03.jpg" alt="Photo gallery - action sports photography" class="split__image" loading="lazy">
-      </div>
-      <div class="split__content">
-        <span class="split__label">03 — WHAT WE DO</span>
-        <h2 id="service-photos" class="split__title">PHOTO<br>DROPS</h2>
-        <p class="split__text">
-          High-resolution action shots delivered fast. Find yourself,
-          download, and share. No watermarks, no hassle.
-        </p>
-        <a href="https://ninochavez.co/photography" target="_blank" rel="noopener noreferrer" class="split__link">
-          BROWSE GALLERIES
-          <svg class="split__link-arrow" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
-        </a>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- ====== GALLERY ====== -->
-  <section class="gallery reveal" aria-labelledby="gallery-title">
-    <div class="gallery__header">
-      <h2 id="gallery-title" class="gallery__title">
-        RECENT <span class="gallery__title-outline">SHOTS</span>
-      </h2>
-      <div class="gallery__counter" aria-live="polite">
-        <span class="gallery__counter-current" id="gallery-current">01</span>
-        <span>/</span>
-        <span id="gallery-total">12</span>
-      </div>
+  <div class="beats">
+    <div class="beats-head">
+      <h2 id="seq-title">The Raiders Open, in order</h2>
+      <p class="stage-label label">The Raiders Open · June 2026 <span class="nowrap">· <a href="https://ninochavez.co/photography/albums/saturday-triples-the-raiders-open-rdrsVB">View gallery</a></span></p>
     </div>
-
-    <div class="gallery__scroll" id="gallery-scroll" role="region" aria-label="Photo gallery" tabindex="0">
-      <!-- Gallery items generated by JavaScript -->
-    </div>
-
-    <div class="gallery__controls">
-      <div class="gallery__progress">
-        <div class="gallery__progress-bar" id="gallery-progress"></div>
-      </div>
-      <span class="gallery__hint">DRAG TO SCROLL · CLICK TO EXPAND</span>
-    </div>
-  </section>
-
-  <!-- ====== LIGHTBOX ====== -->
-  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image lightbox">
-    <div class="lightbox__header">
-      <div class="lightbox__counter">
-        <span class="lightbox__counter-current" id="lightbox-current">01</span>
-        <span>/</span>
-        <span id="lightbox-total">12</span>
-      </div>
-      <button class="lightbox__close" id="lightbox-close" aria-label="Close lightbox">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M18 6L6 18M6 6l12 12"/>
-        </svg>
-      </button>
-    </div>
-
-    <div class="lightbox__main">
-      <button class="lightbox__nav lightbox__nav--prev" id="lightbox-prev" aria-label="Previous image">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M15 18l-6-6 6-6"/>
-        </svg>
-      </button>
-
-      <div class="lightbox__image-container">
-        <img src="" alt="" class="lightbox__image" id="lightbox-image">
-      </div>
-
-      <button class="lightbox__nav lightbox__nav--next" id="lightbox-next" aria-label="Next image">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path d="M9 18l6-6-6-6"/>
-        </svg>
-      </button>
-    </div>
-
-    <div class="lightbox__thumbnails" id="lightbox-thumbnails"></div>
+    <article class="beat">
+      <figure class="beat-fig"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05618/medium" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05618/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05618/large 1600w" sizes="(min-width: 900px) 30vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
+      <p class="beat-num label">01</p>
+      <p class="beat-text">We shoot the whole day: 363 photos and 134 videos at the Raiders Open.</p>
+    </article>
+    <article class="beat">
+      <figure class="beat-fig"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05592/medium" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05592/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05592/large 1600w" sizes="(min-width: 900px) 30vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
+      <p class="beat-num label">02</p>
+      <p class="beat-text">We cut reels for Instagram and TikTok.</p>
+    </article>
+    <article class="beat">
+      <figure class="beat-fig"><img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05670/medium" srcset="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05670/medium 800w, https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05670/large 1600w" sizes="(min-width: 900px) 30vw, 100vw" alt="Photo from The Raiders Open" loading="lazy" decoding="async"></figure>
+      <p class="beat-num label">03</p>
+      <p class="beat-text">Galleries go up within <span class="nowrap">24–48</span> hours, and anyone who played can find themselves.</p>
+    </article>
   </div>
+</section>
 
-  <!-- ====== RECENT COVERAGE ====== -->
-  <section class="coverage reveal" aria-labelledby="coverage-title">
-    <div class="coverage__inner">
-      <header class="coverage__header">
-        <div>
-          <span class="coverage__label">EVENT ARCHIVE</span>
-          <h2 id="coverage-title" class="coverage__title">RECENT<br>COVERAGE</h2>
-        </div>
-        <div class="coverage__stats">
-          <span class="coverage__stats-number">13</span> EVENTS COVERED
-        </div>
-      </header>
-
-      <div class="coverage__grid">
-        <!-- Featured: The Raiders Open (MSOE) — June 2026 -->
-        <a href="https://ninochavez.co/photography/albums/saturday-triples-the-raiders-open-rdrsVB" target="_blank" rel="noopener noreferrer" class="coverage-card coverage-card--featured">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05730/large" alt="The Raiders Open - spike at the net" loading="lazy" style="object-position: center 36%;">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">MSOE · JUNE 2026</span>
-            <h3 class="coverage-card__title">THE RAIDERS OPEN</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- KRUSH Suburban Slam Series #1 — June 2026 -->
-        <a href="https://ninochavez.co/photography/albums/krush-volleyball-suburban-slam-series-1-jun-14-z6uqiQ" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/z6uqiQ-DSC06174/medium" alt="KRUSH Suburban Slam Series #1 - grass volleyball spike" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">KRUSH VOLLEYBALL · JUNE 2026</span>
-            <h3 class="coverage-card__title">SUBURBAN SLAM #1</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Bell Pepper Open — June 2026 -->
-        <a href="https://ninochavez.co/photography/albums/bell-pepper-open-june-2026-TRoiyO" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/DSC05462/medium" alt="Bell Pepper Open 2026 - grass volleyball action" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">LET'S PEPPER SERIES · JUNE 2026</span>
-            <h3 class="coverage-card__title">BELL PEPPER OPEN 2026</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Bell Pepper Open — July 2025 (archive) -->
-        <a href="https://ninochavez.co/photography/albums/bell-pepper-open-official-gallery-jul-19-2025-j5MfJD" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/bx8LpQH/medium" alt="Bell Pepper Open - volleyball action" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">LET'S PEPPER SERIES · JULY 2025</span>
-            <h3 class="coverage-card__title">BELL PEPPER OPEN 2025</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Bell Pepper Video Highlights -->
-        <a href="https://ninochavez.co/photography/albums/bell-pepper-open-video-highlights-jul-19-2025-p4J2jk" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--video">VIDEO</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/bx8LpQH/medium" alt="Bell Pepper Open video highlights" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">LET'S PEPPER SERIES · JULY 2025</span>
-            <h3 class="coverage-card__title">BELL PEPPER HIGHLIGHTS</h3>
-            <span class="coverage-card__cta">
-              WATCH VIDEO
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Chicago AVP SD Smash -->
-        <a href="https://ninochavez.co/photography/albums/chicago-avp-san-diego-smash-jan-1-vKQKbN" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/352M8JD/medium" alt="Chicago AVP SD Smash - beach volleyball" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">AVP TOUR · CHICAGO 2025</span>
-            <h3 class="coverage-card__title">AVP CHICAGO 1</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- AVP Miami Mayhem -->
-        <a href="https://ninochavez.co/photography/albums/avp-chicago-miami-mayhem-sep-1-m3nhJ7" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/cw9ztkp/medium" alt="AVP Miami Mayhem - diving dig" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">AVP TOUR · CHICAGO 2025</span>
-            <h3 class="coverage-card__title">AVP CHICAGO 2</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Player Appreciation Turf 4s -->
-        <a href="https://ninochavez.co/photography/albums/players-player-appreciation-turf-4s-KZf9RF" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/7GNf3hC/medium" alt="Player Appreciation Turf 4s - spike action" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">TURF VOLLEYBALL · SEPT 2025</span>
-            <h3 class="coverage-card__title">PLAYER APPRECIATION 4S</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Krush Suburban Slam -->
-        <a href="https://ninochavez.co/photography/albums/suburban-slam-triples-tourney-jan-1-G8dMVS" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/psPgNCP/medium" alt="Krush Suburban Slam - grass volleyball" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">KRUSH VOLLEYBALL · 2025</span>
-            <h3 class="coverage-card__title">KRUSH SUBURBAN SLAM</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Krush Reverse Co-Ed -->
-        <a href="https://ninochavez.co/photography/albums/krush-reverse-co-ed-wJGz8n" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/JvqbtP7/medium" alt="Krush Reverse Co-Ed - grass volleyball" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">KRUSH VOLLEYBALL · JULY 2025</span>
-            <h3 class="coverage-card__title">KRUSH REVERSE CO-ED</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Krush Reverse Co-Ed 2 -->
-        <a href="https://ninochavez.co/photography/albums/krush-reverse-co-ed-2-qzd2SP" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/J9x9RPK/medium" alt="Krush Reverse Co-Ed 2 - beach volleyball spike" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">KRUSH VOLLEYBALL · AUG 2025</span>
-            <h3 class="coverage-card__title">KRUSH REVERSE CO-ED 2</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Cookout Grass Tournament -->
-        <a href="https://ninochavez.co/photography/albums/cookout-volleyball-grass-tourney-jan-1-fTpMCN" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/KLkJWp8/medium" alt="Cookout Grass Tournament - serve" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">GRASS VOLLEYBALL · 2025</span>
-            <h3 class="coverage-card__title">COOKOUT GRASS TOURNEY</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Grass Launch 2025 -->
-        <a href="https://ninochavez.co/photography/albums/grass-launch-open-triples-tournament-jun-5-2025-5M7kNx" target="_blank" rel="noopener noreferrer" class="coverage-card">
-          <span class="coverage-card__badge coverage-card__badge--photos">PHOTOS</span>
-          <div class="coverage-card__image">
-            <img src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/CvHjnQ9/medium" alt="Grass Launch 2025 - grass triples" loading="lazy">
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">LET'S PEPPER SERIES · 2025</span>
-            <h3 class="coverage-card__title">GRASS LAUNCH 2025</h3>
-            <span class="coverage-card__cta">
-              VIEW GALLERY
-              <svg class="coverage-card__cta-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </span>
-          </div>
-        </a>
-
-        <!-- Coming Soon: Let's Pepper Open Summer -->
-        <div class="coverage-card coverage-card--upcoming">
-          <div class="coverage-card__image">
-            <span class="coverage-card__coming">SUMMER 2026</span>
-          </div>
-          <div class="coverage-card__content">
-            <span class="coverage-card__event">COMING UP</span>
-            <h3 class="coverage-card__title">LET'S PEPPER OPEN</h3>
-            <span class="coverage-card__cta" style="color: var(--gray-light);">
-              STAY TUNED
-            </span>
-          </div>
-        </div>
-      </div>
-
-      <div class="coverage__promo">
-        <div class="coverage__promo-text">
-          <h3>RUNNING A TOURNAMENT?</h3>
-          <p>Let Flickday handle your media so you can focus on the event.</p>
-        </div>
-        <a href="#contact" class="coverage__promo-cta">BOOK COVERAGE</a>
-      </div>
+<section class="proof" aria-labelledby="proof-title">
+  <h2 id="proof-title">1,537 photos from 12 galleries</h2>
+  <p class="proof-note">Photos from the event albums, plus 257 videos. Every tile opens its album.</p>
+  <div class="travel">
+    <div class="row-wrap">
+      <ul class="row row-a" role="list"><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/saturday-triples-the-raiders-open-rdrsVB"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/msow-raiders-open-DSC05730/grid" alt="Photo from The Raiders Open" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">The Raiders Open</span><span class="tile-when">June 2026</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/krush-volleyball-suburban-slam-series-1-jun-14-z6uqiQ"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/z6uqiQ-DSC06174/grid" alt="Photo from Suburban Slam #1" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Suburban Slam #1</span><span class="tile-when">June 2026</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/bell-pepper-open-june-2026-TRoiyO"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/DSC05462/grid" alt="Photo from Bell Pepper Open 2026" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Bell Pepper Open 2026</span><span class="tile-when">June 2026</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/bell-pepper-open-official-gallery-jul-19-2025-j5MfJD"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/bx8LpQH/grid" alt="Photo from Bell Pepper Open 2025" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Bell Pepper Open 2025</span><span class="tile-when">July 2025</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/bell-pepper-open-video-highlights-jul-19-2025-p4J2jk"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/bx8LpQH/grid" alt="Photo from Bell Pepper Open 2025" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Bell Pepper Highlights</span><span class="tile-when">July 2025</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/chicago-avp-san-diego-smash-jan-1-vKQKbN"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/352M8JD/grid" alt="Photo from AVP Chicago 1" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">AVP Chicago 1</span><span class="tile-when">2025</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/avp-chicago-miami-mayhem-sep-1-m3nhJ7"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/cw9ztkp/grid" alt="Photo from AVP Chicago 2" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">AVP Chicago 2</span><span class="tile-when">2025</span></span></a></li></ul>
     </div>
-  </section>
-
-  <!-- ====== CONTACT ====== -->
-  <section id="contact" class="contact" aria-labelledby="contact-title">
-    <div class="contact__media">
-      <img src="./images/gallery/portfolio-10.jpg" alt="Contact background" class="contact__image" loading="lazy">
+    <div class="row-wrap">
+      <ul class="row row-b" role="list"><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/players-player-appreciation-turf-4s-KZf9RF"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/7GNf3hC/grid" alt="Photo from Player Appreciation 4s" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Player Appreciation 4s</span><span class="tile-when">Sept 2025</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/suburban-slam-triples-tourney-jan-1-G8dMVS"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/psPgNCP/grid" alt="Photo from Krush Suburban Slam" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Krush Suburban Slam</span><span class="tile-when">2025</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/krush-reverse-co-ed-wJGz8n"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/JvqbtP7/grid" alt="Photo from Krush Reverse Co-Ed" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Krush Reverse Co-Ed</span><span class="tile-when">July 2025</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/krush-reverse-co-ed-2-qzd2SP"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/J9x9RPK/grid" alt="Photo from Krush Reverse Co-Ed 2" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Krush Reverse Co-Ed 2</span><span class="tile-when">Aug 2025</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/cookout-volleyball-grass-tourney-jan-1-fTpMCN"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/KLkJWp8/grid" alt="Photo from Cookout Grass Tourney" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Cookout Grass Tourney</span><span class="tile-when">2025</span></span></a></li><li class="tile-li"><a class="tile" href="https://ninochavez.co/photography/albums/grass-launch-open-triples-tournament-jun-5-2025-5M7kNx"><img class="tile-img" src="https://imagedelivery.net/wg34HB28-JkySWVm5fW4kA/CvHjnQ9/grid" alt="Photo from Grass Launch 2025" loading="lazy" decoding="async"><span class="tile-label"><span class="tile-title">Grass Launch 2025</span><span class="tile-when">2025</span></span></a></li></ul>
     </div>
+  </div>
+</section>
 
-    <div class="contact__content">
-      <div class="contact__status">
-        <span class="contact__status-dot"></span>
-        AVAILABLE FOR 2026 EVENTS
-      </div>
-
-      <h2 id="contact-title" class="display-massive contact__title">LET'S<br>WORK</h2>
-
-      <p class="contact__subtitle">
-        Tournament coverage, player content, or event media packages.
-        Chicago-based, travel available.
-      </p>
-
-      <div class="contact__links">
-        <a href="mailto:flickday@ninochavez.co" class="contact__link contact__link--primary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="2" y="4" width="20" height="16" rx="2"/>
-            <path d="M22 6l-10 7L2 6"/>
-          </svg>
-          EMAIL US
-        </a>
-        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="contact__link contact__link--secondary">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-          </svg>
-          @FLICKDAY.MEDIA
-        </a>
-      </div>
+<section class="archive" aria-labelledby="archive-title">
+  <h2 id="archive-title">Coverage archive</h2>
+  <p class="archive-intro">Let's Pepper is a Chicago grass volleyball series. All 13 events are listed here.</p>
+  <form class="find" role="search" action="https://ninochavez.co/photography/explore" method="get">
+    <label class="find-label" for="find-q">Find your photos in the whole gallery archive</label>
+    <div class="find-row">
+      <input id="find-q" name="q" type="search" placeholder="Event, team, or jersey number" autocomplete="off">
+      <button class="btn btn-outline" type="submit">Search photos</button>
     </div>
-  </section>
+  </form>
+  <ol class="events">
+    <li class="ev"><p class="ev-when label">June 2026</p><p class="ev-title">The Raiders Open</p><p class="ev-series">MSOE</p><p class="ev-count">363 photos · 134 videos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/saturday-triples-the-raiders-open-rdrsVB">View gallery<span class="sr-only"> for The Raiders Open</span></a></li>
+    <li class="ev"><p class="ev-when label">June 2026</p><p class="ev-title">Suburban Slam #1</p><p class="ev-series">Krush Volleyball</p><p class="ev-count">211 photos · 41 videos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/krush-volleyball-suburban-slam-series-1-jun-14-z6uqiQ">View gallery<span class="sr-only"> for Suburban Slam #1</span></a></li>
+    <li class="ev"><p class="ev-when label">June 2026</p><p class="ev-title">Bell Pepper Open 2026</p><p class="ev-series">Let's Pepper series</p><p class="ev-count">119 photos · 82 videos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/bell-pepper-open-june-2026-TRoiyO">View gallery<span class="sr-only"> for Bell Pepper Open 2026</span></a></li>
+    <li class="ev"><p class="ev-when label">July 2025</p><p class="ev-title">Bell Pepper Open 2025</p><p class="ev-series">Let's Pepper series</p><p class="ev-count">100 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/bell-pepper-open-official-gallery-jul-19-2025-j5MfJD">View gallery<span class="sr-only"> for Bell Pepper Open 2025</span></a></li>
+    <li class="ev"><p class="ev-when label">July 2025</p><p class="ev-title">Bell Pepper Highlights</p><p class="ev-series">Let's Pepper series</p><p class="ev-count">Video album</p><a class="ev-link" href="https://ninochavez.co/photography/albums/bell-pepper-open-video-highlights-jul-19-2025-p4J2jk">Watch video<span class="sr-only"> for Bell Pepper Highlights</span></a></li>
+    <li class="ev"><p class="ev-when label">2025</p><p class="ev-title">AVP Chicago 1</p><p class="ev-series">AVP Tour</p><p class="ev-count">100 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/chicago-avp-san-diego-smash-jan-1-vKQKbN">View gallery<span class="sr-only"> for AVP Chicago 1</span></a></li>
+    <li class="ev"><p class="ev-when label">2025</p><p class="ev-title">AVP Chicago 2</p><p class="ev-series">AVP Tour</p><p class="ev-count">99 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/avp-chicago-miami-mayhem-sep-1-m3nhJ7">View gallery<span class="sr-only"> for AVP Chicago 2</span></a></li>
+    <li class="ev"><p class="ev-when label">Sept 2025</p><p class="ev-title">Player Appreciation 4s</p><p class="ev-series">Turf volleyball</p><p class="ev-count">50 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/players-player-appreciation-turf-4s-KZf9RF">View gallery<span class="sr-only"> for Player Appreciation 4s</span></a></li>
+    <li class="ev"><p class="ev-when label">2025</p><p class="ev-title">Krush Suburban Slam</p><p class="ev-series">Krush Volleyball</p><p class="ev-count">100 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/suburban-slam-triples-tourney-jan-1-G8dMVS">View gallery<span class="sr-only"> for Krush Suburban Slam</span></a></li>
+    <li class="ev"><p class="ev-when label">July 2025</p><p class="ev-title">Krush Reverse Co-Ed</p><p class="ev-series">Krush Volleyball</p><p class="ev-count">97 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/krush-reverse-co-ed-wJGz8n">View gallery<span class="sr-only"> for Krush Reverse Co-Ed</span></a></li>
+    <li class="ev"><p class="ev-when label">Aug 2025</p><p class="ev-title">Krush Reverse Co-Ed 2</p><p class="ev-series">Krush Volleyball</p><p class="ev-count">99 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/krush-reverse-co-ed-2-qzd2SP">View gallery<span class="sr-only"> for Krush Reverse Co-Ed 2</span></a></li>
+    <li class="ev"><p class="ev-when label">2025</p><p class="ev-title">Cookout Grass Tourney</p><p class="ev-series">Grass volleyball</p><p class="ev-count">100 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/cookout-volleyball-grass-tourney-jan-1-fTpMCN">View gallery<span class="sr-only"> for Cookout Grass Tourney</span></a></li>
+    <li class="ev"><p class="ev-when label">2025</p><p class="ev-title">Grass Launch 2025</p><p class="ev-series">Let's Pepper series</p><p class="ev-count">99 photos</p><a class="ev-link" href="https://ninochavez.co/photography/albums/grass-launch-open-triples-tournament-jun-5-2025-5M7kNx">View gallery<span class="sr-only"> for Grass Launch 2025</span></a></li>
+  </ol>
+</section>
 
-  <!-- ====== FOOTER ====== -->
-  <footer class="footer">
-    <div class="footer__inner">
-      <div class="footer__brand">
-        <span class="footer__copyright">© 2026 FLICKDAY MEDIA</span>
-      </div>
-
-      <nav class="footer__links" aria-label="Footer navigation">
-        <a href="https://letspepper.com" target="_blank" rel="noopener noreferrer" class="footer__link">LET'S PEPPER</a>
-        <a href="https://ninochavez.co/photography" target="_blank" rel="noopener noreferrer" class="footer__link">PHOTO DROPS</a>
-      </nav>
-
-      <div class="footer__social">
-        <a href="https://www.instagram.com/flickday.media" target="_blank" rel="noopener noreferrer" class="footer__social-link" aria-label="Instagram">
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-          </svg>
-        </a>
-      </div>
+<section class="ask" aria-labelledby="ask-title">
+  <div class="ask-main">
+    <h2 id="ask-title">Book Flickday for your event</h2>
+    <p class="status"><span class="dot" aria-hidden="true"></span>Booking indoor tournaments now. Outdoor 2027 dates open.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="mailto:flickday@ninochavez.co?subject=Tournament%20coverage%20inquiry">Book coverage</a>
     </div>
-  </footer>
+    <p class="contact">Email <a href="mailto:flickday@ninochavez.co">flickday@ninochavez.co</a> or message <a href="https://www.instagram.com/flickday.media">@flickday.media</a> on Instagram.</p>
+  </div>
+  <ul class="services">
+    <li><strong>Tournament coverage.</strong> On-site photos and video.</li>
+    <li><strong>Reels and edits.</strong> For Instagram and TikTok.</li>
+    <li><strong>Photo galleries.</strong> Find yourself, download, share. No watermarks.</li>
+    <li><strong>Based in Chicago.</strong> Travel available.</li>
+  </ul>
+</section>
 
-  <!-- ====== SCRIPTS ====== -->
-  <script>
-    // Fixed header - show on scroll past hero
-    const siteHeader = document.getElementById('site-header');
-    const heroSection = document.querySelector('.hero');
+</main>
 
-    if (siteHeader && heroSection) {
-      const headerObserver = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            siteHeader.classList.remove('visible');
-          } else {
-            siteHeader.classList.add('visible');
-          }
-        });
-      }, {
-        threshold: 0,
-        rootMargin: '-100px 0px 0px 0px'
-      });
+<footer class="site-footer">
+  <img src="flickday-assets/site/wordmark-play-white.png" alt="Flickday Media" width="640" height="236">
+  <p class="footer-text">Volleyball tournament photos and reels. Chicago.</p>
+  <ul class="footer-links">
+    <li><a href="https://www.instagram.com/flickday.media">Instagram</a></li>
+    <li><a href="mailto:flickday@ninochavez.co">flickday@ninochavez.co</a></li>
+    <li><a href="https://ninochavez.co/photography/explore">Find your photos</a></li>
+  </ul>
+</footer>
+<script>
+// Concept B, Showreel. Enhancement only: nothing here controls layout or motion.
+// A photo that fails to load is hidden inside its dark frame, so the text beside it
+// (a tile's title and date, the stage label, the hero text) stays readable.
+(function () {
+  'use strict';
 
-      headerObserver.observe(heroSection);
+  function markBroken(img) {
+    img.classList.add('is-broken');
+  }
+
+  // Errors on images do not bubble, so listen in the capture phase.
+  document.addEventListener('error', function (event) {
+    var target = event.target;
+    if (target && target.tagName === 'IMG') {
+      markBroken(target);
     }
+  }, true);
 
-    // Scroll reveal animations
-    const revealElements = document.querySelectorAll('.reveal');
-
-    const revealObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-        }
-      });
-    }, {
-      threshold: 0.1,
-      rootMargin: '0px 0px -50px 0px'
-    });
-
-    revealElements.forEach(el => revealObserver.observe(el));
-
-    // ============================================
-    // GALLERY - PARALLAX HORIZONTAL SCROLL
-    // ============================================
-
-    const galleryScroll = document.getElementById('gallery-scroll');
-    const galleryProgress = document.getElementById('gallery-progress');
-    const galleryCurrent = document.getElementById('gallery-current');
-    const galleryTotal = document.getElementById('gallery-total');
-
-    // Check for reduced motion preference
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    // Generate gallery data for all 60 images
-    const TOTAL_IMAGES = 60;
-    const galleryData = [];
-    for (let i = 1; i <= TOTAL_IMAGES; i++) {
-      const num = i.toString().padStart(2, '0');
-      galleryData.push({ src: `./images/gallery/portfolio-${num}.jpg` });
-    }
-
-    // Generate gallery items dynamically
-    if (galleryScroll) {
-      galleryData.forEach((item, index) => {
-        const article = document.createElement('article');
-        article.className = 'gallery__item';
-        article.dataset.index = index;
-        article.innerHTML = `
-          <div class="gallery__item-inner">
-            <img src="${item.src}" alt="FlickDay Media photo ${index + 1}" class="gallery__item-image" loading="lazy">
-          </div>
-        `;
-        galleryScroll.appendChild(article);
-      });
-    }
-
-    // Get generated items
-    const galleryItems = document.querySelectorAll('.gallery__item');
-
-    if (galleryScroll && galleryItems.length > 0) {
-      // Drag scroll state
-      let isDragging = false;
-      let startX = 0;
-      let scrollStart = 0;
-      let dragDistance = 0;
-
-      // Momentum state
-      let velocity = 0;
-      let lastX = 0;
-      let lastTime = 0;
-      let momentumRaf = null;
-
-      // Parallax animation state
-      let currentScroll = 0;
-      let targetScroll = 0;
-      const smoothing = 0.12;
-      let rafId = null;
-
-      // Update total count
-      if (galleryTotal) {
-        galleryTotal.textContent = galleryData.length.toString().padStart(2, '0');
+  // Eager images can fail before this script runs. Check them only after the page's
+  // load event: inline at the end of the body, an image whose request has just started
+  // can briefly read as complete with zero width, which would hide a good photo.
+  // Lazy images are skipped: their state is not final until they near the viewport.
+  window.addEventListener('load', function () {
+    var images = document.querySelectorAll('img');
+    for (var i = 0; i < images.length; i++) {
+      var img = images[i];
+      if (img.getAttribute('loading') === 'lazy') {
+        continue;
       }
-
-      // Damping function for smooth animation
-      const damp = (current, target, factor) => {
-        return current + (target - current) * factor;
-      };
-
-      // Parallax animation loop
-      const animateGallery = () => {
-        if (!galleryScroll) return;
-
-        currentScroll = damp(currentScroll, targetScroll, smoothing);
-        const containerWidth = galleryScroll.offsetWidth;
-        const scrollWidth = galleryScroll.scrollWidth - containerWidth;
-
-        // Update progress bar
-        if (galleryProgress && scrollWidth > 0) {
-          const progress = (galleryScroll.scrollLeft / scrollWidth) * 100;
-          galleryProgress.style.width = `${Math.min(100, Math.max(0, progress))}%`;
-        }
-
-        // Skip parallax effects if user prefers reduced motion
-        if (prefersReducedMotion) {
-          let currentIndex = 0;
-          galleryItems.forEach((item, index) => {
-            const rect = item.getBoundingClientRect();
-            const containerRect = galleryScroll.getBoundingClientRect();
-            const itemCenter = rect.left + rect.width / 2;
-            const containerCenter = containerRect.left + containerRect.width / 2;
-            if (itemCenter < containerCenter + rect.width / 2) {
-              currentIndex = index;
-            }
-          });
-          if (galleryCurrent) {
-            galleryCurrent.textContent = (currentIndex + 1).toString().padStart(2, '0');
-          }
-          rafId = requestAnimationFrame(animateGallery);
-          return;
-        }
-
-        // Calculate current image index for counter
-        let currentIndex = 0;
-        galleryItems.forEach((item, index) => {
-          const rect = item.getBoundingClientRect();
-          const containerRect = galleryScroll.getBoundingClientRect();
-          const itemCenter = rect.left + rect.width / 2;
-          const containerCenter = containerRect.left + containerRect.width / 2;
-
-          if (itemCenter < containerCenter + rect.width / 2) {
-            currentIndex = index;
-          }
-
-          // Calculate distance from center (normalized -1 to 1)
-          const viewportProgress = (itemCenter - containerCenter) / (containerWidth / 2);
-          const distanceFromCenter = Math.abs(viewportProgress);
-
-          // Apply parallax transforms
-          const image = item.querySelector('.gallery__item-image');
-          if (image) {
-            const panAmount = -viewportProgress * 15;
-            const scale = 1.15 - distanceFromCenter * 0.08;
-            image.style.transform = `translate(calc(-50% + ${panAmount}px), -50%) scale(${scale})`;
-          }
-
-          // Container scale and opacity
-          const containerScale = 1.0 - Math.min(distanceFromCenter, 1) * 0.08;
-          const opacity = Math.max(0.5, 1 - distanceFromCenter * 0.5);
-          item.style.transform = `scale(${containerScale})`;
-          item.style.opacity = opacity;
-        });
-
-        if (galleryCurrent) {
-          galleryCurrent.textContent = (currentIndex + 1).toString().padStart(2, '0');
-        }
-
-        rafId = requestAnimationFrame(animateGallery);
-      };
-
-      animateGallery();
-
-      // Scroll event
-      galleryScroll.addEventListener('scroll', () => {
-        targetScroll = galleryScroll.scrollLeft;
-      }, { passive: true });
-
-      // Momentum scroll function
-      const applyMomentum = () => {
-        if (Math.abs(velocity) < 0.5) {
-          velocity = 0;
-          return;
-        }
-
-        velocity *= 0.95; // Friction
-        galleryScroll.scrollLeft += velocity;
-        targetScroll = galleryScroll.scrollLeft;
-        momentumRaf = requestAnimationFrame(applyMomentum);
-      };
-
-      // Mouse drag with momentum
-      galleryScroll.addEventListener('mousedown', (e) => {
-        isDragging = true;
-        dragDistance = 0;
-        startX = e.pageX;
-        scrollStart = galleryScroll.scrollLeft;
-        lastX = e.pageX;
-        lastTime = Date.now();
-        velocity = 0;
-        if (momentumRaf) cancelAnimationFrame(momentumRaf);
-        galleryScroll.classList.add('is-dragging');
-        galleryScroll.style.scrollBehavior = 'auto';
-      });
-
-      window.addEventListener('mousemove', (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
-
-        const x = e.pageX;
-        const walk = startX - x;
-        dragDistance = Math.abs(walk);
-
-        // Calculate velocity for momentum
-        const now = Date.now();
-        const dt = now - lastTime;
-        if (dt > 0) {
-          velocity = (lastX - x) / dt * 16; // Normalize to ~60fps
-        }
-        lastX = x;
-        lastTime = now;
-
-        galleryScroll.scrollLeft = scrollStart + walk;
-        targetScroll = galleryScroll.scrollLeft;
-      });
-
-      window.addEventListener('mouseup', () => {
-        if (!isDragging) return;
-        isDragging = false;
-        galleryScroll.classList.remove('is-dragging');
-        galleryScroll.style.scrollBehavior = '';
-
-        // Apply momentum if velocity is significant
-        if (Math.abs(velocity) > 2) {
-          applyMomentum();
-        }
-      });
-
-      // Touch support with momentum
-      let touchStartX = 0;
-      let touchScrollStart = 0;
-      let touchLastX = 0;
-      let touchLastTime = 0;
-      let touchDragDistance = 0;
-
-      galleryScroll.addEventListener('touchstart', (e) => {
-        touchStartX = e.touches[0].pageX;
-        touchScrollStart = galleryScroll.scrollLeft;
-        touchLastX = touchStartX;
-        touchLastTime = Date.now();
-        touchDragDistance = 0;
-        velocity = 0;
-        if (momentumRaf) cancelAnimationFrame(momentumRaf);
-      }, { passive: true });
-
-      galleryScroll.addEventListener('touchmove', (e) => {
-        const x = e.touches[0].pageX;
-        const walk = touchStartX - x;
-        touchDragDistance = Math.abs(walk);
-
-        const now = Date.now();
-        const dt = now - touchLastTime;
-        if (dt > 0) {
-          velocity = (touchLastX - x) / dt * 16;
-        }
-        touchLastX = x;
-        touchLastTime = now;
-
-        galleryScroll.scrollLeft = touchScrollStart + walk;
-        targetScroll = galleryScroll.scrollLeft;
-      }, { passive: true });
-
-      galleryScroll.addEventListener('touchend', () => {
-        if (Math.abs(velocity) > 2) {
-          applyMomentum();
-        }
-      }, { passive: true });
-
-      // Keyboard navigation
-      galleryScroll.addEventListener('keydown', (e) => {
-        const scrollAmount = 350;
-        if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          galleryScroll.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        } else if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          galleryScroll.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
-        }
-      });
-
-      // Click to open lightbox (only if minimal drag)
-      galleryItems.forEach((item, index) => {
-        item.addEventListener('click', (e) => {
-          // Only open lightbox if drag distance was minimal (less than 10px)
-          if (dragDistance < 10 && touchDragDistance < 10) {
-            openLightbox(index);
-          }
-          // Reset drag distances
-          dragDistance = 0;
-          touchDragDistance = 0;
-        });
-      });
-    }
-
-    // ============================================
-    // LIGHTBOX
-    // ============================================
-
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImage = document.getElementById('lightbox-image');
-    const lightboxCurrent = document.getElementById('lightbox-current');
-    const lightboxTotal = document.getElementById('lightbox-total');
-    const lightboxThumbnails = document.getElementById('lightbox-thumbnails');
-    const lightboxClose = document.getElementById('lightbox-close');
-    const lightboxPrev = document.getElementById('lightbox-prev');
-    const lightboxNext = document.getElementById('lightbox-next');
-
-    let currentLightboxIndex = 0;
-
-    // Build thumbnails
-    if (lightboxThumbnails && galleryData) {
-      galleryData.forEach((item, index) => {
-        const thumb = document.createElement('button');
-        thumb.className = 'lightbox__thumb';
-        thumb.setAttribute('aria-label', `View photo ${index + 1}`);
-        thumb.innerHTML = `<img src="${item.src}" alt="Photo ${index + 1}" loading="lazy">`;
-        thumb.addEventListener('click', () => showLightboxImage(index));
-        lightboxThumbnails.appendChild(thumb);
-      });
-
-      if (lightboxTotal) {
-        lightboxTotal.textContent = galleryData.length.toString().padStart(2, '0');
+      if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) {
+        markBroken(img);
       }
     }
+  });
+})();
 
-    function openLightbox(index) {
-      if (!lightbox) return;
-      currentLightboxIndex = index;
-      showLightboxImage(index);
-      lightbox.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
-
-      // Focus the lightbox for keyboard nav
-      lightbox.focus();
-    }
-
-    function closeLightbox() {
-      if (!lightbox) return;
-      lightbox.classList.remove('is-open');
-      document.body.style.overflow = '';
-    }
-
-    function showLightboxImage(index) {
-      if (!galleryData[index]) return;
-
-      const item = galleryData[index];
-      currentLightboxIndex = index;
-
-      // Update image
-      if (lightboxImage) {
-        lightboxImage.src = item.src;
-        lightboxImage.alt = `Photo ${index + 1}`;
-      }
-
-      // Update counter
-      if (lightboxCurrent) {
-        lightboxCurrent.textContent = (index + 1).toString().padStart(2, '0');
-      }
-
-      // Update thumbnails active state
-      const thumbs = lightboxThumbnails?.querySelectorAll('.lightbox__thumb');
-      thumbs?.forEach((thumb, i) => {
-        thumb.classList.toggle('is-active', i === index);
-      });
-
-      // Scroll thumbnail into view
-      const activeThumb = thumbs?.[index];
-      if (activeThumb) {
-        activeThumb.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-      }
-    }
-
-    function nextLightboxImage() {
-      const nextIndex = (currentLightboxIndex + 1) % galleryData.length;
-      showLightboxImage(nextIndex);
-    }
-
-    function prevLightboxImage() {
-      const prevIndex = (currentLightboxIndex - 1 + galleryData.length) % galleryData.length;
-      showLightboxImage(prevIndex);
-    }
-
-    // Lightbox event listeners
-    if (lightboxClose) {
-      lightboxClose.addEventListener('click', closeLightbox);
-    }
-
-    if (lightboxPrev) {
-      lightboxPrev.addEventListener('click', prevLightboxImage);
-    }
-
-    if (lightboxNext) {
-      lightboxNext.addEventListener('click', nextLightboxImage);
-    }
-
-    // Close on backdrop click
-    if (lightbox) {
-      lightbox.addEventListener('click', (e) => {
-        if (e.target === lightbox || e.target.classList.contains('lightbox__main')) {
-          closeLightbox();
-        }
-      });
-    }
-
-    // Keyboard navigation for lightbox
-    document.addEventListener('keydown', (e) => {
-      if (!lightbox?.classList.contains('is-open')) return;
-
-      switch (e.key) {
-        case 'Escape':
-          closeLightbox();
-          break;
-        case 'ArrowRight':
-          e.preventDefault();
-          nextLightboxImage();
-          break;
-        case 'ArrowLeft':
-          e.preventDefault();
-          prevLightboxImage();
-          break;
-      }
-    });
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function(e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({ behavior: 'smooth' });
-        }
-      });
-    });
-  </script>
-
+</script>
 </body>
 </html>
