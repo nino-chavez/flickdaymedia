@@ -28,7 +28,7 @@ const SYMBOL_PLAY = join(ROOT, 'flickday-assets', 'wordmarks', 'symbol-play.svg'
 // origin — file:// subresources are blocked there and load as nothing. Anything
 // the proof sheet composites has to be inlined as a data URI.
 const dataUri = (p, mime) => `data:${mime};base64,${readFileSync(p).toString('base64')}`;
-const PHOTO_FEED = dataUri(join(ROOT, 'images', 'gallery', 'portfolio-06.jpg'), 'image/jpeg');
+const PHOTO_FEED = dataUri(join(ROOT, 'site', 'images', 'gallery', 'portfolio-06.jpg'), 'image/jpeg');
 const PHOTO_REEL = dataUri(
   join(ROOT, 'motion', 'flickday-overlay-kit', 'assets', 'proof-footage.jpg'),
   'image/jpeg',

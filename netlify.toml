@@ -1,0 +1,5 @@
+# Netlify also deploys this repo (flickdaymedia.netlify.app and PR deploy previews);
+# flickdaymedia.com itself is served by Cloudflare Pages. Publish site/ only, the same
+# folder wrangler.toml gives Pages, so neither host serves the repo's working files.
+[build]
+  publish = "site"

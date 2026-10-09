@@ -1,4 +1,4 @@
-<img src="assets/readme/hero.svg" alt="Flickday Media — Chicago grassroots sports media. Every Day's a Flickday. Raw, fast, player-first. This repo holds index.html (the live site and the brand's ground truth), motion/ (overlay kit, wordmark sting, film-room proof), flickday-assets/ (wordmark studies and symbol explorations), and BRAND-PRIORS.md (inputs for designing, not locked executions)." width="100%">
+<img src="assets/readme/hero.svg" alt="Flickday Media — Chicago grassroots sports media. Every Day's a Flickday. Raw, fast, player-first. This repo holds site/ (the live site and the brand's ground truth), motion/ (overlay kit, wordmark sting, film-room proof), flickday-assets/ (wordmark studies and symbol explorations), and BRAND-PRIORS.md (inputs for designing, not locked executions)." width="100%">
 
 Tournament coverage and same-day photo drops for grassroots volleyball, out of Chicago. We
 shoot for the players, not the brochure.
@@ -7,15 +7,18 @@ shoot for the players, not the brochure.
 
 ## What this repo is
 
-The site itself — a static build, no framework, no build step. `index.html` is the whole
-page. It deploys as-is.
+The site itself — a static build, no framework, no build step. `site/index.html` is the
+whole page.
+
+Cloudflare Pages publishes `site/` as-is and nothing else. `wrangler.toml` sets that. Any
+file a visitor's browser loads goes in `site/`; everything else in the repo stays private
+to the repo.
 
 | Path | Holds |
 |---|---|
-| `index.html` | The live site |
+| `site/` | The live site: `index.html`, `_redirects`, images, favicons, share card |
 | `motion/` | Overlay kit, wordmark sting, film-room proof card — HTML motion pieces |
 | `flickday-assets/` | Wordmark studies, symbol explorations, mock sheets |
-| `images/` | Site imagery |
 | `BRAND-PRIORS.md` | The inputs a designer needs before making anything |
 
 ## The site is the brand, not a doc about the brand
@@ -50,7 +53,7 @@ Yellow on black is the whole thing.
 ```bash
 git clone https://github.com/nino-chavez/flickdaymedia.git
 cd flickdaymedia
-python3 -m http.server 8000
+python3 -m http.server 8000 -d site
 ```
 
 Open `http://localhost:8000`.

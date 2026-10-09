@@ -4,7 +4,7 @@
  *
  *   node scripts/build-site-assets.mjs
  *
- * Outputs into flickday-assets/site/ (favicon/*, og-share-card.png).
+ * Outputs into site/flickday-assets/site/ (favicon/*, og-share-card.png), the folder Pages publishes.
  */
 import { createRequire } from 'node:module'
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
@@ -14,7 +14,7 @@ const require = createRequire('/Users/nino/Workspace/dev/apps/letspepper/package
 const { chromium } = require('playwright')
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const SITE = join(ROOT, 'flickday-assets', 'site')
+const SITE = join(ROOT, 'site', 'flickday-assets', 'site')
 const FAV = join(SITE, 'favicon')
 mkdirSync(FAV, { recursive: true })
 const Y = '#facc15', BG = '#0a0a0a'
@@ -82,4 +82,4 @@ writeFileSync(join(FAV, 'site.webmanifest'), JSON.stringify({
 console.log('✓ site.webmanifest')
 
 await browser.close()
-console.log('\nDone → flickday-assets/site/')
+console.log('\nDone → site/flickday-assets/site/')
