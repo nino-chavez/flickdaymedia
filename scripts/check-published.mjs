@@ -24,6 +24,9 @@ const GALLERY = 'https://ninochavez.co/photography'
 
 const sha = (buf) => createHash('sha256').update(buf).digest('hex')
 const file = (p) => readFileSync(join(ROOT, p))
+// Encode each segment, so a name with #, ? or non-ASCII maps to its real URL. A wrong URL
+// gets the home-page fallback, which would read as "not exposed".
+const enc = (p) => p.split('/').map(encodeURIComponent).join('/')
 
 // The zone rewrites HTML per response: email obfuscation with a fresh key, a bot-detection
 // script with a per-request token, and sometimes the Web Analytics beacon. Strip those,
@@ -38,17 +41,27 @@ function norm(buf) {
   return sha(s.replace(/\s+/g, ''))
 }
 
-// One request, no redirect following unless asked. `follow` takes one same-origin 301/308,
-// which is how Pages serves foo.html at /foo and dir/index.html at /dir/.
-async function get(path, follow = false) {
-  const res = await fetch(BASE + encodeURI(path), {
-    redirect: 'manual',
-    headers: { 'user-agent': 'flickday-check-published/1' },
-  })
+// One request to an already-encoded URL path, no redirect following unless asked. `follow`
+// takes one same-origin 301/308, which is how Pages serves foo.html at /foo and
+// dir/index.html at /dir/.
+// A dropped connection is retried twice; a third failure throws rather than guessing.
+async function get(urlPath, follow = false) {
+  let res
+  for (let attempt = 1; !res; attempt++) {
+    try {
+      res = await fetch(BASE + urlPath, {
+        redirect: 'manual',
+        headers: { 'user-agent': 'flickday-check-published/1' },
+      })
+    } catch (err) {
+      if (attempt === 3) throw err
+      await new Promise((r) => setTimeout(r, 250 * attempt))
+    }
+  }
   const loc = res.headers.get('location') || ''
   if (follow && (res.status === 301 || res.status === 308) && loc.startsWith('/')) {
     await res.arrayBuffer()
-    return get(decodeURI(loc))
+    return get(loc)
   }
   return { status: res.status, location: loc, body: Buffer.from(await res.arrayBuffer()) }
 }
@@ -60,7 +73,7 @@ async function pool(items, fn) {
   return out.filter(Boolean)
 }
 
-const tracked = execFileSync('git', ['-C', ROOT, 'ls-files'], { encoding: 'utf8' }).split('\n').filter(Boolean)
+const tracked = execFileSync('git', ['-C', ROOT, 'ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean)
 const site = tracked.filter((p) => p.startsWith('site/'))
 const priv = tracked.filter((p) => !p.startsWith('site/'))
 const fails = []
@@ -69,10 +82,11 @@ const home = await get('/')
 if (home.status !== 200 || norm(home.body) !== norm(file('site/index.html'))) {
   fails.push(`/ -> ${home.status}, body is not site/index.html`)
 }
+// Cloudflare Pages redirects /index.html to /; Netlify serves it directly. Either is fine.
 const idx = await get('/index.html')
-if (![301, 308].includes(idx.status) || ![`/`, `${BASE}/`].includes(idx.location)) {
-  fails.push(`/index.html -> ${idx.status} location=${idx.location}`)
-}
+const idxRedirects = [301, 308].includes(idx.status) && [`/`, `${BASE}/`].includes(idx.location)
+const idxServes = idx.status === 200 && norm(idx.body) === norm(file('site/index.html'))
+if (!idxRedirects && !idxServes) fails.push(`/index.html -> ${idx.status} location=${idx.location}`)
 
 const manifest = JSON.parse(file('site/flickday-assets/site/favicon/site.webmanifest'))
 const exact = [
@@ -85,7 +99,7 @@ const exact = [
   .concat(manifest.icons.map((i) => [i.src, `site${i.src}`]))
 const published = site
   .filter((p) => p !== 'site/index.html' && p !== 'site/_redirects')
-  .map((p) => [p.slice('site'.length), p])
+  .map((p) => [enc(p.slice('site'.length)), p])
 
 fails.push(...(await pool([...published, ...exact], async ([url, p]) => {
   const r = await get(url)
@@ -99,7 +113,7 @@ for (const path of ['/gallery', '/photos']) {
 
 const homeHash = norm(home.body)
 const exposed = await pool(priv, async (p) => {
-  const r = await get(`/${p}`, true)
+  const r = await get(`/${enc(p)}`, true)
   if (r.status === 200 && norm(r.body) !== homeHash) return p
 })
 
