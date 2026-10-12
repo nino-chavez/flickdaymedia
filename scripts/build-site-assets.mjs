@@ -8,12 +8,10 @@
  * Outputs into site/flickday-assets/site/favicon/, the folder Pages publishes.
  * The share card carries the wordmark, so build-site-wordmark.mjs owns it.
  */
-import { createRequire } from 'node:module'
 import { writeFileSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve, join } from 'node:path'
-const require = createRequire('/Users/nino/Workspace/dev/apps/letspepper/package.json')
-const { chromium } = require('playwright')
+import { chromium } from './wordmark-lib.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const SITE = join(ROOT, 'site', 'flickday-assets', 'site')

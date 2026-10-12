@@ -79,11 +79,13 @@ async function renderMark(page, tmp, color, width, out) {
 }
 
 // The share card: wordmark, a "MEDIA" rule line, the tagline. The mark is
-// drawn at 2x its card width so the 2x screenshot never upscales it.
+// drawn at 2x its card width so the 2x screenshot never upscales it. The text
+// and gaps keep the traced-mark card's proportions to its 620 px mark, so the
+// lines under the mark grow with it instead of reading as an afterthought.
 async function renderCard(page, tmp) {
   const mark = join(tmp, 'card-mark.png');
   await renderMark(page, tmp, YELLOW, CARD_MARK * 2, mark);
-  const rule = Math.round(CARD_MARK * 0.9);
+  const px = (n) => `${Math.round((n * CARD_MARK) / 620)}px`;
   const html = join(tmp, 'card.html');
   writeFileSync(
     html,
@@ -91,12 +93,12 @@ async function renderCard(page, tmp) {
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=JetBrains+Mono:wght@600&display=swap">
 <style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:${CARD_W}px;height:${CARD_H}px;overflow:hidden}
 body{background:${CARD_BG};background-image:radial-gradient(70% 55% at 30% 30%,rgba(250,204,21,0.12),transparent 60%),radial-gradient(80% 60% at 85% 95%,rgba(249,115,22,0.07),transparent 60%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px}
-.wm{display:block;width:${CARD_MARK}px;height:auto;margin-bottom:4px}
-.med{display:flex;align-items:center;gap:16px;width:${rule}px}
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:${px(26)}}
+.wm{display:block;width:${CARD_MARK}px;height:auto;margin-bottom:${px(4)}}
+.med{display:flex;align-items:center;gap:${px(16)};width:${px(560)}}
 .med span.line{flex:1;height:1px;background:#374151}
-.med span.txt{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:22px;letter-spacing:0.5em;text-transform:uppercase;color:${YELLOW};padding-left:0.5em}
-.tag{font-family:'Bebas Neue',sans-serif;font-size:46px;letter-spacing:0.03em;text-transform:uppercase;color:#e5e5e5;line-height:1}</style>
+.med span.txt{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:${px(22)};letter-spacing:0.5em;text-transform:uppercase;color:${YELLOW};padding-left:0.5em}
+.tag{font-family:'Bebas Neue',sans-serif;font-size:${px(46)};letter-spacing:0.03em;text-transform:uppercase;color:#e5e5e5;line-height:1}</style>
 </head><body>
 <img class="wm" src="card-mark.png" alt="">
 <div class="med"><span class="line"></span><span class="txt">Media</span><span class="line"></span></div>
