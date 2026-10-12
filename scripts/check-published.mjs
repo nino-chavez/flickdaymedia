@@ -8,8 +8,12 @@
  *   - every file in site/ must come back byte-identical at its URL path,
  *   - the exact favicon, manifest and OG URLs index.html uses, and /gallery and /photos,
  *     must still work,
- *   - every tracked file outside site/ must NOT come back: a 200 whose body is not the
- *     home page counts as exposed.
+ *   - every tracked file outside site/ must NOT come back. A 200 counts as exposed when its
+ *     body is that file's own bytes or something unrecognized. The home page is the unknown-
+ *     path fallback. A body matching a recent committed index.html is an edge still serving
+ *     the previous deploy's fallback; it is counted on its own line and does not fail the run.
+ * Public files that fail say whether the body is a home-page fallback or an earlier commit's
+ * copy of the file.
  * Exits 0 only when every public URL works and nothing private is exposed.
  */
 import { execFileSync } from 'node:child_process'
@@ -25,6 +29,7 @@ const GALLERY = 'https://ninochavez.co/photography'
 
 const sha = (buf) => createHash('sha256').update(buf).digest('hex')
 const file = (p) => readFileSync(join(ROOT, p))
+const git = (...args) => execFileSync('git', ['-C', ROOT, ...args], { maxBuffer: 1 << 28, stdio: ['ignore', 'pipe', 'ignore'] })
 // Encode each segment, so a name with #, ? or non-ASCII maps to its real URL. A wrong URL
 // gets the home-page fallback, which would read as "not exposed".
 const enc = (p) => p.split('/').map(encodeURIComponent).join('/')
@@ -67,7 +72,20 @@ async function get(urlPath, follow = false) {
     await res.arrayBuffer()
     return get(loc)
   }
-  return { status: res.status, location: loc, body: Buffer.from(await res.arrayBuffer()) }
+  return { status: res.status, location: loc, headers: res.headers, body: Buffer.from(await res.arrayBuffer()) }
+}
+
+// The last ten committed versions of a file, newest first, as [short sha, bytes]. A commit
+// that deleted it is skipped.
+function history(p) {
+  const shas = git('log', '-n', '10', '--format=%H', '--', p).toString('utf8').split('\n').filter(Boolean)
+  return shas.flatMap((h) => {
+    try {
+      return [[h.slice(0, 7), git('show', `${h}:${p}`)]]
+    } catch {
+      return []
+    }
+  })
 }
 
 // Run fn over items, eight requests at a time.
@@ -77,13 +95,21 @@ async function pool(items, fn) {
   return out.filter(Boolean)
 }
 
-const tracked = execFileSync('git', ['-C', ROOT, 'ls-files', '-z'], { encoding: 'utf8' }).split('\0').filter(Boolean)
+const tracked = git('ls-files', '-z').toString('utf8').split('\0').filter(Boolean)
 const site = tracked.filter((p) => p.startsWith('site/'))
 const priv = tracked.filter((p) => !p.startsWith('site/'))
 const fails = []
 
+// After a deploy that changes index.html, Pages edges keep answering unknown paths with the
+// previous deployment's index.html for a while (cf-cache-status HIT, age climbing, despite
+// max-age=0). Recent committed versions let the check name that instead of calling it
+// exposure. A shallow clone knows fewer, and its stale fallbacks read as unrecognized.
+const homes = new Map()
+for (const [h, buf] of history('site/index.html')) if (!homes.has(norm(buf))) homes.set(norm(buf), h)
+
 const home = await get('/')
-if (home.status !== 200 || norm(home.body) !== norm(file('site/index.html'))) {
+const homeHash = norm(home.body)
+if (home.status !== 200 || homeHash !== norm(file('site/index.html'))) {
   fails.push(`/ -> ${home.status}, body is not site/index.html`)
 }
 // Cloudflare Pages redirects /index.html to /; Netlify serves it directly. Either is fine.
@@ -111,9 +137,20 @@ const published = site
   .filter((p) => p !== 'site/index.html' && p !== 'site/_redirects')
   .map((p) => [enc(p.slice('site'.length)), p])
 
+// What a wrong 200 body for public file p actually is, when the check can tell.
+function identify(body, p) {
+  const n = norm(body)
+  if (n === homeHash) return 'home-page fallback, not in this deploy'
+  if (homes.has(n)) return `stale home fallback, index.html as of ${homes.get(n)}`
+  const old = history(p).find(([, buf]) => sha(buf) === sha(body))
+  return old ? `stale copy of ${old[0]}` : ''
+}
+
 fails.push(...(await pool([...published, ...exact], async ([url, p]) => {
   const r = await get(url)
-  if (r.status !== 200 || sha(r.body) !== sha(file(p))) return `${url} -> ${r.status}, ${r.body.length}B, expected ${p}`
+  if (r.status === 200 && sha(r.body) === sha(file(p))) return
+  const what = r.status === 200 ? identify(r.body, p) : ''
+  return `${url} -> ${r.status}, ${r.body.length}B, expected ${p}${what ? ` (${what})` : ''}`
 })))
 
 for (const path of ['/gallery', '/photos']) {
@@ -121,17 +158,40 @@ for (const path of ['/gallery', '/photos']) {
   if (r.status !== 302 || r.location !== GALLERY) fails.push(`${path} -> ${r.status} location=${r.location}`)
 }
 
-const homeHash = norm(home.body)
-const exposed = await pool(priv, async (p) => {
+const ownBytes = (p, body) => {
+  try {
+    const f = file(p)
+    return sha(body) === sha(f) || norm(body) === norm(f)
+  } catch {
+    return false
+  }
+}
+const seen = await pool(priv, async (p) => {
   const r = await get(`/${enc(p)}`, true)
-  if (r.status === 200 && norm(r.body) !== homeHash) return p
+  if (r.status !== 200) return
+  const n = norm(r.body)
+  if (n === homeHash) return
+  if (ownBytes(p, r.body)) return { p, kind: 'own bytes' }
+  if (homes.has(n)) return { p, kind: 'stale', from: homes.get(n) }
+  const h = (k) => r.headers.get(k) || '-'
+  return { p, kind: 'unrecognized', info: `${r.body.length}B ${h('content-type')}, cf-cache-status ${h('cf-cache-status')}, age ${h('age')}` }
 })
+const exposed = seen.filter((x) => x.kind !== 'stale')
+const stale = seen.filter((x) => x.kind === 'stale')
+const unknown = exposed.filter((x) => x.kind === 'unrecognized')
 
 console.log(`base: ${BASE}`)
+console.log(`home versions known: ${homes.size}, from the last commits to site/index.html`)
 console.log(`public: ${published.length + 1} site files, ${exact.length} exact URLs, 2 redirects; failures: ${fails.length}`)
-console.log(`private: ${priv.length} tracked files outside site/; exposed: ${exposed.length}`)
+console.log(`private: ${priv.length} tracked files outside site/; exposed: ${exposed.length} (own bytes ${exposed.length - unknown.length}, unrecognized ${unknown.length})`)
+console.log(`stale home fallback: ${stale.length}`)
 for (const f of fails) console.log(`  FAIL ${f}`)
 const byTop = {}
-for (const p of exposed) byTop[p.split('/')[0]] = (byTop[p.split('/')[0]] || 0) + 1
+for (const { p } of exposed) byTop[p.split('/')[0]] = (byTop[p.split('/')[0]] || 0) + 1
 for (const [top, n] of Object.entries(byTop).sort()) console.log(`  EXPOSED ${String(n).padStart(4)}  ${top}`)
+for (const x of unknown.slice(0, 5)) console.log(`  UNRECOGNIZED /${x.p} -> ${x.info}`)
+if (stale.length) {
+  const from = [...new Set(stale.map((x) => x.from))].join(', ')
+  console.log(`note: edges are still serving the previous deploy's index.html (as of ${from}) for ${stale.length} unknown paths. That is cache lag, not exposure; it clears on its own.`)
+}
 process.exit(fails.length || exposed.length ? 1 : 0)
