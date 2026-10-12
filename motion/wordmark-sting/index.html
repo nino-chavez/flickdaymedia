@@ -96,6 +96,8 @@
       // data-duration holds the length; the timeline's final empty state carries it.
 
       tl.seek(0);
+      // Current runtimes create the registry first; the guard keeps older pins safe.
+      window.__timelines = window.__timelines || {};
       window.__timelines["main"] = tl;
     </script>
   </body>
