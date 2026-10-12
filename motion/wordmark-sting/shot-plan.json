@@ -7,7 +7,7 @@
     "h": 1920,
     "aspect": "9:16"
   },
-  "style": "Courtside, not corporate. Flat, confident, athletic energy over live volleyball footage. Yellow-on-transparent, no soft glows or hairlines: legibility over unpredictable video is the constraint. Wordmark only. The play mark is never inside the d, and the symbol and the wordmark+symbol lockup are still open gates in forge-brand, so this sting carries no play mark (nino, 2026-10-12).",
+  "style": "Courtside, not corporate. Flat, confident, athletic energy over live volleyball footage. Yellow-on-transparent with a flat dark offset shadow, no soft glows or hairlines: legibility over unpredictable video is the constraint. Wordmark only. The play mark is never inside the d, and the symbol and the wordmark+symbol lockup are still open gates in forge-brand, so this sting carries no play mark (nino, 2026-10-12).",
   "palette": [
     "#facc15",
     "#fde047",
@@ -87,7 +87,7 @@
     "PNG, not SVG or live text: Peridot is licensed for live text, not for embedded outlines (BRAND-PRIORS.md), and the PNG layers keep the render free of any font kit.",
     "Layers are drawn at 1600 px, twice the 800 px the sting shows, so no frame upscales them.",
     "No play mark in the d, and no play mark beside the wordmark until the symbol and lockup gates close (nino, 2026-10-12). The traced play-d SVG this sting used before is removed.",
-    "LEGIBILITY-OVER-FOOTAGE: keep the mark pure yellow #facc15 on transparent; do NOT bake in backing. Over bright footage (white sky, sand, a white board) yellow loses contrast. The sanctioned reinforcement is a FLAT, zero-blur offset shadow in a dark ink, NEVER a soft glow. Offer as an option, not a default.",
+    "LEGIBILITY-OVER-FOOTAGE: the mark is pure yellow #facc15 on transparent with a FLAT, zero-blur 6 px offset shadow in dark ink #111318 down and right, NEVER a soft glow. The shadow was an option until nino asked for it on 2026-10-12, after yellow lost contrast over white sky and a white board. It sits on each letter, not the word, so a fading letter fades with its own shadow instead of showing it through. 4 px thinned to a hairline at phone size; 10 px read as an extrusion. Do not bake in any other backing; the compositor owns placement.",
     "Final delivery is ProRes 4444 MOV (alpha): a render-flag detail for the CLI, not a composition change."
   ],
   "shot_brief": "A 5s transparent bookend sting for CapCut compositing over volleyball footage: the Peridot wordmark builds letter by letter, left to right, each letter growing in place with a small upward snap, holds flat and legible through the middle, then collapses letter by letter in the same direction. Frame 0 and the final frame are fully clear so it drops cleanly onto footage. Motion is the message; no tagline, no URL, no symbol. Rendered as an alpha overlay, final delivery ProRes 4444 MOV."
