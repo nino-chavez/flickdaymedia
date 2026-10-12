@@ -21,13 +21,11 @@
  *     → flickday-assets/wordmarks/finalists.png
  *     → flickday-assets/wordmarks/finalists-spacing.json
  */
-import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
 
-const require = createRequire('/Users/nino/Workspace/dev/apps/letspepper/package.json');
-const { chromium } = require('playwright');
+import { chromium } from './wordmark-lib.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'flickday-assets', 'wordmarks');

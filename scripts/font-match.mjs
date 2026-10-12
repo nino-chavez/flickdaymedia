@@ -5,12 +5,10 @@
  *
  *   node scripts/font-match.mjs   →  flickday-assets/wordmarks/_font-match.png
  */
-import { createRequire } from 'node:module'
 import { readFileSync, writeFileSync, rmSync } from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, resolve, join } from 'node:path'
-const require = createRequire('/Users/nino/Workspace/dev/apps/letspepper/package.json')
-const { chromium } = require('playwright')
+import { chromium } from './wordmark-lib.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = join(ROOT, 'flickday-assets', 'wordmarks')

@@ -5,12 +5,10 @@
  *
  *   node scripts/export-wordmarks.mjs   →  flickday-assets/wordmarks/
  */
-import { createRequire } from 'node:module'
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, resolve, join } from 'node:path'
-const require = createRequire('/Users/nino/Workspace/dev/apps/letspepper/package.json')
-const { chromium } = require('playwright')
+import { chromium } from './wordmark-lib.mjs'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const BRAND = join(ROOT, 'flickday-assets', 'brand')
