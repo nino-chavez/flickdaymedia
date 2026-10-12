@@ -20,7 +20,15 @@
          kit's validated safe area (x 122-940). Its height and top come from the
          layers' aspect in the script below, optical centre at 46% of the frame. */
       #mark { position: absolute; left: 140px; width: 800px; }
-      .letter { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+      /* Legibility over bright footage: a FLAT offset shadow in dark ink, zero blur, never a
+         glow (shot-plan build notes; added at nino's request, 2026-10-12). Per letter, not on
+         the word: a filter applies before opacity, so each letter fades as one piece with its
+         shadow. On the word, a half-faded letter showed its own shadow through it. At rest
+         the two are the same, since each later letter paints over the shadow of the one
+         before. 6 px: at phone size (about 0.36x) 4 px thinned to a hairline over white sky,
+         and 10 px read as a 3D extrusion. */
+      .letter { position: absolute; inset: 0; width: 100%; height: 100%; display: block;
+                filter: drop-shadow(6px 6px 0 #111318); }
     </style>
   </head>
   <body>
