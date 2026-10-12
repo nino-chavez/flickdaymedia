@@ -15,7 +15,7 @@
  * never computed (round 1's algorithm drove kd to -0.11em, twice the ck move).
  */
 import { createRequire } from 'node:module';
-import { join } from 'node:path';
+import { resolve } from 'node:path';
 
 // This repo declares no dependencies: a package.json would make the Pages and
 // Netlify builds install Playwright for a site that ships static files. So
@@ -26,19 +26,25 @@ import { join } from 'node:path';
 function loadPlaywright() {
   const anchors = [
     import.meta.url,
-    process.env.PLAYWRIGHT_FROM && join(process.env.PLAYWRIGHT_FROM, 'package.json'),
+    // resolve, not join: createRequire rejects a relative path.
+    process.env.PLAYWRIGHT_FROM && resolve(process.env.PLAYWRIGHT_FROM, 'package.json'),
     '/Users/nino/Workspace/dev/apps/letspepper/package.json',
   ].filter(Boolean);
+  let missing;
   for (const anchor of anchors) {
     try {
       return createRequire(anchor)('playwright');
-    } catch {
-      // not installed there; try the next place
+    } catch (err) {
+      // Move on only when Playwright itself is absent there. A broken install
+      // must surface, not quietly hand over to a different Playwright.
+      if (err?.code !== 'MODULE_NOT_FOUND' || !/'playwright'/.test(err.message)) throw err;
+      missing = err;
     }
   }
   throw new Error(
     'playwright not found. Set PLAYWRIGHT_FROM to a directory whose node_modules has it, ' +
       'e.g. PLAYWRIGHT_FROM=~/some-project node scripts/build-site-wordmark.mjs',
+    { cause: missing },
   );
 }
 
