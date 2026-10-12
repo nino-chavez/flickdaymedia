@@ -20,13 +20,11 @@
  *     → flickday-assets/wordmarks/specimens-apparel.png
  *     → flickday-assets/wordmarks/specimens-KEY.json   (do not read while judging)
  */
-import { createRequire } from 'node:module';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
 
-const require = createRequire('/Users/nino/Workspace/dev/apps/letspepper/package.json');
-const { chromium } = require('playwright');
+import { chromium } from './wordmark-lib.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'flickday-assets', 'wordmarks');
