@@ -92,14 +92,18 @@ const idxServes = idx.status === 200 && norm(idx.body) === norm(file('site/index
 if (!idxRedirects && !idxServes) fails.push(`/index.html -> ${idx.status} location=${idx.location}`)
 
 const manifest = JSON.parse(file('site/flickday-assets/site/favicon/site.webmanifest'))
-const exact = [
-  'og-share-card.png',
-  'favicon/favicon-32x32.png',
-  'favicon/favicon-16x16.png',
-  'favicon/apple-touch-icon.png',
-  'favicon/site.webmanifest',
-].map((p) => [`/flickday-assets/site/${p}?v=2`, `site/flickday-assets/site/${p}`])
-  .concat(manifest.icons.map((i) => [i.src, `site${i.src}`]))
+// Each with the ?v= index.html gives it. Pages ignores the query string, so a stale
+// version here would still pass; the declared check below makes it fail instead.
+const head = [
+  ['og-share-card.png', 4],
+  ['favicon/favicon-32x32.png', 2],
+  ['favicon/favicon-16x16.png', 2],
+  ['favicon/apple-touch-icon.png', 2],
+  ['favicon/site.webmanifest', 2],
+].map(([p, v]) => [`/flickday-assets/site/${p}?v=${v}`, `site/flickday-assets/site/${p}`])
+const html = file('site/index.html').toString('utf8')
+for (const [url] of head) if (!html.includes(`".${url}"`)) fails.push(`index.html does not declare ${url}`)
+const exact = head.concat(manifest.icons.map((i) => [i.src, `site${i.src}`]))
 const published = site
   .filter((p) => p !== 'site/index.html' && p !== 'site/_redirects')
   .map((p) => [enc(p.slice('site'.length)), p])
