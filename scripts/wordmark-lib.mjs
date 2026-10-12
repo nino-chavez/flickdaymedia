@@ -14,8 +14,11 @@
  * Negative closes a pair, positive opens it. Tuned by eye against the render,
  * never computed (round 1's algorithm drove kd to -0.11em, twice the ck move).
  */
+import { execFileSync } from 'node:child_process';
+import { writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { resolve } from 'node:path';
+import { basename, join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
 
 // This repo declares no dependencies: a package.json would make the Pages and
 // Netlify builds install Playwright for a site that ships static files. So
@@ -165,6 +168,56 @@ export function peridotMark(color, fontSize, track = 0, hand = PERIDOT.hand) {
   return `<span class="mk" style="color:${color};font-size:${fontSize};${
     track ? `letter-spacing:${track}em;` : ''
   }">${spans(PERIDOT.cssFamily, PERIDOT.weight, PERIDOT.variation, hand)}</span>`;
+}
+
+// No date or tIME chunks, so a rebuild of an unchanged mark is byte-identical.
+export const PNG_STABLE = ['-define', 'png:exclude-chunks=date,time'];
+
+// document.fonts.check() is true for a family that never loaded at all, so ask
+// whether a face of the family itself reports loaded. Without this a blocked
+// kit writes the text in a fallback face and nothing says so.
+export async function assertLoaded(page, family, file) {
+  const loaded = await page.evaluate(
+    (fam) => [...document.fonts].some((f) => f.family.replace(/["']/g, '') === fam && f.status === 'loaded'),
+    family,
+  );
+  if (!loaded) throw new Error(`${family} did not load; refusing to write ${file} in a fallback face`);
+}
+
+/**
+ * The standard-cut mark in `color` on a transparent page, screenshot untrimmed
+ * to `raw`. With `only` (a letter index), every other letter is transparent but
+ * keeps its space, so each single-letter shot shares the full mark's box.
+ * Single-letter shots also turn ligatures off: Chrome shapes across the spans,
+ * so Peridot's fl ligature would put both letters in the f's span. The plain f
+ * and l match the ligature within 5/255 alpha along the l stem.
+ */
+export async function shootMark(page, tmp, color, raw, only = null) {
+  const S = PERIDOT_CUTS.standard;
+  const html = join(tmp, 'mark.html');
+  const solo =
+    only === null
+      ? ''
+      : `.mk span{color:transparent;font-variant-ligatures:none}.mk span:nth-child(${only + 1}){color:${color}}`;
+  writeFileSync(
+    html,
+    `<!DOCTYPE html><html><head><meta charset="utf-8">${KIT_LINKS}
+<style>*{margin:0;padding:0}body{background:transparent}
+.box{display:inline-block;padding:0.4em;line-height:1.6;white-space:nowrap}${solo}</style>
+</head><body><div class="box">${peridotMark(color, '400px', S.track, S.hand)}</div></body></html>`,
+  );
+  await page.goto(pathToFileURL(html).href, { waitUntil: 'networkidle' });
+  await page.evaluate(() => document.fonts.ready);
+  await assertLoaded(page, PERIDOT.cssFamily, basename(raw));
+  await page.locator('.box').screenshot({ path: raw, omitBackground: true });
+}
+
+// The mark in `color`, trimmed to ink and resized to `width` px, at `out`.
+export async function renderMark(page, tmp, color, width, out) {
+  const raw = join(tmp, 'mark-raw.png');
+  await shootMark(page, tmp, color, raw);
+  execFileSync('magick', [raw, '-trim', '+repage', '-resize', `${width}x`, ...PNG_STABLE, out]);
+  return execFileSync('magick', ['identify', '-format', '%wx%h', out]).toString();
 }
 
 // Ink height per face at a chosen font-size, measured by rasterising and

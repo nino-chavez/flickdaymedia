@@ -24,7 +24,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { basename, dirname, resolve, join } from 'node:path';
-import { chromium, KIT_LINKS, peridotMark, PERIDOT, PERIDOT_CUTS, YELLOW } from './wordmark-lib.mjs';
+import { assertLoaded, chromium, renderMark, YELLOW } from './wordmark-lib.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'site', 'flickday-assets', 'site');
@@ -34,7 +34,6 @@ const COLORWAYS = [
   ['wordmark-yellow.png', YELLOW],
   ['wordmark-white.png', '#ffffff'],
 ];
-const S = PERIDOT_CUTS.standard;
 
 // The share card: 1200x630 drawn at 2x, the size the page declares. The mark
 // width is in card px; its ink is the whole image, so the stack centres on ink.
@@ -45,38 +44,6 @@ const CARD_H = 630;
 const CARD_BG = '#0a0a0a';
 const CARD_MARK = 700;
 const CARD_OUT = join(OUT, 'og-share-card.png');
-
-// document.fonts.check() is true for a family that never loaded at all, so ask
-// whether a face of the family itself reports loaded. Without this a blocked
-// kit writes the text in a fallback face and nothing says so.
-async function assertLoaded(page, family, file) {
-  const loaded = await page.evaluate(
-    (fam) => [...document.fonts].some((f) => f.family.replace(/["']/g, '') === fam && f.status === 'loaded'),
-    family,
-  );
-  if (!loaded) throw new Error(`${family} did not load; refusing to write ${file} in a fallback face`);
-}
-
-// The mark in `color`, trimmed to ink and resized to `width` px, at `out`.
-async function renderMark(page, tmp, color, width, out) {
-  const html = join(tmp, 'mark.html');
-  writeFileSync(
-    html,
-    `<!DOCTYPE html><html><head><meta charset="utf-8">${KIT_LINKS}
-<style>*{margin:0;padding:0}body{background:transparent}
-.box{display:inline-block;padding:0.4em;line-height:1.6;white-space:nowrap}</style>
-</head><body><div class="box">${peridotMark(color, '400px', S.track, S.hand)}</div></body></html>`,
-  );
-  await page.goto(pathToFileURL(html).href, { waitUntil: 'networkidle' });
-  await page.evaluate(() => document.fonts.ready);
-  await assertLoaded(page, PERIDOT.cssFamily, basename(out));
-
-  const raw = join(tmp, 'mark-raw.png');
-  await page.locator('.box').screenshot({ path: raw, omitBackground: true });
-  // No date or tIME chunks, so a rebuild of an unchanged mark is byte-identical.
-  execFileSync('magick', [raw, '-trim', '+repage', '-resize', `${width}x`, '-define', 'png:exclude-chunks=date,time', out]);
-  return execFileSync('magick', ['identify', '-format', '%wx%h', out]).toString();
-}
 
 // The share card: wordmark, a "MEDIA" rule line, the tagline. The mark is
 // drawn at 2x its card width so the 2x screenshot never upscales it. The text
