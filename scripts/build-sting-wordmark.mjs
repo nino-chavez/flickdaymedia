@@ -1,6 +1,7 @@
 /**
- * Sting wordmark — the locked Peridot wordmark as eight registered PNG layers,
- * one letter each, for motion/wordmark-sting.
+ * Sting wordmark — the locked Peridot wordmark for both motion stings:
+ * eight registered PNG letter layers for motion/wordmark-sting, and the whole
+ * mark in three colorways for the overlay kit's wordmark sting.
  *
  * Every layer is the full mark's canvas holding one letter's ink, cropped with
  * the full mark's own trim box. Stacked, the eight redraw the mark exactly
@@ -16,18 +17,28 @@
  *
  *   node scripts/build-sting-wordmark.mjs
  *     → motion/wordmark-sting/assets/wordmark/letter-{1..8}.png, layers.js
+ *     → motion/flickday-overlay-kit/assets/brand/flickday-wordmark-{color,white,black}.png
  */
 import { execFileSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve, join } from 'node:path';
-import { chromium, PNG_STABLE, shootMark, WORD, YELLOW } from './wordmark-lib.mjs';
+import { chromium, INK, PNG_STABLE, renderMark, shootMark, WORD, YELLOW } from './wordmark-lib.mjs';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'motion', 'wordmark-sting', 'assets', 'wordmark');
-// Twice the 800 px the sting shows, so the build's overshoot never upscales.
+// Twice the 800 px both stings show the mark at.
 const WIDTH = 1600;
+// The overlay kit swaps the whole mark through its wordmarkSrc variable, in the
+// colorways its earlier core wordmark shipped: warm white for dark footage (the
+// default), white for the most contrast, near black for light footage.
+const KIT = join(ROOT, 'motion', 'flickday-overlay-kit', 'assets', 'brand');
+const KIT_COLORWAYS = [
+  ['flickday-wordmark-color.png', '#F7F4ED'],
+  ['flickday-wordmark-white.png', '#FFFFFF'],
+  ['flickday-wordmark-black.png', INK],
+];
 // Share of pixels where the stacked layers may differ from the one-piece
 // render: only where two letters' antialiased edges overlap (k|d is kerned
 // tight). A layer shifted 4 px measured 0.0077, fifteen times this.
@@ -84,6 +95,10 @@ async function main() {
         `window.FLICKDAY_WORDMARK = ${JSON.stringify({ width: W, height: H, letters }, null, 2)};\n`,
     );
     console.log(`✓ layers.js  ${W}x${H}`);
+
+    for (const [file, color] of KIT_COLORWAYS) {
+      console.log(`✓ ${file}  ${await renderMark(page, tmp, color, WIDTH, join(KIT, file))}`);
+    }
   } finally {
     await browser.close();
     rmSync(tmp, { recursive: true, force: true });

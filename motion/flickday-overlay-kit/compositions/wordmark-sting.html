@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" data-composition-variables='[
-  {"id":"wordmarkSrc","type":"string","label":"Wordmark asset","default":"assets/brand/flickday-core-color.svg"},
+  {"id":"wordmarkSrc","type":"string","label":"Wordmark asset","default":"assets/brand/flickday-wordmark-color.png"},
   {"id":"accent","type":"color","label":"Accent","default":"#FACC15"}
 ]'>
   <head>
@@ -15,8 +15,8 @@
       .clip { position: absolute; inset: 0; width: 100%; height: 100%; }
       .lockup { position: absolute; left: 122px; top: 812px; width: 818px; height: 220px; display: flex; align-items: center; }
       .seam { display: block; flex: 0 0 12px; width: 12px; height: 220px; background: var(--accent, #FACC15); transform-origin: 50% 50%; will-change: transform, opacity; }
-      .mark-window { display: block; width: 800px; height: 216px; overflow: hidden; --reveal: 100%; clip-path: inset(0 calc(100% - var(--reveal)) 0 0); will-change: transform, opacity, clip-path; }
-      .wordmark { display: block; width: 800px; height: 216px; object-fit: contain; object-position: left center; }
+      .mark-window { display: block; margin-left: 11px; width: 778px; height: 190px; overflow: hidden; --reveal: 100%; clip-path: inset(0 calc(100% - var(--reveal)) 0 0); will-change: transform, opacity, clip-path; }
+      .wordmark { display: block; width: 778px; height: 190px; object-fit: contain; object-position: left center; }
     </style>
   </head>
   <body>
@@ -25,7 +25,7 @@
         <div id="wordmark-lockup" class="lockup">
           <i id="wordmark-seam" class="seam" aria-hidden="true"></i>
           <div id="wordmark-window" class="mark-window">
-            <img id="wordmark" class="wordmark" data-var-src="wordmarkSrc" src="assets/brand/flickday-core-color.svg" alt="Flickday" />
+            <img id="wordmark" class="wordmark" data-var-src="wordmarkSrc" src="assets/brand/flickday-wordmark-color.png" alt="Flickday" />
           </div>
         </div>
       </section>
@@ -40,6 +40,7 @@
       tl.to("#wordmark-seam", { x: 0, duration: 0.14, ease: "power2.out" }, 2.56);
       tl.to("#wordmark-window", { "--reveal": "0%", x: -24, opacity: 0, duration: 0.34, ease: "power3.in" }, 2.72);
       tl.to("#wordmark-seam", { scaleY: 0, opacity: 0, duration: 0.18, ease: "power3.in" }, 2.92);
+      window.__timelines = window.__timelines || {};
       window.__timelines["wordmark-sting"] = tl;
       tl.seek(0);
     </script>

@@ -27,7 +27,7 @@
   "asset_needs": [],
   "shot_brief": "A narrow Flickday-yellow seam cuts decisively into the transparent frame, briefly defining a selected moment before the unchanged lowercase wordmark resolves with editorial precision. The mark holds long enough to read, then the seam and wordmark clear cleanly without bloom, bounce, or a new symbol. The single dominant motion idea is the yellow seam acting as a crop edge and timing cue.",
   "content": {
-    "logo": "assets/brand/flickday-core-color.svg",
+    "logo": "assets/brand/flickday-wordmark-color.png",
     "tagline": "",
     "url": ""
   },
@@ -43,7 +43,7 @@
         "h": 1920,
         "aspect": "9:16"
       },
-      "style": "Minimal Flickday editorial lockup on transparency. The clean core wordmark is the hero; a narrow yellow seam is the only supporting graphic.",
+      "style": "Minimal Flickday editorial lockup on transparency. The Peridot wordmark is the hero; a narrow yellow seam is the only supporting graphic.",
       "palette": [
         "#000000",
         "#FACC15",
@@ -66,7 +66,7 @@
         "signature": "A 12px yellow editorial seam reveals the unchanged wordmark and retracts with it."
       },
       "layout": {
-        "wordmark_box": { "x": 140, "y": 814, "w": 800, "h": 216 },
+        "wordmark_box": { "x": 145, "y": 827, "w": 778, "h": 190 },
         "seam_box": { "x": 122, "y": 812, "w": 12, "h": 220 },
         "safe_margin": 84
       },
@@ -89,7 +89,7 @@
       },
       "proof_times": [0.0, 0.24, 0.56, 2.5, 2.96],
       "content": {
-        "logo": "assets/brand/flickday-core-color.svg",
+        "logo": "assets/brand/flickday-wordmark-color.png",
         "tagline": "",
         "url": ""
       }
