@@ -19,7 +19,8 @@ import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const BASE = (process.argv[2] || 'https://flickdaymedia.com').replace(/\/$/, '')
+const ORIGIN = 'https://flickdaymedia.com'
+const BASE = (process.argv[2] || ORIGIN).replace(/\/$/, '')
 const GALLERY = 'https://ninochavez.co/photography'
 
 const sha = (buf) => createHash('sha256').update(buf).digest('hex')
@@ -102,7 +103,9 @@ const head = [
   ['favicon/site.webmanifest', 2],
 ].map(([p, v]) => [`/flickday-assets/site/${p}?v=${v}`, `site/flickday-assets/site/${p}`])
 const html = file('site/index.html').toString('utf8')
-for (const [url] of head) if (!html.includes(`".${url}"`)) fails.push(`index.html does not declare ${url}`)
+// og:image is absolute, the icons relative; either form counts.
+const declares = (url) => html.includes(`".${url}"`) || html.includes(`"${ORIGIN}${url}"`)
+for (const [url] of head) if (!declares(url)) fails.push(`index.html does not declare ${url}`)
 const exact = head.concat(manifest.icons.map((i) => [i.src, `site${i.src}`]))
 const published = site
   .filter((p) => p !== 'site/index.html' && p !== 'site/_redirects')
