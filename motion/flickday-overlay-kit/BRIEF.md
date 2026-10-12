@@ -12,7 +12,7 @@ Build a small, reusable motion-graphics production layer for Flickday Media. The
 
 - Grassroots sports media: raw, fast, player-first, courtside rather than corporate.
 - Palette: black `#000000`, Flickday yellow `#FACC15`, white `#FFFFFF`, dark gray `#111111`.
-- Use the established lowercase core wordmark unchanged.
+- Use the locked lowercase wordmark unchanged: Peridot PE 950 (locked 2026-07-27). The kit switched from the earlier core mark on 2026-10-12.
 - Use editorial timing, crop seams, sharp rules, and a selected-moment hit as the recurring graphic device.
 - Do not use the rejected cut-`f`, a reel, a filmstrip, or a multi-icon wordmark.
 - Avoid generic app-card styling, glossy 3D effects, gratuitous bounce, and faux-cinematic nostalgia.

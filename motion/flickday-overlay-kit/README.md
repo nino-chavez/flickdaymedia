@@ -1,6 +1,6 @@
 # Flickday overlay kit — HyperFrames pilot
 
-Three deterministic 1080×1920 transparent motion assets for CapCut and other editors. The kit uses the unchanged Flickday core wordmark plus one repeatable editorial device: a narrow yellow selection seam.
+Three deterministic 1080×1920 transparent motion assets for CapCut and other editors. The kit uses the locked Flickday wordmark (Peridot PE 950, lowercase) plus one repeatable editorial device: a narrow yellow selection seam.
 
 ## Compositions
 
@@ -43,7 +43,7 @@ npm run render:stamp
 For a customized lower third:
 
 ```bash
-npx --yes hyperframes@0.7.64 render . \
+npx --yes hyperframes@0.8.150 render . \
   --composition compositions/player-lower-third.html \
   --format mov --quality high \
   --variables '{"playerName":"PLAYER NAME","playerDetail":"12 · OUTSIDE"}' \
@@ -55,7 +55,8 @@ Import the MOV as an overlay in CapCut. If an editor mishandles MOV alpha, rende
 ## QA status
 
 - Project-wide lint: 0 errors, 0 warnings.
-- Wordmark sting browser/runtime/layout/motion check: passed at 0.00, 0.24, 0.56, 2.50, and 2.96 seconds.
+- Wordmark sting, switched to the Peridot wordmark on 2026-10-12 (hyperframes 0.8.150): check passed; proof frames at 0.00, 0.24, 0.56, 2.50, and 2.96 seconds are in `proof/wordmark/`.
+- Player lower-third and highlight stamp re-checked in isolation on 0.8.150 on 2026-10-12: passed, with one new advisory each (`nested_structure_needs_subcomposition`, a Studio timeline-layout hint that does not affect renders). Their earlier per-time checks follow.
 - Player lower-third isolated check: passed at 0.00, 0.22, 0.70, 2.76, and 4.08 seconds.
 - Highlight stamp isolated check: passed at 0.00, 0.12, 0.52, 1.40, and 1.86 seconds.
 - Final MOV rendering is intentionally approval-gated.
