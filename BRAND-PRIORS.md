@@ -59,8 +59,9 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
 
 ## Signature ideas (motifs to draw from — not required in every asset)
 
-- **Play button** — the media/"press play" mark. Was nested in the wordmark's `d`.
-- **Film reel** — cinema/"flick" variant of the same slot.
+- **Play button** — the media/"press play" mark. It stands beside the wordmark as its own
+  symbol, never inside it: no play mark in the `d` (nino, 2026-10-12).
+- **Film reel** — cinema/"flick" variant of the same symbol, under the same rule.
 - **Daily cadence** — "every day's a flickday": a contribution-graph / streak-heatmap texture,
   and a day-counter (e.g. "Day N / 365").
 - **Sports scoreboard** — an LED-grid "FD" that reads as both a scoreboard and the initials.

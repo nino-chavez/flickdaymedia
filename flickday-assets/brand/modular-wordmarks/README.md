@@ -1,5 +1,9 @@
 # Flickday modular wordmarks
 
+> **Not the wordmark.** nino ruled on 2026-10-12: no play mark in the `d`. The wordmark is
+> Peridot PE 950, lowercase (BRAND-PRIORS.md); the site uses `scripts/build-site-wordmark.mjs`.
+> These traced single-cue marks are kept as a record, not for new work.
+
 Production vector and transparent PNG exports for the approved single-cue system.
 
 ## Recommended use
