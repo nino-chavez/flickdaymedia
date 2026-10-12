@@ -2,70 +2,93 @@
   "category": "logo-reveal",
   "duration_s": 5,
   "fps": 30,
-  "canvas": { "w": 1080, "h": 1920, "aspect": "9:16" },
-  "style": "Courtside, not corporate. Flat, confident, athletic energy over live volleyball footage. Yellow-on-transparent, no soft glows or hairlines — legibility over unpredictable video is the constraint. The play mark (nested in the d) is Flickday's one ownable geometric element and is the protagonist of the motion.",
-  "palette": ["#facc15", "#fde047", "#ffffff"],
-  "font": "Bebas Neue",
-  "beats": [15, 36, 72, 105, 144],
-  "export": "alpha-overlay",
-
-  "asset_needs": [],
-
-  "block": "logo-outro",
-  "customize": {
-    "why_this_block": "logo-outro is the catalog's canonical logo-reveal block (piece-by-piece assembly + glow + tagline + URL pill). We reuse its piece-assembly choreography, which is transform/opacity-based and therefore compatible with our FILLED paths (stroke draw-on is unusable here).",
-    "overrides": {
-      "glow_bloom": "DISABLE — conflicts with the no-soft-glow legibility invariant (yellow mark composites over bright/unpredictable footage). Ignition punch comes from scale overshoot (back.out), not glow.",
-      "tagline": "REMOVE — no tagline in v1.",
-      "url_pill": "REMOVE — no URL in v1.",
-      "assembly_order": "RE-SEQUENCE to play-mark-first: the play triangle fires as the ignition seed, then the letterform groups build out from it; the sequence REVERSES on exit (letters retract into the play mark, which punches out last). logo-outro's baked assembly order is not exposed as a customize variable, so this is an add + edit-the-script change, not a variable swap.",
-      "bind_to_paths": "Bind the assembly to the supplied SVG's 9 potrace paths (grouped — see build_notes), not to logo-outro's own baked fragments.",
-      "palette": ["#facc15", "#fde047", "#ffffff"]
-    },
-    "fallback": "If logo-outro's baked assembly cannot be cleanly re-sequenced to lead with the play path, HAND-AUTHOR per the logo-reveal module's sanctioned fork: place the wordmark at its hero frame (CSS), reveal per-path-group via mask/scale/transform using the primitives named in content.motion, hold, then reverse. Same beats either way."
+  "canvas": {
+    "w": 1080,
+    "h": 1920,
+    "aspect": "9:16"
   },
-
+  "style": "Courtside, not corporate. Flat, confident, athletic energy over live volleyball footage. Yellow-on-transparent, no soft glows or hairlines: legibility over unpredictable video is the constraint. Wordmark only. The play mark is never inside the d, and the symbol and the wordmark+symbol lockup are still open gates in forge-brand, so this sting carries no play mark (nino, 2026-10-12).",
+  "palette": [
+    "#facc15",
+    "#fde047",
+    "#ffffff"
+  ],
+  "font": "Peridot PE 950 (the locked wordmark), shipped as PNG letter layers; no live text in the composition",
+  "beats": [
+    5,
+    30,
+    115,
+    139
+  ],
+  "export": "alpha-overlay",
+  "asset_needs": [],
+  "block": null,
+  "customize": {
+    "why_hand_authored": "Hand-authored. The 2026-07 version re-sequenced logo-outro around a play triangle nested in the d; that construction is ruled out, and per-letter layers need no catalog block.",
+    "overrides": {},
+    "fallback": null
+  },
   "content": {
-    "logo": "/Users/nino/Workspace/dev/apps/flickdaymedia/flickday-assets/wordmarks/wordmark-play.svg",
+    "logo": "assets/wordmark/letter-1.png .. letter-8.png (Peridot PE 950, from scripts/build-sting-wordmark.mjs)",
     "tagline": "",
     "url": "",
-
-    "layout": "Wordmark centered in the 1080x1920 frame as a horizontal band (mark is ~2.7:1 wide → ~900px wide at ~85% frame width, ~333px tall, optical center ~y=960). Vertical negative space above/below is intentional — it is a transparent overlay; the compositor positions it over footage. Per-path transform-origins at each path-group's own centroid for the ignition/settle; for the exit, letter groups translate toward the play-mark centroid + scale down (converge-and-collapse), so the Builder needs the play-mark centroid as the exit convergence point.",
-
-    "motif": "play-mark ignition — the play triangle nested in the d is the protagonist; letterforms build out from it, and on exit retract back into it. One dominant motif, bookended by the play mark (first in, last out).",
-
+    "layout": "Wordmark centred in the 1080x1920 frame as a horizontal band: 800 px wide (74% of the frame, inside the overlay kit's validated x 122-940 safe area), about 195 px tall at Peridot's ~4.1:1, optical centre at 46% of the frame height (y ~883). The vertical negative space is intentional: it is a transparent overlay and the compositor owns placement. Each letter is a PNG layer sharing the full mark's box and scales about its own ink centre (origins in assets/wordmark/layers.js).",
+    "motif": "Letter cascade. The word builds left to right the way it reads, holds flat, and clears left to right the way it arrived. One motion idea, no symbol.",
     "motion": {
-      "ignition": "scale_punch on the play triangle — from { scale:.6, opacity:0, ease:'back.out(2.2)' } (impact/energetic).",
-      "letter_build": "staggered scale_grow / slide per letter-GROUP — from { scale:0|y:+40, opacity:0, ease:'power2.out' }, stagger ~0.06s per group, emanating from the d/play-mark. Left-to-right is the safe default if a radial order reads muddy.",
-      "settle": "slight back.out overshoot into the final CSS end-state to sell the snap.",
-      "hold_life": "optional whole-lockup hold_breath at ~1.015 scale (sine.inOut) — ambient only, must NOT read as a second 'change'.",
-      "signature_pulse": "the SINGLE pattern-interrupt at the mid-hold — play triangle scale_pulse to 1.10 (yoyo, sine.inOut). NO glow (invariant).",
-      "letter_retract": "reverse stagger — scale_out / slide_out, each letter-group collapses toward the play-mark centroid (opacity→0, ease:'power2.in').",
-      "punch_out": "play triangle exits LAST — scale_out to 1.06 + opacity→0 (power2.in)."
+      "letter_build": "per letter, stagger 0.06s from 0.15s: scale 0 -> 1 (power3.out, never past 1), y +36 -> 0 (back.out(2.2)), opacity 0 -> 1 (power2.out, 0.3s). The snap lives on the vertical lift: any scale overshoot fuses the tight k|d and d|a pairs of the heavy face.",
+      "hold": "static, flat, legible: the money frame for compositing. No ambient motion.",
+      "letter_retract": "per letter, stagger 0.05s from 3.85s: scale 1 -> 0 and opacity 1 -> 0 (power2.in, 0.44s), left to right."
     },
-
     "beat_table": [
-      { "beat": "clear-in",           "frame_start": 0,   "frame_end": 3,   "t": "0.00s",       "element": "—",                 "motion": "canvas fully empty (transparent) — nothing on screen" },
-      { "beat": "play-mark ignition", "frame_start": 3,   "frame_end": 15,  "t": "0.10-0.50s",  "element": "play triangle",     "motion": "scale_punch back.out(2.2), opacity 0->1 — the hook, lands by 0.5s" },
-      { "beat": "letter build",       "frame_start": 12,  "frame_end": 36,  "t": "0.40-1.20s",  "element": "letterform groups", "motion": "staggered scale_grow/slide, ~0.06s per group, emanating from the play mark (anticipates the ignition land by ~0.1s)" },
-      { "beat": "lockup settled",     "frame_start": 36,  "frame_end": 36,  "t": "1.20s",       "element": "full wordmark",     "motion": "snap to end-state with slight back.out overshoot" },
-      { "beat": "hold",               "frame_start": 36,  "frame_end": 105, "t": "1.20-3.50s",  "element": "full wordmark",     "motion": "static, flat, legible (optional ambient hold_breath 1.015) — the money frame for compositing" },
-      { "beat": "signature pulse",    "frame_start": 72,  "frame_end": 78,  "t": "2.40s",       "element": "play triangle",     "motion": "scale_pulse 1.10 yoyo sine.inOut — the one pattern-interrupt, no glow" },
-      { "beat": "letter retract",     "frame_start": 105, "frame_end": 132, "t": "3.50-4.40s",  "element": "letterform groups", "motion": "reverse stagger scale_out/slide_out, collapse toward play-mark centroid, opacity->0 power2.in" },
-      { "beat": "play-mark punch-out","frame_start": 132, "frame_end": 144, "t": "4.40-4.80s",  "element": "play triangle",     "motion": "exits last — scale_out 1.06 + opacity->0, power2.in" },
-      { "beat": "clear-out",          "frame_start": 144, "frame_end": 150, "t": "4.80-5.00s",  "element": "—",                 "motion": "canvas fully empty — guarantees a clear final frame for CapCut" }
+      {
+        "beat": "clear-in",
+        "frame_start": 0,
+        "frame_end": 5,
+        "t": "0.00-0.15s",
+        "element": "-",
+        "motion": "canvas fully empty (transparent)"
+      },
+      {
+        "beat": "letter build",
+        "frame_start": 5,
+        "frame_end": 30,
+        "t": "0.15-1.01s",
+        "element": "letters f..y",
+        "motion": "staggered grow + lift, left to right"
+      },
+      {
+        "beat": "hold",
+        "frame_start": 30,
+        "frame_end": 115,
+        "t": "1.01-3.85s",
+        "element": "full wordmark",
+        "motion": "static, flat, legible"
+      },
+      {
+        "beat": "letter retract",
+        "frame_start": 115,
+        "frame_end": 139,
+        "t": "3.85-4.64s",
+        "element": "letters f..y",
+        "motion": "staggered collapse + fade, left to right"
+      },
+      {
+        "beat": "clear-out",
+        "frame_start": 139,
+        "frame_end": 150,
+        "t": "4.64-5.00s",
+        "element": "-",
+        "motion": "canvas fully empty; guarantees a clear final frame for CapCut"
+      }
     ]
   },
-
   "build_notes": [
-    "Scaffold index.html ships at 1920x1080 blank example — Builder must reset canvas to 1080x1920 (9:16 vertical) to match this envelope.",
-    "PATH STRUCTURE (verified from the SVG, do not re-assume): 9 <path> elements inside one <g fill=\"#facc15\"> (fill is on the <g>, inherited); transform translate(0,1636) scale(0.1,-0.1) confirms potrace y-flip. The 9 paths DO NOT map 1:1 to the 8 letters + triangle. Three short paths (~108/114/185 chars of d-string) cluster in the left l-i region (x~825-1078 in the SVG's internal 0.1-scaled space) — these are sub-letter fragments (the i's tittle, the i-stem, and/or the simple l stroke). Letters with counters (d, a) carry their counter as subpaths within one <path> d-string.",
-    "BEFORE choreographing: the Builder must (1) render each path with an index label to identify it visually, (2) identify WHICH path index is the play triangle (nested in the d's counter — this is the ignition seed and the exit convergence point), and (3) GROUP multi-path letters (i stem + tittle; confirm d/a counters) into single stagger units, so a letter's dot does not fly in on its own step and break the cascade. Result is ~7-8 stagger GROUPS, not 9 raw paths.",
-    "Copy wordmark-play.svg into the project assets/ and inline it so per-path elements are individually animatable.",
-    "No live text renders in v1 (SVG wordmark only) so no font embed is needed. Bebas Neue is a documented placeholder; if a tagline is ever added, the offline render requires it base64-embedded, never fetched.",
-    "LEGIBILITY-OVER-FOOTAGE: keep the mark pure yellow #facc15 on transparent — do NOT bake in backing; the compositor owns placement. If field legibility fails over bright/yellow footage, the sanctioned reinforcement is a FLAT, zero-blur offset shadow in a dark ink (a flat-design device), NEVER a soft glow. Offer as an option, not a default.",
-    "Final delivery is ProRes 4444 MOV (alpha) — that is a render-flag detail for the CLI, not a composition change."
+    "The wordmark is Peridot PE 950, lowercase, standard cut, as eight registered PNG layers from scripts/build-sting-wordmark.mjs (run from the repo root; needs network for the Adobe Fonts kit and ImageMagick). Each layer is the full mark's canvas with one letter's ink; stacked they redraw the one-piece mark, and the script refuses to write layers that do not.",
+    "PNG, not SVG or live text: Peridot is licensed for live text, not for embedded outlines (BRAND-PRIORS.md), and the PNG layers keep the render free of any font kit.",
+    "Layers are drawn at 1600 px, twice the 800 px the sting shows, so no frame upscales them.",
+    "No play mark in the d, and no play mark beside the wordmark until the symbol and lockup gates close (nino, 2026-10-12). The traced play-d SVG this sting used before is removed.",
+    "LEGIBILITY-OVER-FOOTAGE: keep the mark pure yellow #facc15 on transparent; do NOT bake in backing. Over bright footage (white sky, sand, a white board) yellow loses contrast. The sanctioned reinforcement is a FLAT, zero-blur offset shadow in a dark ink, NEVER a soft glow. Offer as an option, not a default.",
+    "Final delivery is ProRes 4444 MOV (alpha): a render-flag detail for the CLI, not a composition change."
   ],
-
-  "shot_brief": "A ~5s transparent bookend sting for CapCut compositing over volleyball footage. The single dominant motif is play-mark ignition: the play triangle nested in the d fires first as a fast, confident pop, and the remaining letterform groups build out from it in a quick staggered cascade (per-path masks/clip/transform/fade — no stroke-draw, the paths are filled), snapping into the settled lowercase 'flickday' wordmark. It holds flat and legible through the middle with a single signature pulse on the play mark as the pattern-interrupt, then closes the loop on exit: the letterforms retract back into the play mark, which punches out last. Because it composites as an overlay, frame 0 and the final frame are fully clear — nothing on screen before entrance or after exit — so it drops cleanly onto footage. Motion IS the message; no tagline, no URL, pure wordmark. Rendered as alpha-overlay (transparent), final delivery ProRes 4444 MOV."
+  "shot_brief": "A 5s transparent bookend sting for CapCut compositing over volleyball footage: the Peridot wordmark builds letter by letter, left to right, each letter growing in place with a small upward snap, holds flat and legible through the middle, then collapses letter by letter in the same direction. Frame 0 and the final frame are fully clear so it drops cleanly onto footage. Motion is the message; no tagline, no URL, no symbol. Rendered as an alpha overlay, final delivery ProRes 4444 MOV."
 }

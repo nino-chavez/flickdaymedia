@@ -3,3 +3,6 @@
 
 # brand logo/system exploration boards (scratch — regenerate via render-logo-concepts.mjs / render-system-v2.mjs)
 flickday-assets/logo-concepts/
+
+# HyperFrames per-machine history state
+motion/*/.hyperframes/
