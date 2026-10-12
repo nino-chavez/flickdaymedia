@@ -15,9 +15,34 @@
  * never computed (round 1's algorithm drove kd to -0.11em, twice the ck move).
  */
 import { createRequire } from 'node:module';
+import { join } from 'node:path';
 
-const require = createRequire('/Users/nino/Workspace/dev/apps/letspepper/package.json');
-export const { chromium } = require('playwright');
+// This repo declares no dependencies: a package.json would make the Pages and
+// Netlify builds install Playwright for a site that ships static files. So
+// Playwright comes from wherever it is installed, tried in order: this
+// checkout, the directory PLAYWRIGHT_FROM names, then letspepper, where these
+// scripts first borrowed it. An absolute letspepper path alone worked on one
+// machine and failed everywhere else.
+function loadPlaywright() {
+  const anchors = [
+    import.meta.url,
+    process.env.PLAYWRIGHT_FROM && join(process.env.PLAYWRIGHT_FROM, 'package.json'),
+    '/Users/nino/Workspace/dev/apps/letspepper/package.json',
+  ].filter(Boolean);
+  for (const anchor of anchors) {
+    try {
+      return createRequire(anchor)('playwright');
+    } catch {
+      // not installed there; try the next place
+    }
+  }
+  throw new Error(
+    'playwright not found. Set PLAYWRIGHT_FROM to a directory whose node_modules has it, ' +
+      'e.g. PLAYWRIGHT_FROM=~/some-project node scripts/build-site-wordmark.mjs',
+  );
+}
+
+export const { chromium } = loadPlaywright();
 
 export const WORD = 'flickday';
 export const YELLOW = '#facc15';
