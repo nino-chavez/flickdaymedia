@@ -195,6 +195,9 @@ h1, h2, .btn, .find-label, .contact a, .footer-links a, .footer-text { overflow-
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+  /* Room for the absolute header (14px + 44px link + 14px). When the copy is taller than a
+     short phone screen, the hero grows and the copy starts here, not under the wordmark. */
+  padding-top: 72px;
   background: var(--black);
 }
 .hero-photo {
