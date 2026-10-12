@@ -12,12 +12,14 @@
  *     body is that file's own bytes or something unrecognized. The home page is the unknown-
  *     path fallback. A body matching a recent committed index.html is an edge still serving
  *     the previous deploy's fallback; it is counted on its own line and does not fail the run.
- * Public files that fail say whether the body is a home-page fallback or an earlier commit's
- * copy of the file.
+ * A public file that comes back as an earlier commit's copy, or as a recent index.html, passes
+ * as stale when a cache-busted request for it returns the right bytes: the deployment is
+ * right and an edge is lagging. A failed build leaves the old deployment live, so the
+ * cache-busted request is wrong too, and the file fails with a label saying what came back.
  * Exits 0 only when every public URL works and nothing private is exposed.
  */
 import { execFileSync } from 'node:child_process'
-import { createHash } from 'node:crypto'
+import { createHash, randomUUID } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -146,10 +148,17 @@ function identify(body, p) {
   return old ? `stale copy of ${old[0]}` : ''
 }
 
+// A fresh key per request, so the cache-buster itself never gets a cached copy to go stale.
+const stalePublic = []
 fails.push(...(await pool([...published, ...exact], async ([url, p]) => {
   const r = await get(url)
   if (r.status === 200 && sha(r.body) === sha(file(p))) return
-  const what = r.status === 200 ? identify(r.body, p) : ''
+  let what = r.status === 200 ? identify(r.body, p) : ''
+  if (what.startsWith('stale')) {
+    const fresh = await get(`${url}${url.includes('?') ? '&' : '?'}cb=${randomUUID()}`)
+    if (fresh.status === 200 && sha(fresh.body) === sha(file(p))) return void stalePublic.push(`${url} (${what})`)
+    what += '; a cache-busted request is wrong too'
+  }
   return `${url} -> ${r.status}, ${r.body.length}B, expected ${p}${what ? ` (${what})` : ''}`
 })))
 
@@ -185,13 +194,15 @@ console.log(`home versions known: ${homes.size}, from the last commits to site/i
 console.log(`public: ${published.length + 1} site files, ${exact.length} exact URLs, 2 redirects; failures: ${fails.length}`)
 console.log(`private: ${priv.length} tracked files outside site/; exposed: ${exposed.length} (own bytes ${exposed.length - unknown.length}, unrecognized ${unknown.length})`)
 console.log(`stale home fallback: ${stale.length}`)
+console.log(`stale public: ${stalePublic.length}`)
 for (const f of fails) console.log(`  FAIL ${f}`)
+for (const x of stalePublic) console.log(`  STALE ${x}`)
 const byTop = {}
 for (const { p } of exposed) byTop[p.split('/')[0]] = (byTop[p.split('/')[0]] || 0) + 1
 for (const [top, n] of Object.entries(byTop).sort()) console.log(`  EXPOSED ${String(n).padStart(4)}  ${top}`)
 for (const x of unknown.slice(0, 5)) console.log(`  UNRECOGNIZED /${x.p} -> ${x.info}`)
-if (stale.length) {
-  const from = [...new Set(stale.map((x) => x.from))].join(', ')
-  console.log(`note: edges are still serving the previous deploy's index.html (as of ${from}) for ${stale.length} unknown paths. That is cache lag, not exposure; it clears on its own.`)
-}
+const lag = []
+if (stale.length) lag.push(`the previous deploy's index.html (as of ${[...new Set(stale.map((x) => x.from))].join(', ')}) for ${stale.length} unknown paths`)
+if (stalePublic.length) lag.push(`earlier copies of ${stalePublic.length} public URLs, which a cache-busted request gets right`)
+if (lag.length) console.log(`note: edges are still serving ${lag.join(', and ')}. That is cache lag, not exposure or a bad deploy; it clears on its own.`)
 process.exit(fails.length || exposed.length ? 1 : 0)
