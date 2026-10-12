@@ -59,4 +59,5 @@ Import the MOV as an overlay in CapCut. If an editor mishandles MOV alpha, rende
 - Player lower-third and highlight stamp re-checked in isolation on 0.8.150 on 2026-10-12: passed, with one new advisory each (`nested_structure_needs_subcomposition`, a Studio timeline-layout hint that does not affect renders). Their earlier per-time checks follow.
 - Player lower-third isolated check: passed at 0.00, 0.22, 0.70, 2.76, and 4.08 seconds.
 - Highlight stamp isolated check: passed at 0.00, 0.12, 0.52, 1.40, and 1.86 seconds.
+- Lower third and stamp MOVs re-rendered on 0.8.150 on 2026-10-12: same ProRes 4444 alpha format and frame counts, clear first and last frames, and every frame within 61 dB PSNR of the 0.7.64 renders (at most 27 pixels differ past 2%).
 - Final MOV rendering is intentionally approval-gated.
