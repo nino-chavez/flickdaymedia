@@ -1,7 +1,8 @@
 /**
  * Site wordmark — the locked Peridot wordmark in every site asset that shows
  * it: the two PNGs the home page uses (yellow in the header over the hero
- * photo, white in the footer) and the share card (og:image).
+ * photo, white in the footer), the share card (og:image), and the README's
+ * hero banner, the repo's own front page on GitHub.
  *
  * A PNG, not live text and not an SVG (BRAND-PRIORS.md). The page loads no
  * font kit for one word, and Peridot is licensed for live text, not for
@@ -17,7 +18,9 @@
  *
  *   node scripts/build-site-wordmark.mjs
  *     → site/flickday-assets/site/wordmark-yellow.png, wordmark-white.png,
- *       og-share-card.png
+ *       og-share-card.png, and assets/readme/hero.png
+ *   node scripts/build-site-wordmark.mjs --readme
+ *     → assets/readme/hero.png only
  *   node scripts/build-site-wordmark.mjs --card
  *     → og-share-card.png only
  *   node scripts/build-site-wordmark.mjs --out <path>
@@ -68,6 +71,63 @@ const CARD_MEDIA = 22; // "MEDIA" font-size, card px
 const HEADLINE = "Every Day's a Flickday."; // the tagline, exact (render standard gate 3)
 const DESCRIPTOR = 'Volleyball photos &amp; reels · Chicago';
 
+// The README hero: a 1200x440 banner drawn at 2x, shown full width on GitHub. It was
+// an SVG that set "FLICKDAY" in Impact capitals, a stand-in that only looked right
+// where the viewer had Impact installed. A PNG carries the Peridot mark (no outlines
+// in an SVG, BRAND-PRIORS.md) and the site's faces for everyone. The layout is the
+// old one: the card's lockup (wordmark, MEDIA) with the site's eyebrow and the
+// tagline on the left, the repo map on the right. The README's alt text carries
+// every word on it, so a change here changes that alt in the same commit.
+const README_OUT = join(ROOT, 'assets', 'readme', 'hero.png');
+const HERO_W = 1200;
+const HERO_H = 440;
+const HERO_MARK = 500; // wordmark width, hero px
+const REPO_MAP = [
+  ['site/', 'the live site, and the brand&rsquo;s ground truth'],
+  ['motion/', 'overlay kit, wordmark sting, film-room proof'],
+  ['flickday-assets/', 'social kit, play symbol, mascot line-art'],
+  ['BRAND-PRIORS.md', 'inputs for designing, not locked executions'],
+];
+
+async function renderReadmeHero(page, tmp) {
+  const mark = join(tmp, 'hero-mark.png');
+  await renderMark(page, tmp, YELLOW, HERO_MARK * 2, mark);
+  const html = join(tmp, 'hero.html');
+  const map = REPO_MAP.map(([path, what]) => `<div class="row"><b>${path}</b><span>${what}</span></div>`).join('');
+  writeFileSync(
+    html,
+    `<!DOCTYPE html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400&family=JetBrains+Mono:wght@500&display=swap">
+<style>*{margin:0;padding:0;box-sizing:border-box}html,body{width:${HERO_W}px;height:${HERO_H}px;overflow:hidden}
+body{background:#000;border-top:8px solid ${YELLOW};border-bottom:8px solid ${YELLOW};display:flex;align-items:center;justify-content:space-between;padding:0 64px}
+.mono{font-family:'JetBrains Mono',monospace;font-weight:500;text-transform:uppercase}
+.eyebrow{font-size:14px;letter-spacing:0.08em;color:${YELLOW};margin-bottom:22px}
+.lockup{display:inline-flex;flex-direction:column;align-items:center}
+.wm{display:block;width:${HERO_MARK}px;height:auto}
+.med{font-size:19px;letter-spacing:0.5em;padding-left:0.5em;color:${YELLOW};line-height:1;margin-top:6px}
+.head{font-family:'Anton',monospace;font-weight:400;font-size:40px;letter-spacing:0.01em;text-transform:uppercase;color:#fff;line-height:1;margin-top:26px}
+.sub{font-family:'Inter',monospace;font-size:16px;color:#888;margin-top:12px}
+.map{width:376px}
+.map h2{font-size:11px;letter-spacing:0.2em;color:#888;font-weight:500;margin-bottom:12px}
+.row{background:#111;border:1px solid #333;border-radius:4px;padding:10px 18px 11px;margin-top:12px}
+.row b{display:block;font-family:'JetBrains Mono',monospace;font-weight:500;font-size:13px;color:${YELLOW}}
+.row span{display:block;font-family:'Inter',monospace;font-size:13px;color:#888;margin-top:3px}</style>
+</head><body>
+<div><div class="mono eyebrow">${DESCRIPTOR}</div>
+<div class="lockup"><img class="wm" src="hero-mark.png" alt=""><div class="mono med">Media</div></div>
+<div class="head">${HEADLINE}</div>
+<div class="sub">Raw, fast, player-first. We shoot for the ones who live in the rally.</div></div>
+<div class="map"><h2 class="mono">What&rsquo;s in here</h2>${map}</div>
+</body></html>`,
+  );
+  await page.setViewportSize({ width: HERO_W, height: HERO_H });
+  await page.goto(pathToFileURL(html).href, { waitUntil: 'networkidle' });
+  await page.evaluate(() => Promise.all([document.fonts.ready, ...[...document.images].map((i) => i.decode())]));
+  for (const family of ['Anton', 'Inter', 'JetBrains Mono']) await assertLoaded(page, family, basename(README_OUT));
+  await page.screenshot({ path: README_OUT, clip: { x: 0, y: 0, width: HERO_W, height: HERO_H } });
+  return execFileSync('magick', ['identify', '-format', '%wx%h', README_OUT]).toString();
+}
+
 // The mark is drawn at 2x its card width so the 2x screenshot never upscales it.
 async function renderCard(page, tmp) {
   const mark = join(tmp, 'card-mark.png');
@@ -115,12 +175,16 @@ async function main() {
     // --card and --out render the share card alone. A rebuild of the header PNGs on a
     // different Chromium shifts their edge pixels, so leave them be unless the
     // mark itself changed.
-    if (!process.argv.includes('--card') && outAt < 0) {
+    // --readme renders the README hero alone.
+    const cardOnly = process.argv.includes('--card') || outAt > 0;
+    const readmeOnly = process.argv.includes('--readme');
+    if (!cardOnly && !readmeOnly) {
       for (const [file, color] of COLORWAYS) {
         console.log(`✓ ${file}  ${await renderMark(page, tmp, color, WIDTH, join(OUT, file))}`);
       }
     }
-    console.log(`✓ ${basename(CARD_OUT)}  ${await renderCard(page, tmp)}  (mark ${CARD_MARK} px)`);
+    if (!readmeOnly) console.log(`✓ ${basename(CARD_OUT)}  ${await renderCard(page, tmp)}  (mark ${CARD_MARK} px)`);
+    if (!cardOnly) console.log(`✓ ${basename(README_OUT)}  ${await renderReadmeHero(page, tmp)}  (mark ${HERO_MARK} px)`);
   } finally {
     await browser.close();
     rmSync(tmp, { recursive: true, force: true });

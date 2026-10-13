@@ -1,4 +1,4 @@
-<img src="assets/readme/hero.svg" alt="Flickday Media — Chicago grassroots sports media. Every Day's a Flickday. Raw, fast, player-first. This repo holds site/ (the live site and the brand's ground truth), motion/ (overlay kit, wordmark sting, film-room proof), flickday-assets/ (social kit, play symbol, mascot line-art), and BRAND-PRIORS.md (inputs for designing, not locked executions)." width="100%">
+<img src="assets/readme/hero.png" alt="Flickday Media banner. A yellow eyebrow reads Volleyball photos and reels, Chicago. Below it, the yellow flickday wordmark with MEDIA under it. Then the tagline, Every Day's a Flickday. Raw, fast, player-first. We shoot for the ones who live in the rally. A panel lists what's in here. site/: the live site, and the brand's ground truth. motion/: overlay kit, wordmark sting, film-room proof. flickday-assets/: social kit, play symbol, mascot line-art. BRAND-PRIORS.md: inputs for designing, not locked executions." width="100%">
 
 Volleyball tournament photos and reels, out of Chicago. Galleries within 24–48 hours. We
 shoot for the players, not the brochure.
