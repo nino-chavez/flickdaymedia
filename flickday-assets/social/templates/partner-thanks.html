@@ -42,7 +42,7 @@
              margin-bottom:28px;}
       .rail{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;}
       .rail img.mark{height:auto;display:block;}
-      .lockup{width:238px;}
+      .wordmark{width:179px;}
       .handle{width:340px;}
       .tagline{font-family:var(--font-label);font-weight:500;font-size:19px;letter-spacing:3px;
                color:var(--gray-light);text-transform:uppercase;white-space:nowrap;}
@@ -81,7 +81,7 @@
 
       var html = '';
       if (!D.facts_confirmed) html += '<p class="alert">' + D.unconfirmed_label + '</p>';
-      html += '<div class="rail pad"><img class="mark lockup" src="../bug-lockup-white.png" alt="Flickday">' +
+      html += '<div class="rail pad"><img class="mark wordmark" src="../bug-wordmark-white.png" alt="Flickday">' +
               '<span class="eyebrow">' + D.eyebrow + '</span></div>';
       html += '<div class="head pad" id="head"></div>';
       var gridRows = Math.ceil(D.tiles.length / 2);

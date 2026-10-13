@@ -75,7 +75,6 @@ shadows print as a muddy underbase on DTF.
 | File | Size | Notes |
 |---|---|---|
 | `bug-wordmark-{white,yellow,ink}` | 538×132 | wordmark alone, cropped to ink |
-| `bug-lockup-{white,yellow,ink}` | 714×141 | play chip + wordmark |
 | `handle-pill-{dark,yellow}` | 1294×248 | filled pill, drops on any ground |
 | `handle-flat-{white,yellow}` | 1117×120 | no pill, for burn-in over video |
 | `avatar-{yellow-on-black,black-on-yellow}` | 1024² | mark spans 74% of the frame |
