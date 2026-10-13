@@ -25,7 +25,10 @@ orange bar reading `SAMPLE DATA — NOT FOR PUBLICATION` above everything else, 
 the layout reflows to fit it.
 
 - Set it to `true` only when every string on the card traces to a source you can name.
-- `booking-push.data.json` ships `true` — every string on it comes from the live `index.html`.
+- `booking-push.data.json` ships `false` until its 2026-10-12 copy is re-rendered and looked at.
+  It shipped `true`, and so carried "same-day photo drops", a claim the site no longer makes,
+  with no warning bar. Its strings now come from the live `index.html`; set it back to `true`
+  after the look.
 - The other three ship `false` — their sample content is invented to show the composition.
 - The orange is Event Orange `#f97316`, which BRAND-PRIORS lists as a deliberate non-site
   accent. The bar cannot be yellow: yellow is already the CTA colour on three of the four cards.
@@ -120,11 +123,12 @@ drifted.
 
 ## Known gaps
 
-- `BRAND-PRIORS.md` points at `flickday-assets/wordmarks/WORDMARK.md` for the optical cuts. That
-  file is not in the repo. The crossover numbers used here come from `SOCIAL.md`, which quotes it.
-- `booking-push` is the one card that renders with no bar, so its pixels carry no warning.
-  Its 2026 framing is verbatim from the live site's hero badge and contact status, but the site
-  itself may be behind: on a September render, "NOW BOOKING 2026" reads late in the year. Check
-  the site says what you want it to say before posting this one.
+- The optical-cut crossover (24 px on screen) is in `BRAND-PRIORS.md`; `SOCIAL.md` turns it into
+  canvas sizes. `WORDMARK.md`, which this line used to cite, was removed on 2026-08-24.
+- `booking-push`, once set back to `true`, is the one card that renders with no bar, so its
+  pixels carry no warning. Its booking line is verbatim from the live site's contact status
+  ("Booking indoor tournaments now. Outdoor 2027 dates open."), which changes with the season.
+  Check the site says what you want it to say before posting this one. Its rendered PNGs predate
+  the 2026-10-12 copy fix and still say "same-day photo drops"; re-render before posting.
 - Nobody has looked at these on a phone yet. The sizes follow `SOCIAL.md`'s arithmetic, not a
   measurement of a real post.

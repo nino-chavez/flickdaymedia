@@ -30,7 +30,7 @@ two can't drift.
 
 ## Which optical cut, and why the numbers look wrong
 
-`WORDMARK.md` sets the standard/micro crossover at **24px** — an *on-screen*
+`BRAND-PRIORS.md` sets the standard/micro crossover at **24px** — an *on-screen*
 number. A phone renders a 1080-wide export at roughly 390 CSS px, so a mark shows
 at about **0.36×** its canvas size, putting the crossover at **~66px of canvas**.
 
@@ -82,7 +82,6 @@ shadows print as a muddy underbase on DTF.
 | `overlay-reel-1080x1920` | 1080×1920 | transparent; `-scrim` adds a bottom gradient |
 | `overlay-portrait-1080x1350` | 1080×1350 | transparent |
 | `overlay-square-1080x1080` | 1080×1080 | transparent |
-| `og-share-card` | 2400×1260 | 1200×630 @2× |
 | `proof-social-kit` | — | contact sheet, review only, not an asset |
 
 Bugs and badges render at 3× their intended display size, so they downscale
@@ -94,12 +93,9 @@ its own inset.
 
 ## Open
 
-- **`og-share-card.png` is not wired up.** `index.html` still points at
-  `flickday-assets/site/og-share-card.png`, the pre-Peridot card. Same composition,
-  same 1200×630 — swap it when you want the change live.
-- **The motion overlay kit is still pre-Peridot.** Its three rendered MOVs use
-  `flickday-core-color.svg` and Montserrat/Inter, matching neither the site nor the
-  lock. It consumes the wordmark as a bundled `<img>` and promises fully offline
-  assets, so Peridot can't drop in as an SVG — that's an open design question
-  (high-res PNG, or live text plus the Typekit link and no more offline guarantee),
-  not a file swap.
+- **The share card is not in this kit.** `scripts/build-site-wordmark.mjs` builds it from
+  the live page's words, at `site/flickday-assets/site/og-share-card.png`. This kit's
+  `og` group and its card were removed on 2026-10-12: they redrew the retired layout.
+- **The motion overlay kit's type is still its own.** Its wordmark sting ships Peridot
+  PNGs since 2026-10-12, but the lower third and the reaction stamp set Montserrat and
+  Inter, not the site's faces. Open design question, not a file swap.

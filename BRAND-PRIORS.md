@@ -4,11 +4,14 @@ The irreducible inputs for designing wordmarks, graphics, and text assets **from
 This is not a spec of locked executions — it is the set of true things a designer needs
 before making anything. Everything else (the old `brand-forge` kit, `_brand-v2.mjs`, the
 40-file render pipeline, the traced marks) was deleted on 2026-07-05 because it had
-fossilized a 2026-03 brand-kit into a god-module that drifted from the live site.
+fossilized a 2026-03 brand-kit into a god-module that drifted from the live site. Traced
+marks came back for exploration on 2026-08-24 (17acce2); they are retired again, and the
+play-in-the-d construction is ruled out (2026-10-12).
 
 **Ground truth is the live site (`index.html`), not any generated doc.** When priors and a
-generated artifact disagree, the site wins. (The old `DESIGN.md` claimed Inter body + an
-Event-Orange accent; the actual site uses neither. Verify before trusting.)
+generated artifact disagree, the site wins. (The old `DESIGN.md` claimed an Event-Orange
+accent the site never used. Its Inter body claim became true on 2026-07-06, and this line
+kept calling it false until 2026-10-12: verify before trusting, including this file.)
 
 ---
 
@@ -52,15 +55,17 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
 - **Overline / label / mono:** JetBrains Mono was used across prior assets for handles,
   MEDIA lockups, CTAs — a reasonable convention, not mandatory.
 - **Wordmark type is LOCKED: Peridot PE 950, lowercase** (2026-07-27). This prior is
-  closed — the spec, kerning, cuts and colorways live in
-  `flickday-assets/wordmarks/WORDMARK.md`, spacing in `scripts/wordmark-lib.mjs →
-  PERIDOT_CUTS`. The all-caps Bebas wordmark was tried and rejected. The logo
+  closed. Standard cut down to 24 px on screen, micro cut below; spacing and kerning
+  live in `scripts/wordmark-lib.mjs → PERIDOT_CUTS`, and the build scripts that render
+  it are listed in `standards/asset-render-standard.md` (R-0). The all-caps Bebas
+  wordmark was tried and rejected. The logo
   deliberately differs from the site's headline face.
 
 ## Signature ideas (motifs to draw from — not required in every asset)
 
-- **Play button** — the media/"press play" mark. It stands beside the wordmark as its own
-  symbol, never inside it: no play mark in the `d` (nino, 2026-10-12).
+- **Play button** — the media/"press play" mark, its own symbol, never inside the wordmark:
+  no play mark in the `d` (nino, 2026-10-12). Whether it sits beside the wordmark as a
+  lockup is still open.
 - **Film reel** — cinema/"flick" variant of the same symbol, under the same rule.
 - **Daily cadence** — "every day's a flickday": a contribution-graph / streak-heatmap texture,
   and a day-counter (e.g. "Day N / 365").
@@ -79,7 +84,7 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
 - **Social handle bug:** small pill/badge with the play mark + `@flickday.media`.
 - **OG / share card:** **1200×630** — the size `index.html` declares. (This line said
   1200×675; nothing shipped at that size. Verified 2026-07-27.)
-- **Favicon set:** 16/32, apple-touch 180, android 192/512, `.ico`, `site.webmanifest`.
+- **Favicon set:** 16/32, apple-touch 180, android 192/512, `site.webmanifest`.
 - **Font loading:** the wordmark is Peridot PE, served live from the Adobe Fonts kit, so
   the render environment **does** need network. Base64-embedding is still right for
   Google-hosted faces that a script can fetch once (`wordmark-lib.mjs → prepareFaces`),
@@ -96,3 +101,20 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
 - **No god-module.** Whatever regenerates assets should be legible and per-asset, not one
   frozen kit re-stamping 40 files on every tweak.
 - **Live site is canonical.** New marks are validated against `index.html`, not against docs.
+
+## Rulings since the wordmark lock
+
+Newest first. Each names the file that carries it; the values live there, not here.
+
+- **2026-10-12 — the motion sting carries the share card's lockup** (wordmark, MEDIA, tagline).
+  `motion/wordmark-sting/`.
+- **2026-10-12 — share card:** the Peridot wordmark, "MEDIA" as a word under it (no rule lines),
+  the tagline as the headline, then "Volleyball photos & reels · Chicago".
+  `scripts/build-site-wordmark.mjs`.
+- **2026-10-12 — home hero:** the tagline is the headline, "Every Day's a Flickday.", led only by
+  an eyebrow that says what Flickday is. `site/index.html`; the copy rules are in the experience
+  brief in nino-chavez/public-site-rethink.
+- **2026-10-12 — over footage:** the yellow mark carries a flat 6 px dark offset shadow, never a
+  glow, and white text also carries a flat dark outline. `motion/wordmark-sting/shot-plan.json`.
+- **2026-10-12 — no play mark in the `d`.** The symbol and any symbol-beside-wordmark lockup are
+  open.

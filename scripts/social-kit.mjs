@@ -1,20 +1,21 @@
 /**
  * Social kit — the Peridot wordmark as the shippable social assets: corner bugs,
- * handle badges, avatar, transparent overlay frames for reels/stories/feed, and
- * the OG share card.
+ * handle badges, avatar, and transparent overlay frames for reels/stories/feed.
+ * The share card is not here: build-site-wordmark.mjs owns it, from the live
+ * page's words. Its old `og` group redrew the retired card.
  *
  * Per-asset by design (BRAND-PRIORS: "no god-module"). Each group renders
- * independently so tweaking the reel overlay doesn't re-stamp the OG card:
+ * independently so tweaking the reel overlay doesn't re-stamp the others:
  *
  *   node scripts/social-kit.mjs            # everything
  *   node scripts/social-kit.mjs bug        # corner watermarks only
- *   node scripts/social-kit.mjs handle avatar overlay og proof
+ *   node scripts/social-kit.mjs handle avatar overlay proof
  *
  * Everything ships as PNG. The wordmark is live Peridot text rendered to a
  * raster — outlines are never extracted, so the Adobe Fonts licence question
  * never arises (same rule as the play marks in ../flickday-assets/wordmarks).
  * Spacing comes from wordmark-lib's PERIDOT_CUTS, the single source of truth
- * shared with the live site and WORDMARK.md.
+ * shared with the live site.
  */
 import { mkdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -55,7 +56,7 @@ const SAFE_FEED = { l: 60, r: 60, t: 60, b: 60 };
 const SEAM_W = 12;
 
 // A phone renders a 1080-wide export at roughly 390 CSS px, so a mark's on-screen
-// size is ~0.36× its canvas size. WORDMARK.md's 24px standard/micro crossover is
+// size is ~0.36× its canvas size. BRAND-PRIORS' 24px standard/micro crossover is
 // an on-screen number, which puts the crossover at ~66px of canvas.
 const PHONE_SCALE = 390 / 1080;
 const cutFor = (px) => (px * PHONE_SCALE >= 24 ? 'standard' : 'micro');
@@ -304,34 +305,6 @@ async function buildOverlay(browser) {
   }
 }
 
-// ------------------------------------------------------------- og share card
-
-async function buildOg(browser) {
-  // 1200×630 — the size index.html actually declares, not the 675 the priors
-  // claimed. Rendered at 2× to match the existing card's pixel density.
-  console.log('og — 1200×630 @2×, rebuilding the pre-Peridot card in the locked face');
-  const html = page(
-    `.og{width:1200px;height:630px;position:relative;overflow:hidden;background:${BLACK};
-       display:flex;flex-direction:column;align-items:center;justify-content:center;gap:34px}
-     .og .glow{position:absolute;inset:0;background:
-       radial-gradient(120% 90% at 50% 40%,rgba(250,204,21,.10),transparent 62%),
-       radial-gradient(90% 70% at 50% 120%,rgba(250,204,21,.05),transparent 70%)}
-     .og .stack{position:relative;display:flex;flex-direction:column;align-items:center;gap:26px}
-     .rule{display:flex;align-items:center;gap:22px;width:520px}
-     .rule i{flex:1;height:1px;background:linear-gradient(90deg,transparent,#3a3a44)}
-     .rule i:last-child{background:linear-gradient(90deg,#3a3a44,transparent)}
-     .rule .m{font-family:'JetBrains Mono';font-weight:500;color:${YELLOW};font-size:19px;
-       letter-spacing:.42em;text-transform:uppercase;padding-left:.42em}
-     .tag{font-family:'Anton';color:${WHITE};font-size:34px;letter-spacing:.03em;text-transform:uppercase}`,
-    `<div class="og"><div class="glow"></div><div class="stack">
-       ${socialMark(YELLOW, 132)}
-       <div class="rule"><i></i><span class="m">media</span><i></i></div>
-       <div class="tag">Every Day&rsquo;s a Flickday</div>
-     </div></div>`,
-  );
-  await shotCanvas(browser, 'og-share-card', html, { width: 1200, height: 630, dsf: 2, transparent: false });
-}
-
 // --------------------------------------------------------------- proof sheet
 
 async function buildProof(browser) {
@@ -412,7 +385,6 @@ const BUILDERS = {
   handle: buildHandle,
   avatar: buildAvatar,
   overlay: buildOverlay,
-  og: buildOg,
   proof: buildProof,
 };
 

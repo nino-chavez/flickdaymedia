@@ -9,9 +9,15 @@ that run at every tier. Machinery: `~/.claude/hooks/render-dispatch-guard.py` an
 **Rule R-0.** Name the tier, then dispatch. The main loop cannot change model mid-session.
 
 **Check.** Mechanical for `render-kit` invocations only. The 40-file render pipeline was deleted on
-2026-07-05, but two focused scripts have since returned: `scripts/build-site-wordmark.mjs`, which
-makes the header and footer wordmark PNGs and the share card, and `scripts/build-sting-wordmark.mjs`,
-which makes the motion stings' wordmark layers. **Scope caveat (2026-10-12):** the dispatch hook does
+2026-07-05, but four focused scripts have since returned:
+- `scripts/build-site-wordmark.mjs`: the header and footer wordmark PNGs and the share card
+  (`--card` for the card alone, `--out <path>` to try a variant without touching the committed card);
+- `scripts/build-sting-wordmark.mjs`: the motion stings' wordmark layers and the overlay kit's
+  colourways;
+- `scripts/social-kit.mjs`: the social bugs, handle badges, avatar and overlay frames;
+- `scripts/build-site-assets.mjs`: the favicons.
+
+**Scope caveat (2026-10-12):** the dispatch hook does
 not see them. It matches `render-kit` commands only, so R-0 holds for these scripts by discipline,
 not mechanically. When the native-routing gate refuses a Judged-tier agent, run the work in a
 session that is already on the Judged model and say so. Do not route it to a cheaper general agent.
@@ -33,17 +39,29 @@ proves identity correct.
 
 0. **Rendering is not publishing.** Anything public-facing gets a human look first.
 1. **Ground truth is the live site, not a generated doc.** [`BRAND-PRIORS.md`](../BRAND-PRIORS.md)
-   states this explicitly and records why: the deleted `DESIGN.md` claimed Inter body and an
-   Event-Orange accent, and the actual site uses neither. **Check:** harvest computed styles from
+   states this explicitly and records why: the deleted `DESIGN.md` claimed an Event-Orange accent
+   the site never used. This gate also said the site did not use Inter for two months after the
+   site adopted it (2026-07-06): a fact about the site goes stale, so harvest it fresh, never
+   quote it from a doc, this one included. **Check:** harvest computed styles from
    `index.html` — or the live domain — before choosing palette or type. Citing a generated artifact
    instead is the documented failure mode, not a shortcut.
 2. **Priors are inputs, not locked executions.** `BRAND-PRIORS.md` is deliberately not a spec. Do not
    treat it as a component library, and do not regenerate a fossilized brand kit from it — that is
    what was deleted for drifting.
-3. **The name and tagline are exact.** Flickday Media, "Every Day's a Flickday". **Check:** string
-   match, not paraphrase.
-4. **Reuse before generating.** `assets/` and `flickday-assets/` hold real marks. **Check:** look
-   there before producing a new one.
+3. **The name and tagline are exact.** Flickday Media, "Every Day's a Flickday" (the home headline
+   and the share card end it with a period; that is punctuation, not a new tagline). **Check:**
+   string match, not paraphrase. When a request drops, moves or restyles part of the name or the
+   tagline, say how you read it in the preview caption before rendering: "drop the MEDIA rule"
+   was read as dropping the word too, and the card lost half the name (2026-10-12).
+4. **Reuse before generating.** The current marks are what the build scripts under R-0 write.
+   **Check:** reuse their outputs before producing a new one. Much of `flickday-assets/` (the
+   traced SVGs in `brand/`, `wordmarks/wordmark-play*`, `concepts/`) is retired exploration; do
+   not reuse it.
+5. **Overlays are judged where they will be seen.** **Check:** before asking anyone to approve an
+   asset that composites over footage, look at it over a light frame, a dark frame, and at phone
+   scale (about 0.36x of a 1080-wide export). On 2026-10-12 both legibility misses, the yellow
+   mark over white sky and the white tagline over a light frame, were invisible over the dark
+   proof frame.
 
 ## Escalation
 
