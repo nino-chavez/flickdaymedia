@@ -126,7 +126,8 @@ const manifest = JSON.parse(file('site/flickday-assets/site/favicon/site.webmani
 // Each with the ?v= index.html gives it. Pages ignores the query string, so a stale
 // version here would still pass; the declared check below makes it fail instead. Edges key
 // their cache on it, though: re-render one of these files and its ?v must go up in the same
-// change, or edges keep the old bytes under the old URL (the wordmarks, 2026-10-12).
+// change, or edges keep the old bytes under the old URL (the wordmarks, 2026-10-12). The
+// bump check below the declared check enforces that.
 const head = [
   ['og-share-card.png', 6],
   ['wordmark-yellow.png', 3],
@@ -140,6 +141,35 @@ const html = file('site/index.html').toString('utf8')
 // og:image is absolute, the icons ./-relative, the wordmarks bare-relative; any form counts.
 const declares = (url) => [`".${url}"`, `"${url.slice(1)}"`, `"${ORIGIN}${url}"`].some((s) => html.includes(s))
 for (const [url] of head) if (!declares(url)) fails.push(`index.html does not declare ${url}`)
+// A stale edge copy only shows up as STALE, which passes, so a missed bump is caught here
+// instead, from the repo: a file must not change after the deploy that put its current ?v
+// live. Along main's first-parent history each step is one deploy, so a re-render inside a
+// branch before its merge does not count. A ?v that main has not deployed yet passes: no
+// edge has seen that URL. Committed state only; run it after committing.
+const rev = (r) => {
+  try {
+    return git('rev-parse', '--verify', '-q', r).toString('utf8').trim()
+  } catch {
+    return ''
+  }
+}
+const MAIN = rev('origin/main') || rev('HEAD')
+const isAncestor = (a, b) => {
+  try {
+    return git('merge-base', '--is-ancestor', a, b), true
+  } catch {
+    return false
+  }
+}
+for (const [url, p] of head) {
+  const setAt = git('log', '-1', '--first-parent', '--format=%H', `-S${url.slice(1)}`, 'HEAD', '--', 'site/index.html')
+    .toString('utf8').trim()
+  if (!setAt || !isAncestor(setAt, MAIN)) continue
+  const after = git('log', '--first-parent', '--format=%h', `${setAt}..HEAD`, '--', p).toString('utf8').split('\n').filter(Boolean)
+  if (after.length) {
+    fails.push(`${p} changed in ${after.at(-1)}, after ${url.split('?')[1]} went live in ${setAt.slice(0, 7)}: bump its ?v`)
+  }
+}
 const exact = head.concat(manifest.icons.map((i) => [i.src, `site${i.src}`]))
 const published = site
   .filter((p) => p !== 'site/index.html' && p !== 'site/_redirects')
