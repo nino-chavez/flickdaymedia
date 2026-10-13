@@ -10,8 +10,9 @@ that run at every tier. Machinery: `~/.claude/hooks/render-dispatch-guard.py` an
 
 **Check.** Mechanical for `render-kit` invocations only. The 40-file render pipeline was deleted on
 2026-07-05, but four focused scripts have since returned:
-- `scripts/build-site-wordmark.mjs`: the header and footer wordmark PNGs and the share card
-  (`--card` for the card alone, `--out <path>` to try a variant without touching the committed card);
+- `scripts/build-site-wordmark.mjs`: the header and footer wordmark PNGs, the share card
+  (`--card` for the card alone, `--out <path>` to try a variant without touching the committed card),
+  and the README hero (`--readme`);
 - `scripts/build-sting-wordmark.mjs`: the motion stings' wordmark layers and the overlay kit's
   colourways;
 - `scripts/social-kit.mjs`: the social bugs, handle badges, avatar and overlay frames;
