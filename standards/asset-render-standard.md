@@ -8,9 +8,13 @@ that run at every tier. Machinery: `~/.claude/hooks/render-dispatch-guard.py` an
 
 **Rule R-0.** Name the tier, then dispatch. The main loop cannot change model mid-session.
 
-**Check.** Mechanical for `render-kit` invocations. This repo has no render scripts of its own today
-— the 40-file render pipeline was deleted on 2026-07-05 — so `render-kit` is the expected path and
-hook coverage is complete. If a bespoke renderer returns, add a scope caveat here.
+**Check.** Mechanical for `render-kit` invocations only. The 40-file render pipeline was deleted on
+2026-07-05, but two focused scripts have since returned: `scripts/build-site-wordmark.mjs`, which
+makes the header and footer wordmark PNGs and the share card, and `scripts/build-sting-wordmark.mjs`,
+which makes the motion stings' wordmark layers. **Scope caveat (2026-10-12):** the dispatch hook does
+not see them. It matches `render-kit` commands only, so R-0 holds for these scripts by discipline,
+not mechanically. When the native-routing gate refuses a Judged-tier agent, run the work in a
+session that is already on the Judged model and say so. Do not route it to a cheaper general agent.
 
 ## Tiers
 

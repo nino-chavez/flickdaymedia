@@ -124,7 +124,7 @@ const manifest = JSON.parse(file('site/flickday-assets/site/favicon/site.webmani
 // Each with the ?v= index.html gives it. Pages ignores the query string, so a stale
 // version here would still pass; the declared check below makes it fail instead.
 const head = [
-  ['og-share-card.png', 4],
+  ['og-share-card.png', 5],
   ['favicon/favicon-32x32.png', 2],
   ['favicon/favicon-16x16.png', 2],
   ['favicon/apple-touch-icon.png', 2],
