@@ -1,8 +1,8 @@
 .wrangler
 .DS_Store
 
-# brand logo/system exploration boards (scratch — regenerate via render-logo-concepts.mjs / render-system-v2.mjs)
-flickday-assets/logo-concepts/
+# Motion projects install their own packages; the compositions load vendored copies from assets/vendor.
+motion/*/node_modules/
 
 # HyperFrames per-machine history state and Studio thumbnail cache
 motion/*/.hyperframes/

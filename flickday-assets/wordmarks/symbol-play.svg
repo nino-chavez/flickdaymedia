@@ -5,11 +5,9 @@
   knocked out (true transparent hole, so it drops onto any ground). The triangle
   is squat/wide and nudged right so it reads optically centred.
 
-  This is not a replacement for the play-in-the-d lockup. An earlier note here
-  claimed that embed had been rejected because Peridot 950's counter was too
-  small to hold it — that was wrong, and wrong about the technique: the counter
-  is not the icon's budget, it is the thing being replaced. See
-  scripts/wordmark-symbol-study.mjs.
+  The play-in-the-d construction is retired: the play mark never sits inside the
+  wordmark (nino, 2026-10-12). Whether it sits beside the wordmark as a lockup is
+  still open.
 
   Colour is set by the container: fill on the path.
 -->

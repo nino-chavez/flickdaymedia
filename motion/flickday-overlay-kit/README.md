@@ -28,7 +28,7 @@ npm run lint
 npm run dev
 ```
 
-HyperFrames Studio opens the project. Each composition under `compositions/` is independently renderable. Local SVGs, fonts, and GSAP are bundled, so the compositions do not require remote assets.
+HyperFrames Studio opens the project. Each composition under `compositions/` is independently renderable. Local PNGs, fonts, and GSAP are bundled, so the compositions do not require remote assets.
 
 ## CapCut exports
 

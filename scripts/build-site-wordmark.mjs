@@ -20,6 +20,9 @@
  *       og-share-card.png
  *   node scripts/build-site-wordmark.mjs --card
  *     → og-share-card.png only
+ *   node scripts/build-site-wordmark.mjs --out <path>
+ *     → the card only, to <path>: try a variant without touching the committed
+ *       card. On 2026-10-12 a variant render overwrote it before this flag existed.
  */
 import { execFileSync } from 'node:child_process';
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
@@ -50,7 +53,9 @@ const COLORWAYS = [
 const CARD_W = 1200;
 const CARD_H = 630;
 const CARD_BG = '#0a0a0a';
-const CARD_OUT = join(OUT, 'og-share-card.png');
+const outAt = process.argv.indexOf('--out');
+if (outAt > 0 && !process.argv[outAt + 1]) throw new Error('--out needs a path');
+const CARD_OUT = outAt > 0 ? resolve(process.argv[outAt + 1]) : join(OUT, 'og-share-card.png');
 // Mark, MEDIA, headline, descriptor. The headline sits on two lines at 100 px, as the
 // hero sets it on a phone, so it weighs as much as the mark (nino chose two
 // lines over one at 84 px, 2026-10-12). One line ran wider than the mark, and a
@@ -107,10 +112,10 @@ async function main() {
   console.log(`browser: ${browser.version()}`);
   try {
     const page = await browser.newPage({ deviceScaleFactor: 2 });
-    // --card renders the share card alone. A rebuild of the header PNGs on a
+    // --card and --out render the share card alone. A rebuild of the header PNGs on a
     // different Chromium shifts their edge pixels, so leave them be unless the
     // mark itself changed.
-    if (!process.argv.includes('--card')) {
+    if (!process.argv.includes('--card') && outAt < 0) {
       for (const [file, color] of COLORWAYS) {
         console.log(`✓ ${file}  ${await renderMark(page, tmp, color, WIDTH, join(OUT, file))}`);
       }

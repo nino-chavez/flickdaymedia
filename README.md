@@ -1,6 +1,6 @@
 <img src="assets/readme/hero.svg" alt="Flickday Media — Chicago grassroots sports media. Every Day's a Flickday. Raw, fast, player-first. This repo holds site/ (the live site and the brand's ground truth), motion/ (overlay kit, wordmark sting, film-room proof), flickday-assets/ (wordmark studies and symbol explorations), and BRAND-PRIORS.md (inputs for designing, not locked executions)." width="100%">
 
-Tournament coverage and same-day photo drops for grassroots volleyball, out of Chicago. We
+Volleyball tournament photos and reels, out of Chicago. Galleries within 24–48 hours. We
 shoot for the players, not the brochure.
 
 **[flickdaymedia.com](https://flickdaymedia.com)**
@@ -28,8 +28,10 @@ true things — name, tagline, mission, audience, personality, palette — and s
 
 It says so in its own first lines, and it earned the right to: a 40-file render pipeline and a
 generated brand kit were deleted in July 2026 because they had fossilized a March brand into a
-god-module that drifted from the live site. The old `DESIGN.md` claimed an Inter body font and
-an Event-Orange accent. The site used neither.
+god-module that drifted from the live site. The old `DESIGN.md` claimed an Event-Orange accent
+the site never used. (It also claimed an Inter body font, which the site adopted on 2026-07-06;
+this README said otherwise until 2026-10-12. A fact about the site goes stale, so read it from
+`index.html`, not from here.)
 
 So the rule is written down: **ground truth is `index.html`.** When a generated artifact and
 the site disagree, the site wins.
