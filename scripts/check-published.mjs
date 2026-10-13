@@ -10,11 +10,11 @@
  *     must still work,
  *   - every tracked file outside site/ must NOT come back. A 200 counts as exposed when its
  *     body is that file's own bytes or something unrecognized. The home page is the unknown-
- *     path fallback. A body matching a recent committed index.html is an edge still serving
- *     the previous deploy's fallback; it is counted on its own line and does not fail the run.
- * A public file that comes back as an earlier commit's copy, or as a recent index.html, passes
- * as stale when a cache-busted request for it returns the right bytes: the deployment is
- * right and an edge is lagging. A failed build leaves the old deployment live, so the
+ *     path fallback. A body matching any committed index.html is an edge still serving an
+ *     earlier deploy's fallback; it is counted on its own line and does not fail the run.
+ * A public file that comes back as an earlier commit's copy, or as any committed index.html,
+ * passes as stale when a cache-busted request for it returns the right bytes: the deployment
+ * is right and an edge is lagging. A failed build leaves the old deployment live, so the
  * cache-busted request is wrong too, and the file fails with a label saying what came back.
  * Exits 0 only when every public URL works and nothing private is exposed.
  */
@@ -77,10 +77,12 @@ async function get(urlPath, follow = false) {
   return { status: res.status, location: loc, headers: res.headers, body: Buffer.from(await res.arrayBuffer()) }
 }
 
-// The last ten committed versions of a file, newest first, as [short sha, bytes]. A commit
-// that deleted it is skipped.
+// Every committed version of a file, newest first, as [short sha, bytes]. A commit that
+// deleted it is skipped. No cap: an edge can hold a fallback from far back. On 2026-10-12 one
+// served index.html as of the 11th-newest commit for a PNG path, and a ten-version window
+// failed it as unrecognized.
 function history(p) {
-  const shas = git('log', '-n', '10', '--format=%H', '--', p).toString('utf8').split('\n').filter(Boolean)
+  const shas = git('log', '--format=%H', '--', p).toString('utf8').split('\n').filter(Boolean)
   return shas.flatMap((h) => {
     try {
       return [[h.slice(0, 7), git('show', `${h}:${p}`)]]
@@ -104,7 +106,7 @@ const fails = []
 
 // After a deploy that changes index.html, Pages edges keep answering unknown paths with the
 // previous deployment's index.html for a while (cf-cache-status HIT, age climbing, despite
-// max-age=0). Recent committed versions let the check name that instead of calling it
+// max-age=0). Every committed version lets the check name that instead of calling it
 // exposure. A shallow clone knows fewer, and its stale fallbacks read as unrecognized.
 const homes = new Map()
 for (const [h, buf] of history('site/index.html')) if (!homes.has(norm(buf))) homes.set(norm(buf), h)
@@ -122,17 +124,21 @@ if (!idxRedirects && !idxServes) fails.push(`/index.html -> ${idx.status} locati
 
 const manifest = JSON.parse(file('site/flickday-assets/site/favicon/site.webmanifest'))
 // Each with the ?v= index.html gives it. Pages ignores the query string, so a stale
-// version here would still pass; the declared check below makes it fail instead.
+// version here would still pass; the declared check below makes it fail instead. Edges key
+// their cache on it, though: re-render one of these files and its ?v must go up in the same
+// change, or edges keep the old bytes under the old URL (the wordmarks, 2026-10-12).
 const head = [
-  ['og-share-card.png', 5],
+  ['og-share-card.png', 6],
+  ['wordmark-yellow.png', 3],
+  ['wordmark-white.png', 3],
   ['favicon/favicon-32x32.png', 2],
   ['favicon/favicon-16x16.png', 2],
   ['favicon/apple-touch-icon.png', 2],
   ['favicon/site.webmanifest', 2],
 ].map(([p, v]) => [`/flickday-assets/site/${p}?v=${v}`, `site/flickday-assets/site/${p}`])
 const html = file('site/index.html').toString('utf8')
-// og:image is absolute, the icons relative; either form counts.
-const declares = (url) => html.includes(`".${url}"`) || html.includes(`"${ORIGIN}${url}"`)
+// og:image is absolute, the icons ./-relative, the wordmarks bare-relative; any form counts.
+const declares = (url) => [`".${url}"`, `"${url.slice(1)}"`, `"${ORIGIN}${url}"`].some((s) => html.includes(s))
 for (const [url] of head) if (!declares(url)) fails.push(`index.html does not declare ${url}`)
 const exact = head.concat(manifest.icons.map((i) => [i.src, `site${i.src}`]))
 const published = site
@@ -190,7 +196,7 @@ const stale = seen.filter((x) => x.kind === 'stale')
 const unknown = exposed.filter((x) => x.kind === 'unrecognized')
 
 console.log(`base: ${BASE}`)
-console.log(`home versions known: ${homes.size}, from the last commits to site/index.html`)
+console.log(`home versions known: ${homes.size}, from every commit to site/index.html`)
 console.log(`public: ${published.length + 1} site files, ${exact.length} exact URLs, 2 redirects; failures: ${fails.length}`)
 console.log(`private: ${priv.length} tracked files outside site/; exposed: ${exposed.length} (own bytes ${exposed.length - unknown.length}, unrecognized ${unknown.length})`)
 console.log(`stale home fallback: ${stale.length}`)
