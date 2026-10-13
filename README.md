@@ -1,4 +1,4 @@
-<img src="assets/readme/hero.svg" alt="Flickday Media — Chicago grassroots sports media. Every Day's a Flickday. Raw, fast, player-first. This repo holds site/ (the live site and the brand's ground truth), motion/ (overlay kit, wordmark sting, film-room proof), flickday-assets/ (wordmark studies and symbol explorations), and BRAND-PRIORS.md (inputs for designing, not locked executions)." width="100%">
+<img src="assets/readme/hero.svg" alt="Flickday Media — Chicago grassroots sports media. Every Day's a Flickday. Raw, fast, player-first. This repo holds site/ (the live site and the brand's ground truth), motion/ (overlay kit, wordmark sting, film-room proof), flickday-assets/ (social kit, play symbol, mascot line-art), and BRAND-PRIORS.md (inputs for designing, not locked executions)." width="100%">
 
 Volleyball tournament photos and reels, out of Chicago. Galleries within 24–48 hours. We
 shoot for the players, not the brochure.
@@ -17,8 +17,8 @@ to the repo.
 | Path | Holds |
 |---|---|
 | `site/` | The live site: `index.html`, `_redirects`, images, favicons, share card |
-| `motion/` | Overlay kit, wordmark sting, film-room proof card — HTML motion pieces |
-| `flickday-assets/` | Wordmark studies, symbol explorations, mock sheets |
+| `motion/` | Overlay kit, wordmark sting, film-room proof card (retired) — HTML motion pieces |
+| `flickday-assets/` | Social kit, the play symbol, mascot line-art. The wordmark studies and concept boards were deleted on 2026-10-12; git history has them |
 | `BRAND-PRIORS.md` | The inputs a designer needs before making anything |
 
 ## The site is the brand, not a doc about the brand

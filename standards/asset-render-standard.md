@@ -54,9 +54,9 @@ proves identity correct.
    tagline, say how you read it in the preview caption before rendering: "drop the MEDIA rule"
    was read as dropping the word too, and the card lost half the name (2026-10-12).
 4. **Reuse before generating.** The current marks are what the build scripts under R-0 write.
-   **Check:** reuse their outputs before producing a new one. Much of `flickday-assets/` (the
-   traced SVGs in `brand/`, `wordmarks/wordmark-play*`, `concepts/`) is retired exploration; do
-   not reuse it.
+   **Check:** reuse their outputs before producing a new one. The retired exploration (traced
+   SVGs, `wordmarks/wordmark-play*`, `concepts/`, the study scripts) was deleted on 2026-10-12;
+   if you dig it out of git history, do not reuse it as a mark.
 5. **Overlays are judged where they will be seen.** **Check:** before asking anyone to approve an
    asset that composites over footage, look at it over a light frame, a dark frame, and at phone
    scale (about 0.36x of a 1080-wide export). On 2026-10-12 both legibility misses, the yellow

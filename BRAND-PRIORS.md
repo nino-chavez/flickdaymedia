@@ -91,8 +91,9 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
   but the blanket "embed everything, never load remotely" rule predates the Peridot lock
   and no longer holds. Never `@import` inside CSS — it hangs the load; use `<link>`.
 - **Wordmark assets ship as PNG, not SVG.** Peridot is licensed for live text; an SVG
-  would have to embed its outlines. Rasters sidestep that entirely. The SVGs in
-  `flickday-assets/brand/` are pre-Peridot and are not the locked mark.
+  would have to embed its outlines. Rasters sidestep that entirely. The traced
+  pre-Peridot SVGs were deleted on 2026-10-12; `flickday-assets/brand/` now holds only
+  the mascot line-art.
 
 ## Working principles (lessons from the old system)
 
