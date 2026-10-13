@@ -38,17 +38,20 @@ const COLORWAYS = [
 ];
 
 // The share card: 1200x630 drawn at 2x, the size the page declares. It carries
-// the page's own words: the wordmark, the hero's headline (the tagline, which
-// nino made the headline on 2026-10-12), and the hero's eyebrow line, which says
-// what Flickday is. No "MEDIA" rule (nino, 2026-10-12).
+// the page's own words: the wordmark with "MEDIA" under it, so the card names the
+// business in full (Flickday Media, render standard gate 3); the hero's headline
+// (the tagline, which nino made the headline on 2026-10-12); and the hero's eyebrow
+// line, which says what Flickday is. "MEDIA" is a word, not a rule: nino dropped the
+// rule lines and kept the word (2026-10-12).
 // Type and colour are the live hero's computed styles (render standard gate 1):
 // Anton 400, uppercase, 0.01em, white for the headline; JetBrains Mono 500,
-// uppercase, 0.08em, #facc15 for the eyebrow. Read 2026-10-12.
+// uppercase, 0.08em, #facc15 for the eyebrow. Read 2026-10-12. "MEDIA" uses the
+// eyebrow's face, spaced 0.5em as the old card's rule word was.
 const CARD_W = 1200;
 const CARD_H = 630;
 const CARD_BG = '#0a0a0a';
 const CARD_OUT = join(OUT, 'og-share-card.png');
-// Mark, headline, descriptor. The headline sits on two lines at 100 px, as the
+// Mark, MEDIA, headline, descriptor. The headline sits on two lines at 100 px, as the
 // hero sets it on a phone, so it weighs as much as the mark (nino chose two
 // lines over one at 84 px, 2026-10-12). One line ran wider than the mark, and a
 // centred 630 px square, which some apps crop link images to, clipped its ends;
@@ -56,6 +59,7 @@ const CARD_OUT = join(OUT, 'og-share-card.png');
 const CARD_MARK = 600; // wordmark width, card px
 const CARD_HEAD = 100; // headline font-size, card px
 const CARD_TAG = 20; // eyebrow font-size, card px
+const CARD_MEDIA = 22; // "MEDIA" font-size, card px
 const HEADLINE = "Every Day's a Flickday."; // the tagline, exact (render standard gate 3)
 const DESCRIPTOR = 'Volleyball photos &amp; reels · Chicago';
 
@@ -65,10 +69,11 @@ async function renderCard(page, tmp) {
   await renderMark(page, tmp, YELLOW, CARD_MARK * 2, mark);
   const rows = {
     wm: `<img class="wm" src="card-mark.png" alt="">`,
+    med: `<div class="med">Media</div>`,
     tag: `<div class="eyebrow">${DESCRIPTOR}</div>`,
     head: `<div class="head">${HEADLINE.replace(' Flickday', '<br>Flickday')}</div>`,
   };
-  const order = ['wm', 'head', 'tag'];
+  const order = ['wm', 'med', 'head', 'tag'];
   const html = join(tmp, 'card.html');
   writeFileSync(
     html,
@@ -78,6 +83,7 @@ async function renderCard(page, tmp) {
 body{background:${CARD_BG};background-image:radial-gradient(70% 55% at 30% 30%,rgba(250,204,21,0.12),transparent 60%),radial-gradient(80% 60% at 85% 95%,rgba(249,115,22,0.07),transparent 60%);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px}
 .wm{display:block;width:${CARD_MARK}px;height:auto}
+.med{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:${CARD_MEDIA}px;letter-spacing:0.5em;padding-left:0.5em;text-transform:uppercase;color:${YELLOW};line-height:1;margin-top:-10px}
 .eyebrow{font-family:'JetBrains Mono',monospace;font-weight:500;font-size:${CARD_TAG}px;letter-spacing:0.08em;text-transform:uppercase;color:${YELLOW};line-height:1.5}
 .head{font-family:'Anton',Impact,sans-serif;font-weight:400;font-size:${CARD_HEAD}px;letter-spacing:0.01em;text-transform:uppercase;color:#ffffff;line-height:0.96;white-space:nowrap;text-align:center}</style>
 </head><body>
