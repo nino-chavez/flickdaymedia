@@ -74,12 +74,9 @@ const chip = (size, color) =>
   `<svg width="${size}" height="${size}" viewBox="0 0 120 120" aria-hidden="true" style="display:block">` +
   `<path fill="${color}" fill-rule="evenodd" d="${PLAY_D}"/></svg>`;
 
-/** Chip + wordmark on one baseline — the corner watermark lockup. */
-const lockup = (color, px) =>
-  `<span class="lockup" style="gap:${(px * 0.34).toFixed(1)}px">${chip(Math.round(px * 1.05), color)}${socialMark(
-    color,
-    px,
-  )}</span>`;
+// No chip-plus-wordmark lockup: the play mark does not sit beside the wordmark while
+// the symbol and lockup gates are open (nino, 2026-10-12). Bugs and overlays carry the
+// wordmark alone; the chip stays on the handle badges, which carry no wordmark.
 
 /** Chip + @handle — the social badge. */
 const badge = (px, fg, chipColor = fg) =>
@@ -91,7 +88,7 @@ const CSS = `
 html,body{background:transparent}
 .mk span{font-optical-sizing:none}
 .mk{display:inline-block;line-height:1;white-space:nowrap}
-.lockup,.badge{display:inline-flex;align-items:center;line-height:1;white-space:nowrap}
+.badge{display:inline-flex;align-items:center;line-height:1;white-space:nowrap}
 .handle{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500;line-height:1;letter-spacing:.01em}
 .seam{display:block;background:${YELLOW};width:${SEAM_W}px;border-radius:1px}
 `;
@@ -201,8 +198,7 @@ async function buildBug(browser) {
   const body = tones
     .map(
       ([id, c]) =>
-        `<div><span data-shot="bug-wordmark-${id}">${socialMark(c, BUG_PX * 3)}</span></div>` +
-        `<div><span data-shot="bug-lockup-${id}">${lockup(c, BUG_PX * 3)}</span></div>`,
+        `<div><span data-shot="bug-wordmark-${id}">${socialMark(c, BUG_PX * 3)}</span></div>`,
     )
     .join('');
   await shotElements(browser, page(SHOT_LAYOUT, body), { width: 1600, height: 2600 });
@@ -272,11 +268,11 @@ function overlayHtml({ w, h, safe, corner, scrim, markPx, badgePx }) {
   // sits in the trailing corner where a watermark is conventionally read.
   const parts =
     corner === 'reel'
-      ? `<div class="at" style="left:${safe.l}px;top:${safe.t}px">${lockup(WHITE, markPx)}</div>
+      ? `<div class="at" style="left:${safe.l}px;top:${safe.t}px">${socialMark(WHITE, markPx)}</div>
          <div class="at" style="left:${safe.l}px;bottom:${safe.b}px;display:flex;align-items:center;gap:${Math.round(
            badgePx * 0.75,
          )}px"><i class="seam" style="height:${seamH}px"></i>${badge(badgePx, WHITE, YELLOW)}</div>`
-      : `<div class="at" style="right:${safe.r}px;bottom:${safe.b}px">${lockup(WHITE, markPx)}</div>`;
+      : `<div class="at" style="right:${safe.r}px;bottom:${safe.b}px">${socialMark(WHITE, markPx)}</div>`;
   return page(
     `.frame{position:relative;width:${w}px;height:${h}px;overflow:hidden}
      /* Overlays composite over uncontrolled footage — a white mark can land on a
@@ -357,9 +353,8 @@ async function buildProof(browser) {
      <div class="cap">corner bugs · on black</div>
      <div class="badges">
        <img src="data:image/png;base64,${b64('bug-wordmark-white')}">
-       <img src="data:image/png;base64,${b64('bug-lockup-white')}">
-       <img src="data:image/png;base64,${b64('bug-lockup-yellow')}">
-       <span class="lite"><img src="data:image/png;base64,${b64('bug-lockup-ink')}"></span>
+       <img src="data:image/png;base64,${b64('bug-wordmark-yellow')}">
+       <span class="lite"><img src="data:image/png;base64,${b64('bug-wordmark-ink')}"></span>
      </div>
 
      <div class="cap">avatar · 1024 square</div>

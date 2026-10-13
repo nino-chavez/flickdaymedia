@@ -110,10 +110,11 @@ drifted.
   `--yellow-bright #fde047`, `--gray-dark #111`, `--gray-mid #333`, `--gray-light #888`.
 - **Type** — the same `:root`: Anton display, Inter body, Barlow Condensed 700 tags, JetBrains
   Mono labels. Loaded from the same Google Fonts URL `index.html` uses.
-- **Marks** — the shipped PNGs one directory up: `bug-lockup-white.png` and
-  `handle-flat-white.png`. The wordmark is never re-set in another face. `SOCIAL.md` notes those
-  files render at 3× their intended display size, so the lockup sits at 238px and the handle at
-  340px on a 1080 canvas, at both sizes.
+- **Marks** — the shipped PNGs one directory up: `bug-wordmark-white.png` and
+  `handle-flat-white.png`. The wordmark is never re-set in another face, and it carries no play
+  chip beside it while the lockup is open (2026-10-12). `SOCIAL.md` notes those files render at 3×
+  their intended display size, so the wordmark sits at 179px and the handle at 340px on a 1080
+  canvas, at both sizes.
 - **Safe areas** — read off `motion/flickday-overlay-kit/compositions/*.html`, the only geometry
   in this repo validated against real posts: story keeps 300px clear at the top, 270px at the
   bottom and 84px at the left, with 180px at the right for the action rail. Feed uses 64px all

@@ -47,9 +47,9 @@
              margin-bottom:28px;}
       .rail{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:24px;}
       .rail img.mark{height:auto;display:block;}
-      /* SOCIAL.md: the shipped bugs are rendered at 3x their intended display size, so a
-         714px lockup is built to sit near 238px on a 1080 canvas. Do not shrink for story. */
-      .lockup{width:238px;}
+      /* SOCIAL.md: the shipped bugs are rendered at 3x their intended display size, so the
+         538px wordmark bug is built to sit near 179px on a 1080 canvas. Do not shrink for story. */
+      .wordmark{width:179px;}
       .handle{width:340px;}
       .tagline{font-family:var(--font-label);font-weight:500;font-size:19px;letter-spacing:3px;
                color:var(--gray-light);text-transform:uppercase;white-space:nowrap;}
@@ -89,7 +89,7 @@
 
       var html = '';
       if (!D.facts_confirmed) html += '<p class="alert">' + D.unconfirmed_label + '</p>';
-      html += '<div class="rail pad"><img class="mark lockup" src="../bug-lockup-white.png" alt="Flickday">' +
+      html += '<div class="rail pad"><img class="mark wordmark" src="../bug-wordmark-white.png" alt="Flickday">' +
               '<span class="eyebrow">' + D.eyebrow + '</span></div>';
       html += '<div class="stack pad" id="stack"></div>';
       html += '<div class="facts pad">' + D.rows.map(function (r) {
