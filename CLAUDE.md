@@ -1,0 +1,3 @@
+# Flickday Media
+
+@AGENTS.md
