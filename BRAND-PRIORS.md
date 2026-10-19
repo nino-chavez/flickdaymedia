@@ -55,9 +55,10 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
 - **Overline / label / mono:** JetBrains Mono was used across prior assets for handles,
   MEDIA lockups, CTAs — a reasonable convention, not mandatory.
 - **Wordmark type is LOCKED: Peridot PE 950, lowercase** (2026-07-27). This prior is
-  closed. Standard cut down to 24 px on screen, micro cut below; spacing and kerning
-  live in `scripts/wordmark-lib.mjs → PERIDOT_CUTS`, and the build scripts that render
-  it are listed in `standards/asset-render-standard.md` (R-0). The all-caps Bebas
+  closed. Standard cut down to 24 px on screen, micro cut below; the deployed-site
+  generator keeps its spacing and kerning in `scripts/wordmark-lib.mjs → PERIDOT_CUTS`.
+  The canonical revision source is `brands/flickday/web-identity/v001` in the private
+  `brand-assets` library. The all-caps Bebas
   wordmark was tried and rejected. The logo
   deliberately differs from the site's headline face.
 
@@ -71,7 +72,8 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
   and a day-counter (e.g. "Day N / 365").
 - **Sports scoreboard** — an LED-grid "FD" that reads as both a scoreboard and the initials.
 - **Mascot** — "Almost Flickday," a cartoon caricature of Nino (the photographer). Source
-  line-art kept at `flickday-assets/brand/face-lineart*.{svg,png}`; full renders live in Drive.
+  line-art is in `brands/flickday/identity/v001/source/` in the private `brand-assets`
+  library; full renders live in Drive.
 
 ## Production constraints (so from-scratch assets stay usable)
 
@@ -79,8 +81,8 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
   — they print as muddy underbase), garment-aware pairs (`-dark` for dark garments = yellow/white
   ink; `-light` for light garments = dark ink), sized for ~300 DPI chest/back prints.
 - **Reels / Stories overlays:** 1080×1920, transparent where they composite over video.
-  Safe areas are harvested from `motion/flickday-overlay-kit/compositions/*.html`, the
-  only numbers in this repo validated against real posts.
+  Safe areas are recorded in `brands/flickday/overlay-kit/v001/records/` in the private
+  `brand-assets` library, the only numbers validated against real posts.
 - **Social handle bug:** small pill/badge with the play mark + `@flickday.media`.
 - **OG / share card:** **1200×630** — the size `index.html` declares. (This line said
   1200×675; nothing shipped at that size. Verified 2026-07-27.)
@@ -92,8 +94,8 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
   and no longer holds. Never `@import` inside CSS — it hangs the load; use `<link>`.
 - **Wordmark assets ship as PNG, not SVG.** Peridot is licensed for live text; an SVG
   would have to embed its outlines. Rasters sidestep that entirely. The traced
-  pre-Peridot SVGs were deleted on 2026-10-12; `flickday-assets/brand/` now holds only
-  the mascot line-art.
+  pre-Peridot SVGs were deleted on 2026-10-12; the retained mascot line-art lives in
+  `brands/flickday/identity/v001/source/` in the private `brand-assets` library.
 
 ## Working principles (lessons from the old system)
 
@@ -108,7 +110,7 @@ intent): Event Orange `#f97316`, ember `#ea580c`.
 Newest first. Each names the file that carries it; the values live there, not here.
 
 - **2026-10-12 — the motion sting carries the share card's lockup** (wordmark, MEDIA, tagline).
-  `motion/wordmark-sting/`.
+  `brands/flickday/wordmark-motion/v001` in the private `brand-assets` library.
 - **2026-10-12 — share card:** the Peridot wordmark, "MEDIA" as a word under it (no rule lines),
   the tagline as the headline, then "Volleyball photos & reels · Chicago".
   `scripts/build-site-wordmark.mjs`.
@@ -116,6 +118,20 @@ Newest first. Each names the file that carries it; the values live there, not he
   an eyebrow that says what Flickday is. `site/index.html`; the copy rules are in the experience
   brief in nino-chavez/public-site-rethink.
 - **2026-10-12 — over footage:** the yellow mark carries a flat 6 px dark offset shadow, never a
-  glow, and white text also carries a flat dark outline. `motion/wordmark-sting/shot-plan.json`.
+  glow, and white text also carries a flat dark outline. The decision record is
+  `brands/flickday/wordmark-motion/v001/records/flickday-wordmark-motion-v001-shot-plan.json`
+  in the private `brand-assets` library.
+
 - **2026-10-12 — no play mark in the `d`.** The symbol and any symbol-beside-wordmark lockup are
   open.
+
+## Brand source materialization
+
+The website keeps deployed copies and its favicon/share-card generators only. Reopen motion or
+overlay sources from the private library, never by recreating the retired folders here:
+
+```bash
+cd ~/Workspace/dev/tools/brand-assets
+python3 bin/assets.py materialize flickday-wordmark-motion out/flickday-wordmark-motion
+python3 bin/assets.py materialize flickday-overlay-kit out/flickday-overlay-kit
+```
