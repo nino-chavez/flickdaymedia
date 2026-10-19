@@ -8,15 +8,16 @@ that run at every tier. Machinery: `~/.claude/hooks/render-dispatch-guard.py` an
 
 **Rule R-0.** Name the tier, then dispatch. The main loop cannot change model mid-session.
 
-**Check.** Mechanical for `render-kit` invocations only. The 40-file render pipeline was deleted on
-2026-07-05, but four focused scripts have since returned:
-- `scripts/build-site-wordmark.mjs`: the header and footer wordmark PNGs, the share card
-  (`--card` for the card alone, `--out <path>` to try a variant without touching the committed card),
-  and the README hero (`--readme`);
-- `scripts/build-sting-wordmark.mjs`: the motion stings' wordmark layers and the overlay kit's
-  colourways;
-- `scripts/social-kit.mjs`: the social bugs, handle badges, avatar and overlay frames;
+**Check.** Mechanical for `render-kit` invocations only. This repository retains two focused
+deployed-site generators:
+- `scripts/build-site-wordmark.mjs`: the header and footer wordmark PNGs and the share card
+  (`--card` for the card alone, `--out <path>` to try a variant without touching the committed card);
 - `scripts/build-site-assets.mjs`: the favicons.
+
+Motion, social-kit, and historical generator sources are canonical in the private `brand-assets`
+library: `brands/flickday/{web-identity,wordmark-motion,overlay-kit}/v001`. Materialize a native
+project under that library's ignored `out/` directory with `python3 bin/assets.py materialize
+<source-id> <new-directory>`; do not recreate its retired source folder here.
 
 **Scope caveat (2026-10-12):** the dispatch hook does
 not see them. It matches `render-kit` commands only, so R-0 holds for these scripts by discipline,
@@ -29,7 +30,7 @@ session that is already on the Judged model and say so. Do not route it to a che
 
 | Who catches it | Tier | Model |
 |---|---|---|
-| A gate — a build that fails, a diff against a committed asset in `assets/` or `flickday-assets/` | Mechanical | `haiku` |
+| A gate — a build that fails, a diff against a committed asset in `site/` or a library materialization | Mechanical | `haiku` |
 | A gate exists, but the work is real editing — payload edits, template geometry | Standard | `sonnet` |
 | A person judges it on appearance; any new mark, wordmark or public graphic | Judged | `opus` |
 
@@ -54,10 +55,11 @@ proves identity correct.
    string match, not paraphrase. When a request drops, moves or restyles part of the name or the
    tagline, say how you read it in the preview caption before rendering: "drop the MEDIA rule"
    was read as dropping the word too, and the card lost half the name (2026-10-12).
-4. **Reuse before generating.** The current marks are what the build scripts under R-0 write.
-   **Check:** reuse their outputs before producing a new one. The retired exploration (traced
-   SVGs, `wordmarks/wordmark-play*`, `concepts/`, the study scripts) was deleted on 2026-10-12;
-   if you dig it out of git history, do not reuse it as a mark.
+4. **Reuse before generating.** The current mark sources are named by the private library's
+   `brands/flickday/current.json`; this repo retains only the site copies and their two generators.
+   **Check:** reuse the current collection exports before producing a new one. The retired
+   exploration (traced SVGs, `wordmarks/wordmark-play*`, `concepts/`, the study scripts) was
+   deleted on 2026-10-12; if you dig it out of git history, do not reuse it as a mark.
 5. **Overlays are judged where they will be seen.** **Check:** before asking anyone to approve an
    asset that composites over footage, look at it over a light frame, a dark frame, and at phone
    scale (about 0.36x of a 1080-wide export). On 2026-10-12 both legibility misses, the yellow

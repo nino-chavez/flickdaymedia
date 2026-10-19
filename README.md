@@ -1,4 +1,4 @@
-<img src="assets/readme/hero.png" alt="Flickday Media banner. A yellow eyebrow reads Volleyball photos and reels, Chicago. Below it, the yellow flickday wordmark with MEDIA under it. Then the tagline, Every Day's a Flickday. Raw, fast, player-first. We shoot for the ones who live in the rally. A panel lists what's in here. site/: the live site, and the brand's ground truth. motion/: overlay kit, wordmark sting, film-room proof. flickday-assets/: social kit, play symbol, mascot line-art. BRAND-PRIORS.md: inputs for designing, not locked executions." width="100%">
+# Flickday Media
 
 Volleyball tournament photos and reels, out of Chicago. Galleries within 24–48 hours. We
 shoot for the players, not the brochure.
@@ -17,9 +17,26 @@ to the repo.
 | Path | Holds |
 |---|---|
 | `site/` | The live site: `index.html`, `_redirects`, images, favicons, share card |
-| `motion/` | Overlay kit, wordmark sting, film-room proof card (retired) — HTML motion pieces |
-| `flickday-assets/` | Social kit, the play symbol, mascot line-art. The wordmark studies and concept boards were deleted on 2026-10-12; git history has them |
+| `motion/filmroom-pick-proof/` | Unrelated Film Room proof project |
 | `BRAND-PRIORS.md` | The inputs a designer needs before making anything |
+
+## Brand artwork
+
+The private shared library at `~/Workspace/dev/tools/brand-assets` owns Flickday artwork and
+revision sources. Its current pointer names `identity`, `web-identity`, `wordmark-motion`, and
+`overlay-kit` v001 under `brands/flickday/`; this repository keeps only the copies deployed from
+`site/`.
+
+To reopen a retained native source, materialize it into the library's ignored `out/` directory:
+
+```bash
+cd ~/Workspace/dev/tools/brand-assets
+python3 bin/assets.py materialize flickday-wordmark-motion out/flickday-wordmark-motion
+python3 bin/assets.py materialize flickday-overlay-kit out/flickday-overlay-kit
+```
+
+Use `flickday-web-assets` for the retained social assets or `flickday-web-generators` for their
+historical generators. Do not restore those folders in this website repository.
 
 ## The site is the brand, not a doc about the brand
 
