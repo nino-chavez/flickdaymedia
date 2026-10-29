@@ -27,6 +27,10 @@ kept calling it false until 2026-10-12: verify before trusting, including this f
 - **Personality:** authentic, energetic, bold, player-focused, grassroots — courtside, not
   corporate.
 
+The working direction for gallery captions lives in
+[the social voice guide](docs/social-voice-guide.md). It is an initial editorial
+direction, separate from the visual identity and subject to Nino's edits.
+
 ## Palette (from the live site `:root`)
 
 Dark theme. Yellow on black is the whole identity.
